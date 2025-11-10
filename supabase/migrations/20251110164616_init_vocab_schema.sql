@@ -437,3 +437,4 @@ grant execute on function app.rpc_vocabulary_overview(uuid, uuid) to authenticat
 -- ensure anon clients cannot call rpc directly; omit grant to maintain locked-down surface.
 
 
+

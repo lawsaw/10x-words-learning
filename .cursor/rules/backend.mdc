@@ -1,0 +1,13 @@
+---
+description: 
+globs: *.ts, *.tsx
+alwaysApply: false
+---
+### Backend and Database
+
+- Use Supabase for backend services — authentication, database interactions, storage, and RPC.
+- Follow Supabase best practices for security, RLS policies, and performance.
+- Use Zod schemas to validate data exchanged with the backend.
+- In server components and API routes access Supabase instances from `lib/supabase/server.ts`.
+- In client components access Supabase instances from `lib/supabase/client.ts`.
+- Do not import the global supabaseClient directly — always use context-aware instances (server or browser).
