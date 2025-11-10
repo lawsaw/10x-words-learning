@@ -2,7 +2,7 @@
 
 ## 1. Product Overview
 
-10x Words Learning is a web-based vocabulary management tool for independent language learners who operate in an English-language interface but need to master terminology across multiple target languages. The application combines manual curation and AI-assisted generation of vocabulary to help users assemble thematic word lists, review definitions and translations, and practice via table or slider modes. Supabase provides persistence with row-level security, while the frontend uses Tailwind 4 and Shadcn/ui to deliver a responsive experience across desktop, tablet, and mobile form factors. The MVP emphasizes streamlined CRUD flows, predictable learning navigation, and seamless AI-powered word suggestions without ancillary analytics or administrative tooling.
+10x Words Learning is a web-based vocabulary management tool for independent language learners who operate in an English-language interface but need to master terminology across multiple target languages. The application combines manual curation and AI-assisted generation of vocabulary to help users assemble thematic word lists, review translations, and practice via table or slider modes. Supabase provides persistence with row-level security, while the frontend uses Tailwind 4 and Shadcn/ui to deliver a responsive experience across desktop, tablet, and mobile form factors. The MVP emphasizes streamlined CRUD flows, predictable learning navigation, and seamless AI-powered word suggestions without ancillary analytics or administrative tooling.
 
 ## 2. User Problem
 
@@ -32,7 +32,7 @@
 - Cascade deletions so that removing a category also removes all words linked to it after user confirmation.
 
 ### 3.4 Word Management
-- Allow users to create and edit words within a category, capturing the word in the learning language, target-language definitions, the user’s translation, and Markdown-formatted usage examples.
+- Allow users to create and edit words within a category, capturing the word in the learning language, the user’s translation, and Markdown-formatted usage examples.
 - Display and edit Markdown content with guidance inline so users can format multi-line examples or emphasis as needed.
 - Maintain word-level timestamps to support chronological sorting in views.
 - Provide deletion controls for individual words that trigger confirmation flows before data is removed.
@@ -158,7 +158,7 @@ ID: US-008
 Title: Manage Word Details Manually
 Description: As a learner, I want to manually add and edit words within a category so that the vocabulary reflects my needs.
 Acceptance Criteria:
-- The word form captures the word in the learning language, its definitions, the user’s translation, and Markdown-formatted example sentences.
+- The word form captures the word in the learning language, the user’s translation, and Markdown-formatted example sentences.
 - Saving the form with all required fields persists the word and displays it in both table and slider views.
 - Editing an existing word updates the stored values and reflects the changes immediately in all views.
 
