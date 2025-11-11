@@ -66,6 +66,22 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 - `npm run lint:fix` — Run ESLint with automatic fixes.
 - `npm run format` — Format files with Prettier.
 
+## API Documentation
+
+A comprehensive REST API is available for all application functionality. See [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for complete endpoint documentation including:
+
+- **Authentication** - Register, login, logout, session management
+- **Languages** - Available language catalog
+- **Profile** - User profile management
+- **Learning Languages** - CRUD with optional statistics
+- **Categories** - Full category management with search and word counts
+- **Words** - Complete vocabulary CRUD with multiple view modes and global search
+- **AI Generation** - OpenRouter integration for word suggestions
+- **Vocabulary Overview** - Aggregated analytics view
+- **Testing** - Database reset utilities for test environments
+
+All endpoints follow REST conventions with standardized error responses and proper HTTP status codes.
+
 ## Project Scope
 **In scope**
 - Email/password authentication with immutable user language selection.
