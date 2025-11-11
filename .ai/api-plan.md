@@ -434,3 +434,4 @@
   - Logging: Server logs include request id, user id, endpoint, latency; exclude PII where possible.
   - Observability: Expose metrics (success/error counts, latency) for critical endpoints.
 
+
