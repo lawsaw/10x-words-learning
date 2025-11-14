@@ -13,6 +13,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type RegisterModalProps = {
   open: boolean
@@ -137,17 +144,24 @@ export function RegisterModal({
   }, [languagesState.data])
 
   const handleFieldChange = useCallback(
-    (field: "email" | "password" | "userLanguage") =>
-      (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const value = event.target.value
-        setFormState((previous) => ({
-          ...previous,
-          [field]: value,
-          error: null,
-        }))
-      },
+    (field: "email" | "password") => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value
+      setFormState((previous) => ({
+        ...previous,
+        [field]: value,
+        error: null,
+      }))
+    },
     [],
   )
+
+  const handleLanguageSelect = useCallback((value: string) => {
+    setFormState((previous) => ({
+      ...previous,
+      userLanguage: value,
+      error: null,
+    }))
+  }, [])
 
   const canSubmit = useMemo(() => {
     const isEmailValid = email.trim().length > 0
@@ -235,7 +249,7 @@ export function RegisterModal({
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <label htmlFor="register-email" className="text-sm font-medium text-foreground">
               Email
             </label>
@@ -251,7 +265,7 @@ export function RegisterModal({
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="register-password"
@@ -276,7 +290,7 @@ export function RegisterModal({
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="register-language"
@@ -292,21 +306,22 @@ export function RegisterModal({
             {isLanguagesLoading ? (
               <div className="h-10 w-full animate-pulse rounded-md bg-muted" />
             ) : (
-              <select
-                id="register-language"
-                value={userLanguage}
-                onChange={handleFieldChange("userLanguage")}
-                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              <Select
+                value={userLanguage || undefined}
+                onValueChange={handleLanguageSelect}
                 disabled={status === "submitting"}
-                required
               >
-                <option value="">Select your language</option>
-                {languages.items.map((item) => (
-                  <option key={item.code} value={item.code}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id="register-language" className="h-10 w-full">
+                  <SelectValue placeholder="Select your language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.items.map((item) => (
+                    <SelectItem key={item.code} value={item.code}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
 
             {isLanguagesError ? (

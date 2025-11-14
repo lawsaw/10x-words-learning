@@ -3,6 +3,13 @@
 import { useMemo } from "react"
 
 import { CreateWordButton } from "@/components/category-word-table/create-word-button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { SortDirection, WordOrderField } from "@/lib/types"
 
 type WordToolbarProps = {
@@ -53,30 +60,34 @@ export function WordToolbar({
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
         <CreateWordButton onClick={onCreate} disabled={busy} />
-        <label className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>Sort</span>
-          <select
-            className="h-8 rounded-md border border-input bg-background px-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span id="word-toolbar-sort-label">Sort</span>
+          <Select
             value={`${orderBy}:${direction}`}
-            onChange={(event) => {
-              const [nextOrderBy, nextDirection] = event.target.value.split(":") as [
-                WordOrderField,
-                SortDirection,
-              ]
+            onValueChange={(value) => {
+              const [nextOrderBy, nextDirection] = value.split(":") as [WordOrderField, SortDirection]
               onSortChange(nextOrderBy, nextDirection)
             }}
             disabled={busy}
           >
-            {SORT_OPTIONS.map((option) => (
-              <option
-                key={`${option.orderBy}:${option.direction}`}
-                value={`${option.orderBy}:${option.direction}`}
-              >
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+            <SelectTrigger
+              aria-labelledby="word-toolbar-sort-label"
+              className="h-8 w-[11.5rem] justify-between px-2 text-sm"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORT_OPTIONS.map((option) => (
+                <SelectItem
+                  key={`${option.orderBy}:${option.direction}`}
+                  value={`${option.orderBy}:${option.direction}`}
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   )

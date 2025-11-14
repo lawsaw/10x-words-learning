@@ -53,7 +53,7 @@ export function RenameCategoryDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3">
+        <div className="grid gap-2">
           <label className="text-sm font-medium text-foreground" htmlFor="rename-category-input">
             Category name
           </label>

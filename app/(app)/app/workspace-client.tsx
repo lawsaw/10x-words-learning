@@ -14,6 +14,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export type LearningLanguageSummary = {
   id: string
@@ -354,7 +361,7 @@ function LanguageList({ summaries, onCreateCategory }: LanguageListProps) {
       {summaries.map((summary) => (
         <section
           key={summary.id}
-          className="space-y-3 rounded-lg border border-border bg-white p-4 shadow-sm"
+          className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm"
         >
           <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -382,7 +389,7 @@ function LanguageList({ summaries, onCreateCategory }: LanguageListProps) {
                 <li key={category.id}>
                   <Link
                     href={`/app/${summary.id}/${category.id}`}
-                    className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 px-4 py-3 transition hover:border-foreground hover:bg-muted/50"
+                    className="flex flex-col gap-2 rounded-lg border border-border bg-muted px-4 py-3 transition hover:border-foreground hover:bg-muted/50"
                   >
                     <span className="text-sm font-medium text-foreground">{category.name}</span>
                     <span className="text-xs text-muted-foreground">
@@ -457,19 +464,22 @@ function CreateLearningLanguageDialog({
               <label className="text-sm font-medium text-foreground" htmlFor="learning-language-select">
                 Learning language
               </label>
-              <select
-                id="learning-language-select"
-                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                value={selectedLanguageCode}
-                onChange={(event) => onSelectedLanguageChange(event.target.value)}
+              <Select
+                value={selectedLanguageCode || undefined}
+                onValueChange={onSelectedLanguageChange}
                 disabled={busy}
               >
-                {options.map((option) => (
-                  <option key={option.code} value={option.code}>
-                    {option.name} ({option.code})
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id="learning-language-select" className="h-9 w-full px-3 text-sm">
+                  <SelectValue placeholder="Select learning language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {options.map((option) => (
+                    <SelectItem key={option.code} value={option.code}>
+                      {option.name} ({option.code})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
 
@@ -531,19 +541,22 @@ function CreateCategoryDialog({
             <label className="text-sm font-medium text-foreground" htmlFor="category-language-select">
               Learning language
             </label>
-            <select
-              id="category-language-select"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              value={selectedLearningLanguage}
-              onChange={(event) => onLearningLanguageChange(event.target.value)}
+            <Select
+              value={selectedLearningLanguage || undefined}
+              onValueChange={onLearningLanguageChange}
               disabled={busy || summaries.length === 0}
             >
-              {summaries.map((summary) => (
-                <option key={summary.id} value={summary.id}>
-                  {summary.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id="category-language-select" className="h-9 w-full px-3 text-sm">
+                <SelectValue placeholder="Select learning language" />
+              </SelectTrigger>
+              <SelectContent>
+                {summaries.map((summary) => (
+                  <SelectItem key={summary.id} value={summary.id}>
+                    {summary.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid gap-2">

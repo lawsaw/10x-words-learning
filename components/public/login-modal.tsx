@@ -127,7 +127,7 @@ export function LoginModal({ open, onClose, onSwitch }: LoginModalProps) {
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <label htmlFor="login-email" className="text-sm font-medium text-foreground">
               Email
             </label>
@@ -142,7 +142,7 @@ export function LoginModal({ open, onClose, onSwitch }: LoginModalProps) {
               disabled={status === "submitting"}
             />
           </div>
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <label htmlFor="login-password" className="text-sm font-medium text-foreground">
               Password
             </label>

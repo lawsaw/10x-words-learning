@@ -13,6 +13,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type {
   CreateWordCommand,
   DifficultyLevel,
@@ -241,19 +248,22 @@ export function WordFormModal({
               <label className="text-sm font-medium text-foreground" htmlFor="word-difficulty">
                 Difficulty
               </label>
-              <select
-                id="word-difficulty"
+              <Select
                 value={difficulty}
-                onChange={(event) => setDifficulty(event.target.value as DifficultyLevel)}
-                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                onValueChange={(value) => setDifficulty(value as DifficultyLevel)}
                 disabled={busy || aiBusy}
               >
-                {(Object.keys(DIFFICULTY_LABELS) as DifficultyLevel[]).map((key) => (
-                  <option key={key} value={key}>
-                    {DIFFICULTY_LABELS[key]}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id="word-difficulty" className="h-9 w-full px-3 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(DIFFICULTY_LABELS) as DifficultyLevel[]).map((key) => (
+                    <SelectItem key={key} value={key}>
+                      {DIFFICULTY_LABELS[key]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-muted-foreground">
                 Difficulty guides AI generation and helps contextualise your study sessions.
               </p>
