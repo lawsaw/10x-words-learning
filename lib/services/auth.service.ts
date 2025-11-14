@@ -53,6 +53,19 @@ export class AuthService {
       if (authError.message?.toLowerCase().includes("already registered")) {
         throw new ConflictError("Email address is already registered")
       }
+
+      const detailedMessage =
+        authError.message || (authError as { error_description?: string }).error_description
+
+      if (detailedMessage) {
+        const normalized = detailedMessage.trim()
+        if (normalized.toLowerCase().includes("password")) {
+          throw new ValidationError(normalized)
+        }
+        if (authError.status === 400) {
+          throw new ValidationError(normalized)
+        }
+      }
       throw mapSupabaseError(authError)
     }
 

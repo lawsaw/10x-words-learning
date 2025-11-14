@@ -11,3 +11,5 @@ create policy profiles_insert_authenticated
     with check (user_id = auth.uid());
 
 
+
+

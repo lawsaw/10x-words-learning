@@ -15,11 +15,11 @@ export function SupportedLanguageList({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="text-sm font-medium uppercase tracking-wide text-muted-foreground text-center">
         Supported languages
       </div>
       {hasLanguages ? (
-        <ul className="mt-3 flex flex-wrap gap-2">
+        <ul className="mt-3 flex flex-wrap justify-center gap-2">
           {items.map((item) => (
             <li
               key={item.code}
@@ -30,7 +30,7 @@ export function SupportedLanguageList({
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-sm text-muted-foreground">
+        <p className="mt-3 text-sm text-muted-foreground text-center">
           We&apos;re curating the best content—new languages are added every
           week.
         </p>

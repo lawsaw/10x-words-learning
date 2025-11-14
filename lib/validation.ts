@@ -175,14 +175,17 @@ export const wordParamsSchema = z.object({
  */
 export const generateWordsCommandSchema = z.object({
   learningLanguageId: uuidSchema,
+  learningLanguageName: z.string().max(150).optional(),
   userLanguage: languageCodeSchema,
+  userLanguageName: z.string().max(150).optional(),
   difficulty: z
     .enum(["easy", "medium", "advanced"])
     .optional()
     .default("medium") as z.ZodType<DifficultyLevel>,
   categoryContext: z.string().max(500).optional(),
   temperature: z.number().min(0).max(1).default(0.7),
-  count: z.number().int().min(1).max(5).default(5),
+  count: z.literal(1).default(1),
+  excludeTerms: z.array(z.string().min(1).max(500)).max(100).optional(),
 })
 
 /**

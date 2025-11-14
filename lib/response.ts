@@ -27,7 +27,7 @@ export function createdResponse<T>(data: T): NextResponse<T> {
  * Success response for DELETE requests (no content).
  */
 export function noContentResponse(): NextResponse<EmptyResponse> {
-  return jsonResponse({} as EmptyResponse, 204)
+  return new NextResponse(null, { status: 204 })
 }
 
 /**
@@ -35,6 +35,9 @@ export function noContentResponse(): NextResponse<EmptyResponse> {
  */
 export function errorResponse(error: unknown): NextResponse {
   const { body, status } = createErrorResponse(error)
+  if (status === 204) {
+    return noContentResponse()
+  }
   return jsonResponse(body, status)
 }
 

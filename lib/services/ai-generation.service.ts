@@ -113,7 +113,9 @@ export class AiGenerationService {
       // Validate response structure
       const suggestions = this.validateAndExtractSuggestions(
         parsedContent,
-        command.count || 5
+        command.count || 1,
+        command.excludeTerms,
+        command.learningLanguageName ?? command.learningLanguageId
       )
 
       // Extract usage information
@@ -166,24 +168,35 @@ export class AiGenerationService {
     const difficultyDesc = difficultyDescriptions[difficulty]
     const count = command.count || 5
 
-    let prompt = `Generate ${count} ${difficultyDesc} words or phrases in "${command.learningLanguageId}" language.`
+    const learningLanguageLabel = command.learningLanguageName ?? command.learningLanguageId
+    const userLanguageLabel = command.userLanguageName ?? command.userLanguage
+
+    let prompt = `Generate ${count} distinct ${difficultyDesc} words or phrases in ${learningLanguageLabel}.`
 
     if (command.categoryContext) {
       prompt += ` The words should be related to the following topic or context: "${command.categoryContext}".`
     }
 
-    prompt += `\n\nFor each word, provide:
-1. "term": the word or phrase in ${command.learningLanguageId}
-2. "translation": the translation in ${command.userLanguage}
-3. "examplesMd": 1-3 example sentences in ${command.learningLanguageId} showing usage, formatted as markdown list items (use "- " prefix). Keep examples concise and practical.
+    if (command.excludeTerms && command.excludeTerms.length > 0) {
+      prompt += ` Avoid generating any of the following existing terms: ${command.excludeTerms
+        .map((item) => `"${item}"`)
+        .join(", ")}.`
+    }
+
+    prompt += `
+
+For each word, provide:
+1. "term": the word or phrase in ${learningLanguageLabel}
+2. "translation": the translation in ${userLanguageLabel}
+3. "examplesMd": exactly 5 concise example sentences in ${learningLanguageLabel} showing usage, formatted as markdown list items (each sentence prefixed with "- "). Sentences should be practical and no longer than 120 characters.
 
 Return ONLY a JSON object with this exact structure:
 {
   "words": [
     {
-      "term": "word in ${command.learningLanguageId}",
-      "translation": "translation in ${command.userLanguage}",
-      "examplesMd": "- Example sentence 1\\n- Example sentence 2"
+      "term": "word in ${learningLanguageLabel}",
+      "translation": "translation in ${userLanguageLabel}",
+      "examplesMd": "- Example sentence 1\n- Example sentence 2"
     }
   ]
 }
@@ -198,7 +211,9 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanations.`
    */
   private static validateAndExtractSuggestions(
     response: any,
-    expectedCount: number
+    expectedCount: number,
+    excludeTerms?: string[],
+    learningLanguageLabel?: string
   ): GeneratedWordSuggestionDto[] {
     // Check if response has words array
     if (!response.words || !Array.isArray(response.words)) {
@@ -221,6 +236,10 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanations.`
     }
 
     // Validate and sanitize each suggestion
+    const normalizedExclusions = new Set(
+      (excludeTerms ?? []).map((term) => term.toLowerCase().trim())
+    )
+
     const suggestions: GeneratedWordSuggestionDto[] = []
 
     for (let i = 0; i < Math.min(words.length, expectedCount); i++) {
@@ -240,12 +259,35 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanations.`
       // Sanitize and validate lengths
       const term = word.term.trim().substring(0, 500)
       const translation = word.translation.trim().substring(0, 500)
-      const examplesMd = word.examplesMd
-        ? sanitizeMarkdown(word.examplesMd.trim()).substring(0, 2000)
-        : ""
+      const examplesRaw = word.examplesMd
+        ? String(word.examplesMd)
+        : Array.isArray(word.examples)
+          ? word.examples.join("\n")
+          : ""
+
+      const sanitizedExamples = examplesRaw
+        .split("\n")
+        .map((item: string) => sanitizeMarkdown(String(item).trim()))
+        .filter((item: string) => item.length > 0)
+
+      if (sanitizedExamples.length !== 5) {
+        console.warn(`Skipping word ${i}: expected 5 examples, received ${sanitizedExamples.length}`)
+        continue
+      }
+
+      const examplesMd = sanitizedExamples
+        .slice(0, 5)
+        .map((example: string) => (example.startsWith("- ") ? example : `- ${example}`))
+        .join("\n")
+        .substring(0, 2000)
 
       if (!term || !translation) {
         console.warn(`Skipping word ${i}: empty term or translation after sanitization`)
+        continue
+      }
+
+      if (normalizedExclusions.has(term.toLowerCase())) {
+        console.warn(`Skipping word ${i}: term already exists in category`)
         continue
       }
 

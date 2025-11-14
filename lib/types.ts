@@ -209,6 +209,52 @@ export type CategoryWordsListDto = {
   meta: WordListMetaDto
 }
 
+/**
+ * Category word table view models.
+ */
+export type WordTableRowVm = {
+  id: string
+  term: string
+  translation: string
+  examplesMd: string
+  createdAt: string
+  updatedAt: string
+  createdAtLabel: string
+  updatedAtLabel: string
+}
+
+export type WordTableViewModel = {
+  rows: WordTableRowVm[]
+  meta: WordListMetaDto
+  count: number
+  isEmpty: boolean
+}
+
+export type WordFormState = {
+  wordId?: string
+  term: string
+  translation: string
+  examplesMd: string
+  difficulty: DifficultyLevel
+}
+
+export type DeleteWordContext = {
+  wordId: string
+  term: string
+}
+
+export type AiGenerationRequest = {
+  difficulty: DifficultyLevel
+  learningLanguageId: string
+  learningLanguageName?: string
+  userLanguage: string
+  userLanguageName?: string
+  categoryContext?: string
+  temperature?: number
+  count?: number
+  excludeTerms?: string[]
+}
+
 export type CreateWordCommand = {
   term: WordEntity["term"]
   translation: WordEntity["translation"]
@@ -241,10 +287,13 @@ export type DifficultyLevel = "easy" | "medium" | "advanced"
 export type GenerateWordsCommand = {
   difficulty?: DifficultyLevel
   learningLanguageId: WordEntity["user_learning_language_id"]
+  learningLanguageName?: string
   userLanguage: ProfileEntity["user_language_id"]
+  userLanguageName?: string
   categoryContext?: string
   temperature?: number
   count?: number
+  excludeTerms?: string[]
 }
 
 export type GeneratedWordSuggestionDto = {

@@ -1,0 +1,96 @@
+"use client"
+
+import { useEffect, useState } from "react"
+
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+
+type RenameCategoryDialogProps = {
+  open: boolean
+  initialName: string
+  busy?: boolean
+  error?: string | null
+  onSubmit: (name: string) => Promise<void> | void
+  onCancel: () => void
+}
+
+export function RenameCategoryDialog({
+  open,
+  initialName,
+  busy,
+  error,
+  onSubmit,
+  onCancel,
+}: RenameCategoryDialogProps) {
+  const [name, setName] = useState(initialName)
+  const [touched, setTouched] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      setName(initialName)
+      setTouched(false)
+    }
+  }, [open, initialName])
+
+  const trimmedName = name.trim()
+  const hasError = touched && !trimmedName
+
+  return (
+    <Dialog open={open} onOpenChange={(next) => (!next ? onCancel() : undefined)}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Rename category</DialogTitle>
+          <DialogDescription>
+            Update the category name to help organize your vocabulary library.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-3">
+          <label className="text-sm font-medium text-foreground" htmlFor="rename-category-input">
+            Category name
+          </label>
+          <Input
+            id="rename-category-input"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            onBlur={() => setTouched(true)}
+            placeholder="e.g. Travel essentials"
+            disabled={busy}
+          />
+          {hasError ? (
+            <p className="text-xs text-destructive">Category name is required.</p>
+          ) : null}
+          {error ? <p className="text-xs text-destructive">{error}</p> : null}
+        </div>
+
+        <DialogFooter>
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              setTouched(true)
+              if (!trimmedName) {
+                return
+              }
+              void onSubmit(trimmedName)
+            }}
+            disabled={busy || !trimmedName}
+          >
+            {busy ? "Saving…" : "Save"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
