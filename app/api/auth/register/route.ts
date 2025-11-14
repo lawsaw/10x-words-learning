@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json()
     const validatedCommand = registerCommandSchema.parse(body)
-
     // Register user and create profile
     const result: RegisterResponseDto =
       await AuthService.register(validatedCommand)

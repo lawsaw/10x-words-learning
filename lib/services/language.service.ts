@@ -1,6 +1,14 @@
 import { createClient } from "@/lib/supabase/server"
 import type { LanguageDto, LanguagesListDto, LanguagesQueryDto } from "@/lib/types"
-import { mapSupabaseError } from "@/lib/errors"
+import { DomainError, ErrorCode, mapSupabaseError } from "@/lib/errors"
+
+const FALLBACK_LANGUAGES: LanguageDto[] = [
+  { code: "en", name: "English" },
+  { code: "de", name: "German" },
+  { code: "pl", name: "Polish" },
+  { code: "ru", name: "Russian" },
+  { code: "uk", name: "Ukrainian" },
+]
 
 /**
  * Service for managing language catalog operations.
@@ -38,7 +46,20 @@ export class LanguageService {
         languages,
       }
     } catch (error) {
-      throw error instanceof Error ? error : mapSupabaseError(error)
+      const normalizedError =
+        error instanceof DomainError ? error : error instanceof Error ? error : mapSupabaseError(error)
+
+      // if (normalizedError instanceof DomainError && normalizedError.code === ErrorCode.Forbidden) {
+      //   console.warn("[LanguageService] Falling back to static language list due to access error", {
+      //     error: normalizedError.message,
+      //   })
+
+      //   return {
+      //     languages: FALLBACK_LANGUAGES,
+      //   }
+      // }
+
+      throw normalizedError
     }
   }
 }

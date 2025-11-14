@@ -47,7 +47,7 @@ export class AuthService {
       email: command.email,
       password: command.password,
     })
-
+    
     if (authError) {
       // Handle duplicate email case
       if (authError.message?.toLowerCase().includes("already registered")) {
