@@ -178,7 +178,7 @@ export function LoginModal({ open, onClose, onSwitch }: LoginModalProps) {
           <span>Don&apos;t have an account yet? </span>
           <button
             type="button"
-            className="font-medium text-primary underline-offset-2 hover:underline"
+            className="font-medium text-primary underline-offset-2 hover:underline cursor-pointer disabled:cursor-not-allowed"
             onClick={handleSwitchToRegister}
             disabled={status === "submitting"}
           >

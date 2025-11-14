@@ -29,7 +29,7 @@ export default function AppShellLayout({
   return (
     <div
       className={cn(
-        "flex min-h-screen flex-col bg-background text-foreground",
+        "flex min-h-screen flex-col bg-transparent text-foreground",
         className,
       )}
     >

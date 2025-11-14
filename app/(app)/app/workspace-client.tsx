@@ -260,7 +260,7 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-3 rounded-lg border border-border bg-card/50 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 text-sm">
           <h2 className="text-base font-semibold text-foreground">Workspace overview</h2>
           <p className="text-muted-foreground">
@@ -352,7 +352,10 @@ function LanguageList({ summaries, onCreateCategory }: LanguageListProps) {
   return (
     <div className="space-y-8">
       {summaries.map((summary) => (
-        <section key={summary.id} className="space-y-3 rounded-lg border border-border bg-card/50 p-4 shadow-sm">
+        <section
+          key={summary.id}
+          className="space-y-3 rounded-lg border border-border bg-white p-4 shadow-sm"
+        >
           <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-base font-semibold text-foreground">
@@ -379,7 +382,7 @@ function LanguageList({ summaries, onCreateCategory }: LanguageListProps) {
                 <li key={category.id}>
                   <Link
                     href={`/app/${summary.id}/${category.id}`}
-                    className="flex flex-col gap-2 rounded-lg border border-border px-4 py-3 transition hover:border-foreground"
+                    className="flex flex-col gap-2 rounded-lg border border-border bg-muted/30 px-4 py-3 transition hover:border-foreground hover:bg-muted/50"
                   >
                     <span className="text-sm font-medium text-foreground">{category.name}</span>
                     <span className="text-xs text-muted-foreground">

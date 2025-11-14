@@ -358,7 +358,7 @@ export function RegisterModal({
           <span>Already have an account?</span>
           <button
             type="button"
-            className="font-medium text-primary underline-offset-2 hover:underline"
+            className="font-medium text-primary underline-offset-2 hover:underline cursor-pointer disabled:cursor-not-allowed"
             onClick={handleSwitchToLogin}
             disabled={status === "submitting"}
           >
