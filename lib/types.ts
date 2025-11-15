@@ -360,3 +360,117 @@ export type ErrorResponseDto = {
   }
 }
 
+/**
+ * OpenRouter service types.
+ */
+export type ChatMessageRole = "system" | "user" | "assistant" | "tool"
+
+export type ChatMessage = {
+  role: ChatMessageRole
+  content: string
+  name?: string
+}
+
+export type ResponseFormatType = "text" | "json_object" | "json_schema"
+
+export type JsonSchema = {
+  type: string
+  properties?: Record<string, any>
+  required?: string[]
+  additionalProperties?: boolean
+  items?: any
+  [key: string]: any
+}
+
+export type ResponseFormatSchema = {
+  type: ResponseFormatType
+  json_schema?: {
+    name: string
+    strict?: boolean
+    schema: JsonSchema
+  }
+}
+
+export type ModelParameters = {
+  temperature?: number
+  top_p?: number
+  max_tokens?: number
+  frequency_penalty?: number
+  presence_penalty?: number
+  stop?: string | string[]
+}
+
+export type ChatRequest = {
+  messages: ChatMessage[]
+  model?: string
+  parameters?: ModelParameters
+  responseFormat?: ResponseFormatSchema
+  tags?: Record<string, string>
+  signal?: AbortSignal
+}
+
+export type ChatChoice = {
+  index: number
+  message: ChatMessage
+  finish_reason: string | null
+}
+
+export type UsageInfo = {
+  prompt_tokens: number
+  completion_tokens: number
+  total_tokens: number
+}
+
+export type ChatResponse = {
+  id: string
+  model: string
+  choices: ChatChoice[]
+  usage?: UsageInfo
+  created?: number
+}
+
+export type ChatChunk = {
+  id: string
+  model: string
+  choices: Array<{
+    index: number
+    delta: Partial<ChatMessage>
+    finish_reason: string | null
+  }>
+}
+
+export type OpenRouterConfig = {
+  apiKey: string
+  baseUrl: string
+  defaultModel: string
+  defaultParams?: ModelParameters
+  timeoutMs?: number
+  appUrl?: string
+  appTitle?: string
+}
+
+export type OpenRouterOptions = {
+  fetchImpl?: typeof fetch
+  logger?: {
+    info: (message: string, meta?: any) => void
+    warn: (message: string, meta?: any) => void
+    error: (message: string, meta?: any) => void
+  }
+  metricsClient?: {
+    recordMetric: (event: string, meta: any) => void
+  }
+}
+
+export type OpenRouterPayload = {
+  model: string
+  messages: ChatMessage[]
+  temperature?: number
+  top_p?: number
+  max_tokens?: number
+  frequency_penalty?: number
+  presence_penalty?: number
+  stop?: string | string[]
+  response_format?: ResponseFormatSchema
+  stream?: boolean
+}
+

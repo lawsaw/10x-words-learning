@@ -63,6 +63,21 @@ export async function POST(
       .eq("code", learningLanguageCodeFromProfile ?? validatedCommand.learningLanguageId)
       .single()
 
+    // Fetch user's language (for translation) from profile
+    const { data: profileRow } = await supabase
+      .schema("app")
+      .from("profiles")
+      .select("user_language_id")
+      .eq("user_id", userId)
+      .single()
+
+    const { data: userLanguageRow } = await supabase
+      .schema("app")
+      .from("languages")
+      .select("name")
+      .eq("code", profileRow?.user_language_id ?? validatedCommand.userLanguage)
+      .single()
+
     const { data: existingWords } = await supabase
       .schema("app")
       .from("words")
@@ -84,6 +99,7 @@ export async function POST(
         ...validatedCommand,
         categoryContext: validatedCommand.categoryContext ?? categoryRow.name,
         learningLanguageName: languageRow?.name,
+        userLanguageName: userLanguageRow?.name,
         excludeTerms: Array.from(new Set([...databaseTerms, ...clientExclude])),
       })
 

@@ -2,31 +2,31 @@ import type {
   GenerateWordsCommand,
   AiGeneratedWordsDto,
   GeneratedWordSuggestionDto,
+  OpenRouterConfig,
 } from "@/lib/types"
-import {
-  ValidationError,
-  ExternalServiceError,
-  RateLimitError,
-  DomainError,
-  ErrorCode,
-} from "@/lib/errors"
+import { ValidationError, DomainError, ErrorCode } from "@/lib/errors"
 import { sanitizeMarkdown } from "@/lib/sanitize"
+import { OpenRouterService } from "@/lib/openrouter/service"
+import { MessageComposer } from "@/lib/openrouter/message-composer"
+import {
+  OpenRouterConfigurationError,
+  OpenRouterAuthError,
+  OpenRouterRateLimitError,
+} from "@/lib/openrouter/errors"
 
 /**
  * Service for AI-powered word generation using OpenRouter.
+ * This service uses the OpenRouterService for API communication.
  */
 export class AiGenerationService {
-  private static readonly OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
   private static readonly DEFAULT_MODEL = "openai/gpt-4o-mini"
-  private static readonly REQUEST_TIMEOUT = 30000 // 30 seconds
+  private static readonly OPENROUTER_API_URL = "https://openrouter.ai/api/v1"
 
   /**
-   * Generates word suggestions using AI based on learning context.
+   * Creates an OpenRouterService instance with proper configuration.
+   * @private
    */
-  static async generateWords(
-    command: GenerateWordsCommand
-  ): Promise<AiGeneratedWordsDto> {
-    // Validate API key is configured
+  private static createOpenRouterService(): OpenRouterService {
     const apiKey = process.env.OPENROUTER_API_KEY
     if (!apiKey) {
       throw new ValidationError(
@@ -34,61 +34,69 @@ export class AiGenerationService {
       )
     }
 
+    const config: OpenRouterConfig = {
+      apiKey,
+      baseUrl: this.OPENROUTER_API_URL,
+      defaultModel: this.DEFAULT_MODEL,
+      appUrl: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      appTitle: "10xWordsLearning",
+    }
+
+    return new OpenRouterService(config, {
+      logger: {
+        info: (message, meta) => console.log(`[OpenRouter] ${message}`, meta),
+        warn: (message, meta) => console.warn(`[OpenRouter] ${message}`, meta),
+        error: (message, meta) => console.error(`[OpenRouter] ${message}`, meta),
+      },
+    })
+  }
+
+  /**
+   * Generates word suggestions using AI based on learning context.
+   */
+  static async generateWords(
+    command: GenerateWordsCommand
+  ): Promise<AiGeneratedWordsDto> {
     // Compose the prompt
     const prompt = this.composePrompt(command)
+    
+    // Debug: Log language detection
+    console.log('[AI Generation] Language detection:', {
+      learningLanguageId: command.learningLanguageId,
+      learningLanguageName: command.learningLanguageName,
+      isLearningEnglish: this.isEnglishLanguage(command.learningLanguageId) || 
+                         this.isEnglishLanguage(command.learningLanguageName),
+      userLanguage: command.userLanguage,
+      userLanguageName: command.userLanguageName,
+    })
 
     try {
-      // Call OpenRouter API
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), this.REQUEST_TIMEOUT)
+      // Create OpenRouter service instance
+      const openRouterService = this.createOpenRouterService()
 
-      const response = await fetch(this.OPENROUTER_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-          "HTTP-Referer": process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-          "X-Title": "10xWordsLearning",
-        },
-        body: JSON.stringify({
-          model: this.DEFAULT_MODEL,
-          messages: [
-            {
-              role: "system",
-              content: "You are a helpful language learning assistant that generates vocabulary words with translations and examples in valid JSON format.",
-            },
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
+      // Note: We'll post-process translations for English later, but we can still hint to the AI
+      // Prepare system message
+      const systemMessage = "You are a helpful language learning assistant that generates vocabulary words with translations and examples in valid JSON format."
+      
+      // Prepare messages
+      const messages = [
+        MessageComposer.createSystemMessage(systemMessage),
+        MessageComposer.createUserMessage(prompt),
+      ]
+
+      // Send chat request
+      const response = await openRouterService.sendChat({
+        messages,
+        parameters: {
           temperature: command.temperature,
-          response_format: { type: "json_object" },
-        }),
-        signal: controller.signal,
+        },
+        responseFormat: {
+          type: "json_object",
+        },
       })
 
-      clearTimeout(timeoutId)
-
-      // Handle rate limiting
-      if (response.status === 429) {
-        throw new RateLimitError("AI service rate limit exceeded. Please try again later.")
-      }
-
-      // Handle API errors
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error("OpenRouter API error:", response.status, errorText)
-        throw new ExternalServiceError(
-          "OpenRouter",
-          `API request failed with status ${response.status}`
-        )
-      }
-
-      const data = await response.json()
-
       // Extract the generated content
-      const content = data.choices?.[0]?.message?.content
+      const content = response.choices?.[0]?.message?.content
       if (!content) {
         throw new DomainError(
           ErrorCode.InvalidAIResponse,
@@ -118,25 +126,46 @@ export class AiGenerationService {
         command.learningLanguageName ?? command.learningLanguageId
       )
 
-      // Extract usage information
-      const usage = {
-        promptTokens: data.usage?.prompt_tokens || 0,
-        completionTokens: data.usage?.completion_tokens || 0,
+      // Post-process TERMS for English learning: add articles and "to" for verbs
+      const isLearningEnglish = this.isEnglishLanguage(command.learningLanguageId) || 
+                                 this.isEnglishLanguage(command.learningLanguageName)
+      
+      if (isLearningEnglish) {
+        suggestions.forEach((suggestion) => {
+          suggestion.term = this.enhanceEnglishTranslation(suggestion.term)
+        })
       }
 
-      const model = data.model || this.DEFAULT_MODEL
+      // Extract usage information
+      const usage = {
+        promptTokens: response.usage?.prompt_tokens || 0,
+        completionTokens: response.usage?.completion_tokens || 0,
+      }
 
       return {
         generated: suggestions,
-        model,
+        model: response.model,
         usage,
       }
     } catch (error) {
-      // Handle fetch abort (timeout)
-      if (error instanceof Error && error.name === "AbortError") {
-        throw new ExternalServiceError(
-          "OpenRouter",
-          "AI request timed out. Please try again."
+      // Handle OpenRouter-specific errors
+      if (error instanceof OpenRouterConfigurationError) {
+        throw new ValidationError(
+          "AI generation is not configured. Please contact support."
+        )
+      }
+
+      if (error instanceof OpenRouterAuthError) {
+        throw new ValidationError(
+          "AI service authentication failed. Please contact support."
+        )
+      }
+
+      if (error instanceof OpenRouterRateLimitError) {
+        throw new DomainError(
+          ErrorCode.RateLimited,
+          "AI service rate limit exceeded. Please try again later.",
+          429
         )
       }
 
@@ -145,11 +174,12 @@ export class AiGenerationService {
         throw error
       }
 
-      // Handle network errors
+      // Handle unexpected errors
       console.error("AI generation error:", error)
-      throw new ExternalServiceError(
-        "OpenRouter",
-        "Failed to generate words. Please try again later."
+      throw new DomainError(
+        ErrorCode.ExternalServiceError,
+        "Failed to generate words. Please try again later.",
+        500
       )
     }
   }
@@ -170,6 +200,10 @@ export class AiGenerationService {
 
     const learningLanguageLabel = command.learningLanguageName ?? command.learningLanguageId
     const userLanguageLabel = command.userLanguageName ?? command.userLanguage
+    
+    // Check if translation language is English
+    const isEnglishTranslation = this.isEnglishLanguage(command.userLanguage) || 
+                                  this.isEnglishLanguage(command.userLanguageName)
 
     let prompt = `Generate ${count} distinct ${difficultyDesc} words or phrases in ${learningLanguageLabel}.`
 
@@ -188,7 +222,34 @@ export class AiGenerationService {
 For each word, provide:
 1. "term": the word or phrase in ${learningLanguageLabel}
 2. "translation": the translation in ${userLanguageLabel}
-3. "examplesMd": exactly 5 concise example sentences in ${learningLanguageLabel} showing usage, formatted as markdown list items (each sentence prefixed with "- "). Sentences should be practical and no longer than 120 characters.
+3. "examplesMd": exactly 5 concise example sentences in ${learningLanguageLabel} showing usage, formatted as markdown list items (each sentence prefixed with "- "). Sentences should be practical and no longer than 120 characters.`
+
+    // Check if learning English (terms should have articles/to)
+    const isLearningEnglish = this.isEnglishLanguage(command.learningLanguageId) || 
+                               this.isEnglishLanguage(command.learningLanguageName)
+    
+    // Add English-specific term rules when learning English
+    if (isLearningEnglish) {
+      prompt += `
+
+CRITICAL RULES FOR ENGLISH TERMS:
+- For VERBS: ALWAYS include "to" at the beginning (e.g., "to eat", "to run", "to speak")
+- For NOUNS: include appropriate articles "a", "an", or "the" (e.g., "a book", "the house", "an apple")
+- For ADJECTIVES: write without articles (e.g., "beautiful", "fast", "happy")
+
+Examples of CORRECT terms:
+✓ "term": "to eat" (verb with "to")
+✓ "term": "a book" (noun with article)
+✓ "term": "an apple" (noun with article)
+✓ "term": "the house" (noun with article)
+
+Examples of WRONG terms:
+✗ "term": "eat" (missing "to")
+✗ "term": "book" (missing article)
+✗ "term": "apple" (missing article)`
+    }
+
+    prompt += `
 
 Return ONLY a JSON object with this exact structure:
 {
@@ -204,6 +265,67 @@ Return ONLY a JSON object with this exact structure:
 IMPORTANT: Return ONLY valid JSON, no additional text or explanations.`
 
     return prompt
+  }
+
+  /**
+   * Checks if a language code or name is English.
+   * @private
+   */
+  private static isEnglishLanguage(language?: string): boolean {
+    if (!language) return false
+    const normalized = language.toLowerCase().trim()
+    return normalized === 'en' || 
+           normalized === 'eng' || 
+           normalized === 'english' || 
+           normalized.startsWith('en-') ||
+           normalized.startsWith('english')
+  }
+
+  /**
+   * Enhances English translations by adding articles for nouns and "to" for verbs.
+   * @private
+   */
+  private static enhanceEnglishTranslation(translation: string): string {
+    const trimmed = translation.trim()
+    
+    // If already has article or "to", return as-is
+    if (/^(a|an|the|to)\s+/i.test(trimmed)) {
+      return trimmed
+    }
+
+    // Common verb patterns - add "to"
+    const verbIndicators = [
+      'be', 'have', 'do', 'say', 'go', 'get', 'make', 'know', 'think', 'take',
+      'see', 'come', 'want', 'use', 'find', 'give', 'tell', 'work', 'call', 'try',
+      'ask', 'need', 'feel', 'become', 'leave', 'put', 'mean', 'keep', 'let', 'begin',
+      'seem', 'help', 'show', 'hear', 'play', 'run', 'move', 'live', 'believe', 'bring',
+      'happen', 'write', 'sit', 'stand', 'lose', 'pay', 'meet', 'include', 'continue',
+      'set', 'learn', 'change', 'lead', 'understand', 'watch', 'follow', 'stop', 'create',
+      'speak', 'read', 'spend', 'grow', 'open', 'walk', 'win', 'teach', 'offer', 'remember',
+      'consider', 'appear', 'buy', 'serve', 'die', 'send', 'build', 'stay', 'fall', 'cut',
+      'reach', 'kill', 'raise', 'pass', 'sell', 'decide', 'return', 'explain', 'hope',
+      'develop', 'carry', 'break', 'receive', 'agree', 'support', 'hit', 'produce', 'eat',
+      'cover', 'catch', 'draw', 'choose', 'cause', 'point', 'allow', 'expect', 'build',
+      'drink', 'sleep', 'cook', 'clean', 'drive', 'sing', 'dance', 'swim', 'fly', 'jump'
+    ]
+
+    const firstWord = trimmed.split(/\s+/)[0].toLowerCase()
+    
+    // Check if it's likely a verb
+    if (verbIndicators.includes(firstWord)) {
+      return `to ${trimmed}`
+    }
+
+    // Vowel sounds for "an" vs "a"
+    const vowelSounds = /^[aeiou]/i
+    
+    // Common noun indicators - add article
+    // If it starts with a vowel sound, use "an", otherwise "a"
+    if (vowelSounds.test(trimmed)) {
+      return `an ${trimmed}`
+    } else {
+      return `a ${trimmed}`
+    }
   }
 
   /**
