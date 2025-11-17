@@ -1,12 +1,5 @@
 import type { LanguageDto } from "@/lib/types"
 
-export type AuthModalKey = "login" | "register" | null
-
-export type AuthModalControls = {
-  onOpenLogin: () => void
-  onOpenRegister: () => void
-}
-
 export type SupportedLanguagesVm = {
   items: Array<{
     code: LanguageDto["code"]

@@ -11,7 +11,7 @@ export function PrivacySection() {
     <section
       id="privacy"
       aria-labelledby="privacy-heading"
-      className="mx-auto w-full max-w-5xl rounded-3xl border border-border/40 bg-muted/30 px-8 py-12 shadow-inner sm:px-12"
+      className="mx-auto w-full max-w-6xl rounded-3xl border border-border/40 bg-muted/30 px-2 py-12 shadow-inner sm:px-6"
     >
       <div className="mx-auto max-w-3xl text-center">
         <h2

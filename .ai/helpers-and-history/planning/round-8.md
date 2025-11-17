@@ -37,5 +37,5 @@ _Не забудь размять **картошку**, пока она ещё �
 6) Create a local or temporary testing database.
 7) Not needed.
 8) When clicking “Shuffle Cards,” the cards are shuffled and reset to the beginning.
-9) No email confirmation is required. Password: minimum 5 characters.
+9) No email confirmation is required. Password: minimum 6 characters.
 10) Do nothing.

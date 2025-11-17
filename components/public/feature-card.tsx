@@ -38,11 +38,11 @@ export function FeatureCard({
   return (
     <Card
       className={cn(
-        "relative h-full overflow-hidden border-border/50 bg-background/80 backdrop-blur transition hover:border-primary/40 hover:shadow-lg",
+        "relative flex h-full flex-col overflow-hidden border-border/50 bg-background/80 backdrop-blur transition hover:border-primary/40 hover:shadow-lg",
         className,
       )}
     >
-      <CardHeader className="space-y-6 pb-6">
+      <CardHeader className="space-y-6 p-4 sm:p-6">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
           <Icon className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
         </div>
@@ -51,7 +51,7 @@ export function FeatureCard({
           <CardDescription>{description}</CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="mt-auto p-4 sm:p-6 sm:pt-0">
         <div className="rounded-xl border border-dashed border-border/60 bg-muted/40 p-4 text-xs text-muted-foreground">
           Coming soon: walkthrough videos and sample lists tailored to this
           feature.

@@ -1,27 +1,24 @@
 "use client"
 
-import type { AuthModalControls, SupportedLanguagesVm } from "@/app/(public)/types"
+import Link from "next/link"
+
+import type { SupportedLanguagesVm } from "@/app/(public)/types"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import { SupportedLanguageList } from "./supported-language-list"
 
-type HeroSectionProps = AuthModalControls & {
+type HeroSectionProps = {
   languages: SupportedLanguagesVm
   className?: string
 }
 
-export function HeroSection({
-  languages,
-  onOpenLogin,
-  onOpenRegister,
-  className,
-}: HeroSectionProps) {
+export function HeroSection({ languages, className }: HeroSectionProps) {
   return (
     <section
       id="hero"
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-primary/5 via-background to-secondary/20 px-6 py-16 shadow-sm sm:px-12",
+        "relative overflow-hidden border-b border-border/40 bg-gradient-to-br from-primary/5 via-background to-secondary/20 px-6 py-16 shadow-sm sm:px-12",
         className,
       )}
       aria-labelledby="hero-heading"
@@ -41,11 +38,11 @@ export function HeroSection({
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button size="lg" onClick={onOpenRegister}>
-            Create your free workspace
+          <Button size="lg" asChild>
+            <Link href="/auth/register">Create your free workspace</Link>
           </Button>
-          <Button variant="ghost" size="lg" onClick={onOpenLogin}>
-            I already have an account
+          <Button variant="ghost" size="lg" asChild>
+            <Link href="/auth/login">I already have an account</Link>
           </Button>
         </div>
 

@@ -47,7 +47,7 @@ export class AuthService {
       email: command.email,
       password: command.password,
     })
-    
+
     if (authError) {
       // Handle duplicate email case
       if (authError.message?.toLowerCase().includes("already registered")) {
@@ -55,7 +55,8 @@ export class AuthService {
       }
 
       const detailedMessage =
-        authError.message || (authError as { error_description?: string }).error_description
+        authError.message ||
+        (authError as { error_description?: string }).error_description
 
       if (detailedMessage) {
         const normalized = detailedMessage.trim()

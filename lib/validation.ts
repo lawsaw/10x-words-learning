@@ -26,7 +26,7 @@ const emailSchema = z.string().email("Invalid email format")
  */
 export const registerCommandSchema = z.object({
   email: emailSchema,
-  password: z.string().min(5, "Password must be at least 5 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   userLanguage: languageCodeSchema,
 })
 

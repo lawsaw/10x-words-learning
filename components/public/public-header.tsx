@@ -1,18 +1,13 @@
 import Link from "next/link"
 
-import type { AuthModalControls } from "@/app/(public)/types"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-type PublicHeaderProps = AuthModalControls & {
+type PublicHeaderProps = {
   className?: string
 }
 
-export function PublicHeader({
-  onOpenLogin,
-  onOpenRegister,
-  className,
-}: PublicHeaderProps) {
+export function PublicHeader({ className }: PublicHeaderProps) {
   return (
     <header
       className={cn(
@@ -31,36 +26,12 @@ export function PublicHeader({
           </span>
           <span>Words Learning</span>
         </Link>
-        <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground lg:flex">
-          <a
-            href="#features"
-            className="transition-colors hover:text-foreground"
-          >
-            Features
-          </a>
-          <a
-            href="#privacy"
-            className="transition-colors hover:text-foreground"
-          >
-            Privacy
-          </a>
-          <a
-            href="#languages"
-            className="transition-colors hover:text-foreground"
-          >
-            Languages
-          </a>
-        </nav>
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            onClick={onOpenLogin}
-            aria-label="Open login modal"
-          >
-            Log in
+          <Button variant="ghost" asChild aria-label="Go to login page">
+            <Link href="/auth/login">Log in</Link>
           </Button>
-          <Button onClick={onOpenRegister} aria-label="Open registration modal">
-            Get started
+          <Button asChild aria-label="Go to registration page">
+            <Link href="/auth/register">Get started</Link>
           </Button>
         </div>
       </div>
