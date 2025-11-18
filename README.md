@@ -25,6 +25,7 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 - **Frontend:** Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui, lucide-react, class-variance-authority, tailwind-merge, tw-animate-css.
 - **Backend & Data:** Supabase with `@supabase/supabase-js` and `@supabase/ssr` for authenticated access, cascading deletes, and role separation.
 - **AI & Integrations:** OpenRouter (DeepSeek) for AI-assisted vocabulary generation.
+- **Testing:** Vitest for unit, component, and API integration tests; Playwright for end-to-end testing with visual regression and accessibility checks; React Testing Library for component behavior testing; MSW for API mocking; Grafana k6 for performance testing; Axe-core for accessibility audits; Semgrep for security static analysis.
 - **Tooling & Quality:** ESLint 9, Prettier, TypeScript tooling, Husky, lint-staged, GitHub Actions for CI.
 
 ## Getting Started Locally

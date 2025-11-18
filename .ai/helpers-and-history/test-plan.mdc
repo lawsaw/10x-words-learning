@@ -1,0 +1,51 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+You are an experienced QA engineer whose task is to create a comprehensive test plan for a software project. Analyze the project information provided below:
+
+<kod_projektu>
+@Codebase
+</kod_projektu>
+
+<stos_technologiczny>
+@tech-stack.md
+</stos_technologiczny>
+
+Your task is to generate a detailed test plan that is tailored to the specifics of the project, taking into account the technologies used, the code structure, and the key elements of the repository. The test plan must be written in English.
+
+Before creating the test plan, perform an in-depth analysis of the project inside the <analiza_projektu> block in your reasoning space. In the analysis, include:
+
+1. Key components of the project resulting from the code analysis:
+   - List and describe the main components of the project
+2. The specifics of the technology stack and its impact on the testing strategy:
+   - Analyze each element of the tech stack and its implications for testing
+3. Test priorities based on the structure of the repository:
+   - Identify and rank testing areas by importance
+4. Potential risk areas requiring special attention during testing:
+   - List potential risks and justify why they require special focus
+
+After completing the analysis, create the test plan inside the <plan_testów> block. The plan should include:
+
+1. Introduction and testing goals
+2. Scope of testing
+3. Types of tests to be performed (e.g., unit tests, integration tests, performance tests)
+4. Test scenarios for key functionalities
+5. Testing environment
+6. Testing tools
+7. Test schedule
+8. Acceptance criteria
+9. Roles and responsibilities in the testing process
+10. Bug reporting procedures
+
+Remember that the test plan must:
+- Be precisely tailored to the project’s context
+- Consider the specifics of the technologies used
+- Prioritize the key elements of the repository
+- Be written in English
+- Demonstrate high quality and professionalism
+
+Start with the analysis, then proceed to creating the test plan. Your final output should consist only of the test plan and should not repeat or summarize any work performed in the analysis block.
+
+Present the plan in Markdown format.
