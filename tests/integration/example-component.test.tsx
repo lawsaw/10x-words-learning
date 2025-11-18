@@ -16,9 +16,9 @@ describe('Button Component', () => {
   });
 
   it('should render button with different variants', () => {
-    render(<Button variant="destructive">Delete</Button>);
+    render(<Button variant="outline">Outlined</Button>);
     
-    const button = screen.getByRole('button', { name: /delete/i });
+    const button = screen.getByRole('button', { name: /outlined/i });
     expect(button).toBeInTheDocument();
     // Check that the button has Tailwind classes applied
     expect(button.className).toBeTruthy();
