@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { MoreHorizontal, FolderPlus, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -74,6 +82,11 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
   )
   const [categoryName, setCategoryName] = useState("")
   const [createCategoryError, setCreateCategoryError] = useState<string | null>(null)
+
+  const [deleteLanguageOpen, setDeleteLanguageOpen] = useState(false)
+  const [deleteLanguageBusy, setDeleteLanguageBusy] = useState(false)
+  const [languageToDelete, setLanguageToDelete] = useState<{ id: string; name: string } | null>(null)
+  const [deleteLanguageError, setDeleteLanguageError] = useState<string | null>(null)
 
   const hasLearningLanguages = summaries.length > 0
 
@@ -153,6 +166,13 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
     setCreateCategoryOpen(false)
     setCreateCategoryBusy(false)
     setCreateCategoryError(null)
+  }
+
+  const closeDeleteLanguageDialog = () => {
+    setDeleteLanguageOpen(false)
+    setDeleteLanguageBusy(false)
+    setLanguageToDelete(null)
+    setDeleteLanguageError(null)
   }
 
   const handleCreateLanguage = async () => {
@@ -251,6 +271,39 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
     setCreateLanguageOpen(true)
   }
 
+  const handleOpenDeleteDialog = useCallback((languageId: string, languageName: string) => {
+    setLanguageToDelete({ id: languageId, name: languageName })
+    setDeleteLanguageError(null)
+    setDeleteLanguageOpen(true)
+  }, [])
+
+  const handleDeleteLanguage = async () => {
+    if (!languageToDelete) return
+
+    setDeleteLanguageBusy(true)
+    setDeleteLanguageError(null)
+    try {
+      const response = await fetch(`/api/learning-languages/${languageToDelete.id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        const message = payload?.error?.message ?? "Failed to delete learning language."
+        throw new Error(message)
+      }
+
+      closeDeleteLanguageDialog()
+      showFeedback("success", "Learning language deleted successfully.")
+      router.refresh()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to delete learning language."
+      setDeleteLanguageError(message)
+    } finally {
+      setDeleteLanguageBusy(false)
+    }
+  }
+
   return (
     <div className="space-y-8">
       {feedback ? (
@@ -276,7 +329,7 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Button type="button" onClick={handleOpenLanguageDialog}>
+          <Button type="button" onClick={handleOpenLanguageDialog} data-test-id="add-learning-language-button">
             Add learning language
           </Button>
           <Button
@@ -284,6 +337,7 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
             variant="outline"
             onClick={() => handleOpenCategoryDialog()}
             disabled={!hasLearningLanguages}
+            data-test-id="add-category-button"
           >
             Add category
           </Button>
@@ -291,19 +345,23 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
       </div>
 
       {summaries.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border bg-card/40 px-6 py-16 text-center">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border bg-card/40 px-6 py-16 text-center" data-test-id="empty-state">
           <div className="space-y-2">
             <h3 className="text-base font-semibold text-foreground">No learning languages yet</h3>
             <p className="text-sm text-muted-foreground">
               Add your first learning language to start creating categories and studying new words.
             </p>
           </div>
-          <Button type="button" onClick={handleOpenLanguageDialog}>
+          <Button type="button" onClick={handleOpenLanguageDialog} data-test-id="add-learning-language-button">
             Add learning language
           </Button>
         </div>
       ) : (
-        <LanguageList summaries={summaries} onCreateCategory={handleOpenCategoryDialog} />
+        <LanguageList 
+          summaries={summaries} 
+          onCreateCategory={handleOpenCategoryDialog} 
+          onDeleteLanguage={handleOpenDeleteDialog}
+        />
       )}
 
       <CreateLearningLanguageDialog
@@ -346,6 +404,22 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
         onSubmit={handleCreateCategory}
         onCancel={closeCategoryDialog}
       />
+
+      <DeleteLearningLanguageDialog
+        open={deleteLanguageOpen}
+        onOpenChange={(next) => {
+          if (!next) {
+            closeDeleteLanguageDialog()
+          } else {
+            setDeleteLanguageOpen(true)
+          }
+        }}
+        languageName={languageToDelete?.name ?? ""}
+        busy={deleteLanguageBusy}
+        error={deleteLanguageError}
+        onConfirm={handleDeleteLanguage}
+        onCancel={closeDeleteLanguageDialog}
+      />
     </div>
   )
 }
@@ -353,19 +427,21 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
 type LanguageListProps = {
   summaries: LearningLanguageSummary[]
   onCreateCategory: (learningLanguageId: string) => void
+  onDeleteLanguage: (learningLanguageId: string, languageName: string) => void
 }
 
-function LanguageList({ summaries, onCreateCategory }: LanguageListProps) {
+function LanguageList({ summaries, onCreateCategory, onDeleteLanguage }: LanguageListProps) {
   return (
     <div className="space-y-8">
       {summaries.map((summary) => (
         <section
           key={summary.id}
           className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm"
+          data-test-id={`language-section-${summary.code}`}
         >
           <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="text-base font-semibold text-foreground" data-test-id={`language-name-${summary.code}`}>
                 {summary.name} <span className="text-sm text-muted-foreground">({summary.code})</span>
               </h3>
               {summary.categories.length === 0 ? (
@@ -378,9 +454,39 @@ function LanguageList({ summaries, onCreateCategory }: LanguageListProps) {
                 </p>
               )}
             </div>
-            <Button type="button" variant="outline" size="sm" onClick={() => onCreateCategory(summary.id)}>
-              Add category
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  data-test-id={`language-menu-${summary.code}`}
+                  aria-label={`Actions for ${summary.name}`}
+                >
+                  <MoreHorizontal className="h-4 w-4" aria-hidden />
+                  <span className="sr-only">Open actions menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem
+                  onClick={() => onCreateCategory(summary.id)}
+                  data-test-id={`add-category-${summary.code}`}
+                  className="gap-2"
+                >
+                  <FolderPlus className="h-3.5 w-3.5" aria-hidden />
+                  Add category
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => onDeleteLanguage(summary.id, summary.name)}
+                  className="gap-2 text-destructive focus:text-destructive"
+                  data-test-id={`delete-language-${summary.code}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                  Delete language
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </header>
 
           {summary.categories.length > 0 ? (
@@ -437,7 +543,7 @@ function CreateLearningLanguageDialog({
 }: CreateLearningLanguageDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" data-test-id="add-learning-language-dialog">
         <DialogHeader>
           <DialogTitle>Add learning language</DialogTitle>
           <DialogDescription>
@@ -469,12 +575,12 @@ function CreateLearningLanguageDialog({
                 onValueChange={onSelectedLanguageChange}
                 disabled={busy}
               >
-                <SelectTrigger id="learning-language-select" className="h-9 w-full px-3 text-sm">
+                <SelectTrigger id="learning-language-select" className="h-9 w-full px-3 text-sm" data-test-id="language-select-trigger">
                   <SelectValue placeholder="Select learning language" />
                 </SelectTrigger>
                 <SelectContent>
                   {options.map((option) => (
-                    <SelectItem key={option.code} value={option.code}>
+                    <SelectItem key={option.code} value={option.code} data-test-id={`language-option-${option.code}`}>
                       {option.name} ({option.code})
                     </SelectItem>
                   ))}
@@ -487,10 +593,10 @@ function CreateLearningLanguageDialog({
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy} data-test-id="dialog-cancel">
             Cancel
           </Button>
-          <Button type="button" onClick={() => void onSubmit()} disabled={busy || options.length === 0}>
+          <Button type="button" onClick={() => void onSubmit()} disabled={busy || options.length === 0} data-test-id="dialog-submit">
             {busy ? "Adding…" : "Add language"}
           </Button>
         </DialogFooter>
@@ -585,6 +691,61 @@ function CreateCategoryDialog({
             disabled={busy || summaries.length === 0}
           >
             {busy ? "Creating…" : "Create category"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+type DeleteLearningLanguageDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  languageName: string
+  busy: boolean
+  error: string | null
+  onConfirm: () => Promise<void> | void
+  onCancel: () => void
+}
+
+function DeleteLearningLanguageDialog({
+  open,
+  onOpenChange,
+  languageName,
+  busy,
+  error,
+  onConfirm,
+  onCancel,
+}: DeleteLearningLanguageDialogProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md" data-test-id="delete-learning-language-dialog">
+        <DialogHeader>
+          <DialogTitle>Delete learning language</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete <strong>{languageName}</strong>? This will permanently remove all categories and words associated with this language.
+          </DialogDescription>
+        </DialogHeader>
+
+        {error ? (
+          <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </div>
+        ) : null}
+
+        <DialogFooter>
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy} data-test-id="dialog-cancel">
+            Cancel
+          </Button>
+          <Button 
+            type="button" 
+            variant="outline"
+            onClick={() => void onConfirm()} 
+            disabled={busy}
+            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            data-test-id="dialog-confirm-delete"
+          >
+            {busy ? "Deleting…" : "Delete language"}
           </Button>
         </DialogFooter>
       </DialogContent>

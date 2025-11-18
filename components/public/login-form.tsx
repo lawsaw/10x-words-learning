@@ -176,6 +176,7 @@ export function LoginForm({
           type="submit"
           className="w-full"
           disabled={!canSubmit || status === "submitting"}
+          data-test-id="login-submit"
         >
           {status === "submitting" ? submittingLabel : submitLabel}
         </Button>
