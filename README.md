@@ -1,4 +1,5 @@
 # 10x Words Learning
+
 ![Version](https://img.shields.io/badge/version-0.0.1-blue.svg) ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js) ![CI](https://github.com/lawsaw/10x-words-learning/actions/workflows/pull-request.yml/badge.svg) ![License](https://img.shields.io/badge/license-TBD-lightgrey)
 
 A web-based vocabulary workspace for independent language learners. The MVP blends manual curation and AI-assisted word generation so users can assemble thematic lists, study in table or slider modes, and keep data private through Supabase row-level security. For a detailed breakdown of requirements, see the [Product Requirements](./.ai/prd.md).
