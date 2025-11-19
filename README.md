@@ -1,5 +1,5 @@
 # 10x Words Learning
-![Version](https://img.shields.io/badge/version-0.0.1-blue.svg) ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js) ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-blue) ![License](https://img.shields.io/badge/license-TBD-lightgrey)
+![Version](https://img.shields.io/badge/version-0.0.1-blue.svg) ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js) ![CI](https://github.com/lawsaw/10x-words-learning/actions/workflows/pull-request.yml/badge.svg) ![License](https://img.shields.io/badge/license-TBD-lightgrey)
 
 A web-based vocabulary workspace for independent language learners. The MVP blends manual curation and AI-assisted word generation so users can assemble thematic lists, study in table or slider modes, and keep data private through Supabase row-level security. For a detailed breakdown of requirements, see the [Product Requirements](./.ai/prd.md).
 
@@ -11,6 +11,7 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
   - [Installation](#installation)
   - [Environment Variables](#environment-variables)
   - [Testing & QA](#testing--qa)
+- [Continuous Integration](#continuous-integration)
 - [Available Scripts](#available-scripts)
 - [API Documentation](#api-documentation)
 - [Project Scope](#project-scope)
@@ -103,7 +104,7 @@ E2E_USERNAME=<test-user-email>
 E2E_PASSWORD=<test-user-password>
 ```
 
-**Note:** The test user must exist in your Supabase project with a matching profile in `app.profiles` table. See the [Testing & QA](#testing--qa) section for setup instructions.
+**Note:** The test user must exist in your Supabase project with a matching profile in `app.profiles` table. These same credentials must also be configured as GitHub Secrets for CI/CD. See the [Continuous Integration](#continuous-integration) section for setup instructions.
 
 ### Testing & QA
 
@@ -137,6 +138,37 @@ E2E tests use Playwright with the Page Object Model pattern to ensure critical u
 - Empty state handling
 
 Additional test and migration scripts will build on the Supabase configuration outlined in the PRD.
+
+## Continuous Integration
+
+The project uses GitHub Actions for automated testing on all pull requests. The CI pipeline includes:
+
+- **Linting** - ESLint checks for code quality
+- **Build** - Validates production build succeeds
+- **Unit Tests** - Runs Vitest tests with coverage collection
+- **E2E Tests** - Executes Playwright tests in CI environment
+
+All jobs run in parallel after successful linting, and a status comment is automatically posted to the pull request with detailed results.
+
+### GitHub Secrets Configuration
+
+For CI to work, configure these secrets in your GitHub repository:
+
+**Settings → Environments → Create "integration" environment**
+
+Add the following secrets to the **integration** environment:
+
+**Application Secrets:**
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+- `OPENROUTER_API_KEY` - Your OpenRouter API key for AI generation
+
+**E2E Test Secrets:**
+- `E2E_USERNAME_ID` - Test user UUID from Supabase Authentication
+- `E2E_USERNAME` - Test user email address
+- `E2E_PASSWORD` - Test user password
+
+The workflow automatically runs on pull requests and posts detailed status comments with job results and links to workflow runs.
 
 ## Available Scripts
 - `npm run dev` — Start the Next.js development server.
