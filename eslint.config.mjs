@@ -23,6 +23,8 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // Generated Supabase types
+    'lib/supabase/database.types.ts',
   ]),
 ])
 
