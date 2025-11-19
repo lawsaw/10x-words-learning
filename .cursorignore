@@ -1,3 +1,4 @@
-# local env files
-.env*.local
-.env
+# local env files (but not example files)
+.env.local
+.env.test
+.env.*.local
