@@ -24,30 +24,48 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
   }
 
   return (
-    <div className="border-border bg-card overflow-visible rounded-lg border shadow-sm">
-      <table className="min-w-full border-collapse text-sm">
-        <thead className="bg-muted/70 text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-          <tr>
-            <HeaderCell className="text-left align-middle">Term</HeaderCell>
-            <HeaderCell className="text-left align-middle">Translation</HeaderCell>
-            <HeaderCell className="text-center align-middle">Examples</HeaderCell>
-            <HeaderCell className="text-right align-middle">Actions</HeaderCell>
-          </tr>
-        </thead>
-        <tbody className="divide-border/70 divide-y">
-          {rows.map(row => (
-            <WordTableRow
-              key={row.id}
-              row={row}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              busy={busy}
-              expanded={Boolean(expandedMap[row.id])}
-              onToggle={() => toggleRow(row.id)}
-            />
-          ))}
-        </tbody>
-      </table>
+    <div className="border-border bg-card overflow-hidden rounded-lg border shadow-sm">
+      {/* Desktop table view - hidden on mobile */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="min-w-full border-collapse text-sm">
+          <thead className="bg-muted/70 text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+            <tr>
+              <HeaderCell className="text-left align-middle">Term</HeaderCell>
+              <HeaderCell className="text-left align-middle">Translation</HeaderCell>
+              <HeaderCell className="text-center align-middle">Examples</HeaderCell>
+              <HeaderCell className="text-right align-middle">Actions</HeaderCell>
+            </tr>
+          </thead>
+          <tbody className="divide-border/70 divide-y">
+            {rows.map(row => (
+              <WordTableRow
+                key={row.id}
+                row={row}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                busy={busy}
+                expanded={Boolean(expandedMap[row.id])}
+                onToggle={() => toggleRow(row.id)}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile card view - visible only on mobile */}
+      <div className="md:hidden divide-y divide-border/70">
+        {rows.map(row => (
+          <WordTableRow
+            key={row.id}
+            row={row}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            busy={busy}
+            expanded={Boolean(expandedMap[row.id])}
+            onToggle={() => toggleRow(row.id)}
+          />
+        ))}
+      </div>
     </div>
   )
 })
