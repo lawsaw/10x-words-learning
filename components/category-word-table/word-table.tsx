@@ -1,12 +1,9 @@
-"use client"
+'use client'
 
-import { memo, useState } from "react"
+import { memo, useState } from 'react'
 
-import { WordTableRow } from "@/components/category-word-table/word-table-row"
-import type {
-  DeleteWordContext,
-  WordTableRowVm,
-} from "@/lib/types"
+import { WordTableRow } from '@/components/category-word-table/word-table-row'
+import type { DeleteWordContext, WordTableRowVm } from '@/lib/types'
 
 type WordTableProps = {
   rows: WordTableRowVm[]
@@ -23,13 +20,13 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
   const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({})
 
   const toggleRow = (id: string) => {
-    setExpandedMap((prev) => ({ ...prev, [id]: !prev[id] }))
+    setExpandedMap(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
   return (
-    <div className="overflow-visible rounded-lg border border-border bg-card shadow-sm">
+    <div className="border-border bg-card overflow-visible rounded-lg border shadow-sm">
       <table className="min-w-full border-collapse text-sm">
-        <thead className="bg-muted/70 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <thead className="bg-muted/70 text-muted-foreground text-xs font-semibold tracking-wide uppercase">
           <tr>
             <HeaderCell className="text-left align-middle">Term</HeaderCell>
             <HeaderCell className="text-left align-middle">Translation</HeaderCell>
@@ -37,8 +34,8 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
             <HeaderCell className="text-right align-middle">Actions</HeaderCell>
           </tr>
         </thead>
-        <tbody className="divide-y divide-border/70">
-          {rows.map((row) => (
+        <tbody className="divide-border/70 divide-y">
+          {rows.map(row => (
             <WordTableRow
               key={row.id}
               row={row}
@@ -61,7 +58,5 @@ type HeaderCellProps = {
 }
 
 function HeaderCell({ children, className }: HeaderCellProps) {
-  return <th className={`px-4 py-3 text-left ${className ?? ""}`}>{children}</th>
+  return <th className={`px-4 py-3 text-left ${className ?? ''}`}>{children}</th>
 }
-
-

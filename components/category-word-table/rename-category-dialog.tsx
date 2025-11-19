@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 
 type RenameCategoryDialogProps = {
   open: boolean
@@ -44,7 +44,7 @@ export function RenameCategoryDialog({
   const hasError = touched && !trimmedName
 
   return (
-    <Dialog open={open} onOpenChange={(next) => (!next ? onCancel() : undefined)}>
+    <Dialog open={open} onOpenChange={next => (!next ? onCancel() : undefined)}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Rename category</DialogTitle>
@@ -54,21 +54,19 @@ export function RenameCategoryDialog({
         </DialogHeader>
 
         <div className="grid gap-2">
-          <label className="text-sm font-medium text-foreground" htmlFor="rename-category-input">
+          <label className="text-foreground text-sm font-medium" htmlFor="rename-category-input">
             Category name
           </label>
           <Input
             id="rename-category-input"
             value={name}
-            onChange={(event) => setName(event.target.value)}
+            onChange={event => setName(event.target.value)}
             onBlur={() => setTouched(true)}
             placeholder="e.g. Travel essentials"
             disabled={busy}
           />
-          {hasError ? (
-            <p className="text-xs text-destructive">Category name is required.</p>
-          ) : null}
-          {error ? <p className="text-xs text-destructive">{error}</p> : null}
+          {hasError ? <p className="text-destructive text-xs">Category name is required.</p> : null}
+          {error ? <p className="text-destructive text-xs">{error}</p> : null}
         </div>
 
         <DialogFooter>
@@ -86,11 +84,10 @@ export function RenameCategoryDialog({
             }}
             disabled={busy || !trimmedName}
           >
-            {busy ? "Saving…" : "Save"}
+            {busy ? 'Saving…' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-

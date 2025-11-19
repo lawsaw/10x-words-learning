@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useEffect, useRef, useState } from "react"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { useEffect, useRef, useState } from 'react'
+import { MoreHorizontal, Pencil, Trash } from 'lucide-react'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 
 type WordActionsMenuProps = {
   onEdit: () => void
@@ -29,9 +29,9 @@ export function WordActionsMenu({ onEdit, onDelete, busy }: WordActionsMenuProps
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [open])
 
@@ -54,7 +54,7 @@ export function WordActionsMenu({ onEdit, onDelete, busy }: WordActionsMenuProps
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls="word-actions-menu"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => setOpen(prev => !prev)}
         disabled={busy}
       >
         <MoreHorizontal className="h-4 w-4" aria-hidden />
@@ -65,7 +65,7 @@ export function WordActionsMenu({ onEdit, onDelete, busy }: WordActionsMenuProps
         <div
           id="word-actions-menu"
           role="menu"
-          className="absolute right-0 top-full z-40 mt-2 w-36 rounded-md border border-border bg-popover p-1 shadow-lg"
+          className="border-border bg-popover absolute top-full right-0 z-40 mt-2 w-36 rounded-md border p-1 shadow-lg"
         >
           <Button
             type="button"
@@ -85,7 +85,7 @@ export function WordActionsMenu({ onEdit, onDelete, busy }: WordActionsMenuProps
             size="sm"
             onClick={handleDelete}
             disabled={busy}
-            className="w-full justify-start gap-2 text-sm text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive w-full justify-start gap-2 text-sm"
             role="menuitem"
           >
             <Trash className="h-3.5 w-3.5" aria-hidden />
@@ -96,4 +96,3 @@ export function WordActionsMenu({ onEdit, onDelete, busy }: WordActionsMenuProps
     </div>
   )
 }
-

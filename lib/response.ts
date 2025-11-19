@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server"
-import type { EmptyResponse } from "./types"
-import { createErrorResponse } from "./errors"
+import { NextResponse } from 'next/server'
+import type { EmptyResponse } from './types'
+import { createErrorResponse } from './errors'
 
 /**
  * Helper to create standardized JSON responses.
@@ -49,5 +49,3 @@ export function omitUndefined<T extends Record<string, any>>(obj: T): Partial<T>
     Object.entries(obj).filter(([, value]) => value !== undefined)
   ) as Partial<T>
 }
-
-

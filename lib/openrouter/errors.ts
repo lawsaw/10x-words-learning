@@ -1,4 +1,4 @@
-import { DomainError, ErrorCode } from "@/lib/errors"
+import { DomainError, ErrorCode } from '@/lib/errors'
 
 /**
  * Base class for all OpenRouter-specific errors.
@@ -11,7 +11,7 @@ export class OpenRouterError extends DomainError {
     public readonly context?: Record<string, any>
   ) {
     super(code, message, statusCode)
-    this.name = "OpenRouterError"
+    this.name = 'OpenRouterError'
   }
 }
 
@@ -21,7 +21,7 @@ export class OpenRouterError extends DomainError {
 export class OpenRouterConfigurationError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.ExternalServiceError, message, 500, context)
-    this.name = "OpenRouterConfigurationError"
+    this.name = 'OpenRouterConfigurationError'
   }
 }
 
@@ -31,7 +31,7 @@ export class OpenRouterConfigurationError extends OpenRouterError {
 export class OpenRouterValidationError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.ValidationError, message, 400, context)
-    this.name = "OpenRouterValidationError"
+    this.name = 'OpenRouterValidationError'
   }
 }
 
@@ -45,7 +45,7 @@ export class OpenRouterNetworkError extends OpenRouterError {
     context?: Record<string, any>
   ) {
     super(ErrorCode.ExternalServiceError, message, 503, context)
-    this.name = "OpenRouterNetworkError"
+    this.name = 'OpenRouterNetworkError'
   }
 }
 
@@ -55,7 +55,7 @@ export class OpenRouterNetworkError extends OpenRouterError {
 export class OpenRouterAuthError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.Unauthorized, message, 401, context)
-    this.name = "OpenRouterAuthError"
+    this.name = 'OpenRouterAuthError'
   }
 }
 
@@ -69,7 +69,7 @@ export class OpenRouterRateLimitError extends OpenRouterError {
     context?: Record<string, any>
   ) {
     super(ErrorCode.RateLimited, message, 429, context)
-    this.name = "OpenRouterRateLimitError"
+    this.name = 'OpenRouterRateLimitError'
   }
 }
 
@@ -79,7 +79,7 @@ export class OpenRouterRateLimitError extends OpenRouterError {
 export class OpenRouterServerError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.ExternalServiceError, message, 502, context)
-    this.name = "OpenRouterServerError"
+    this.name = 'OpenRouterServerError'
   }
 }
 
@@ -89,7 +89,7 @@ export class OpenRouterServerError extends OpenRouterError {
 export class OpenRouterSafetyError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.InvalidAIResponse, message, 422, context)
-    this.name = "OpenRouterSafetyError"
+    this.name = 'OpenRouterSafetyError'
   }
 }
 
@@ -99,7 +99,7 @@ export class OpenRouterSafetyError extends OpenRouterError {
 export class OpenRouterSchemaError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.InvalidAIResponse, message, 422, context)
-    this.name = "OpenRouterSchemaError"
+    this.name = 'OpenRouterSchemaError'
   }
 }
 
@@ -109,7 +109,7 @@ export class OpenRouterSchemaError extends OpenRouterError {
 export class OpenRouterStreamError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.ExternalServiceError, message, 500, context)
-    this.name = "OpenRouterStreamError"
+    this.name = 'OpenRouterStreamError'
   }
 }
 
@@ -119,7 +119,6 @@ export class OpenRouterStreamError extends OpenRouterError {
 export class OpenRouterUnexpectedResponseError extends OpenRouterError {
   constructor(message: string, context?: Record<string, any>) {
     super(ErrorCode.InvalidAIResponse, message, 502, context)
-    this.name = "OpenRouterUnexpectedResponseError"
+    this.name = 'OpenRouterUnexpectedResponseError'
   }
 }
-

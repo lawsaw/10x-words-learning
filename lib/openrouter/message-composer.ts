@@ -1,5 +1,5 @@
-import type { ChatMessage } from "@/lib/types"
-import { OpenRouterValidationError } from "./errors"
+import type { ChatMessage } from '@/lib/types'
+import { OpenRouterValidationError } from './errors'
 
 /**
  * Utility for composing and normalizing chat messages.
@@ -13,23 +13,23 @@ export class MessageComposer {
    */
   static normalizeMessages(messages: ChatMessage[]): ChatMessage[] {
     if (!messages || messages.length === 0) {
-      throw new OpenRouterValidationError("Messages array cannot be empty")
+      throw new OpenRouterValidationError('Messages array cannot be empty')
     }
 
     return messages.map((msg, index) => {
       // Validate required fields
       if (!msg.role) {
-        throw new OpenRouterValidationError(
-          `Message at index ${index} is missing role`,
-          { index, message: msg }
-        )
+        throw new OpenRouterValidationError(`Message at index ${index} is missing role`, {
+          index,
+          message: msg,
+        })
       }
 
       if (!msg.content) {
-        throw new OpenRouterValidationError(
-          `Message at index ${index} is missing content`,
-          { index, message: msg }
-        )
+        throw new OpenRouterValidationError(`Message at index ${index} is missing content`, {
+          index,
+          message: msg,
+        })
       }
 
       // Validate UTF-8 encoding
@@ -51,14 +51,14 @@ export class MessageComposer {
     try {
       // Attempt to encode/decode to validate UTF-8
       const encoder = new TextEncoder()
-      const decoder = new TextDecoder("utf-8", { fatal: true })
+      const decoder = new TextDecoder('utf-8', { fatal: true })
       const encoded = encoder.encode(content)
       return decoder.decode(encoded)
     } catch (error) {
-      throw new OpenRouterValidationError(
-        `Message at index ${index} contains invalid UTF-8`,
-        { index, error: error instanceof Error ? error.message : String(error) }
-      )
+      throw new OpenRouterValidationError(`Message at index ${index} contains invalid UTF-8`, {
+        index,
+        error: error instanceof Error ? error.message : String(error),
+      })
     }
   }
 
@@ -68,15 +68,12 @@ export class MessageComposer {
    * @param systemMessage Optional system message to prepend
    * @returns Composed messages with system message first if provided
    */
-  static composeWithSystem(
-    userMessages: ChatMessage[],
-    systemMessage?: string
-  ): ChatMessage[] {
+  static composeWithSystem(userMessages: ChatMessage[], systemMessage?: string): ChatMessage[] {
     const messages: ChatMessage[] = []
 
     if (systemMessage) {
       messages.push({
-        role: "system",
+        role: 'system',
         content: systemMessage,
       })
     }
@@ -114,12 +111,9 @@ export class MessageComposer {
    * @param maxTokens Maximum token count
    * @returns Truncated messages
    */
-  static truncateToTokenLimit(
-    messages: ChatMessage[],
-    maxTokens: number
-  ): ChatMessage[] {
-    const systemMessages = messages.filter((m) => m.role === "system")
-    const otherMessages = messages.filter((m) => m.role !== "system")
+  static truncateToTokenLimit(messages: ChatMessage[], maxTokens: number): ChatMessage[] {
+    const systemMessages = messages.filter(m => m.role === 'system')
+    const otherMessages = messages.filter(m => m.role !== 'system')
 
     // Always keep system messages
     const result = [...systemMessages]
@@ -147,7 +141,7 @@ export class MessageComposer {
    */
   static createUserMessage(content: string): ChatMessage {
     return {
-      role: "user",
+      role: 'user',
       content,
     }
   }
@@ -157,7 +151,7 @@ export class MessageComposer {
    */
   static createSystemMessage(content: string): ChatMessage {
     return {
-      role: "system",
+      role: 'system',
       content,
     }
   }
@@ -167,9 +161,8 @@ export class MessageComposer {
    */
   static createAssistantMessage(content: string): ChatMessage {
     return {
-      role: "assistant",
+      role: 'assistant',
       content,
     }
   }
 }
-

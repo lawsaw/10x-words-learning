@@ -1,9 +1,6 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState } from 'react'
 
-import type {
-  AiGenerationRequest,
-  GeneratedWordSuggestionDto,
-} from "@/lib/types"
+import type { AiGenerationRequest, GeneratedWordSuggestionDto } from '@/lib/types'
 
 type UseAiWordGenerationOptions = {
   categoryId: string
@@ -19,7 +16,7 @@ type UseAiWordGenerationResult = {
   aiBusy: boolean
   error: string | null
   generate: (
-    difficulty: AiGenerationRequest["difficulty"],
+    difficulty: AiGenerationRequest['difficulty']
   ) => Promise<GeneratedWordSuggestionDto | null>
   resetError: () => void
 }
@@ -43,7 +40,7 @@ export function useAiWordGeneration({
         onError(message)
       }
     },
-    [onError],
+    [onError]
   )
 
   const resetError = useCallback(() => {
@@ -51,37 +48,32 @@ export function useAiWordGeneration({
   }, [emitError])
 
   const generate = useCallback(
-    async (difficulty: AiGenerationRequest["difficulty"]) => {
+    async (difficulty: AiGenerationRequest['difficulty']) => {
       setAiBusy(true)
       emitError(null)
       const jitteredTemperature = Math.min(0.9, Math.max(0.1, Math.random() * 0.3 + 0.35))
 
       try {
-        const response = await fetch(
-          `/api/categories/${categoryId}/words/ai-generate`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              difficulty,
-              learningLanguageId,
-              learningLanguageName,
-              userLanguage,
-              excludeTerms,
-              categoryContext: categoryName,
-              temperature: jitteredTemperature,
-              count: 1,
-            } satisfies AiGenerationRequest),
+        const response = await fetch(`/api/categories/${categoryId}/words/ai-generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        )
+          body: JSON.stringify({
+            difficulty,
+            learningLanguageId,
+            learningLanguageName,
+            userLanguage,
+            excludeTerms,
+            categoryContext: categoryName,
+            temperature: jitteredTemperature,
+            count: 1,
+          } satisfies AiGenerationRequest),
+        })
 
         if (!response.ok) {
           const payload = await response.json().catch(() => null)
-          const message =
-            payload?.error?.message ??
-            "Unable to generate word suggestion."
+          const message = payload?.error?.message ?? 'Unable to generate word suggestion.'
           emitError(message)
           return null
         }
@@ -93,24 +85,29 @@ export function useAiWordGeneration({
         const suggestion = payload.generated?.[0]
 
         if (!suggestion) {
-          emitError("AI did not return any suggestions.")
+          emitError('AI did not return any suggestions.')
           return null
         }
 
         emitError(null)
         return suggestion
       } catch (err) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : "AI generation failed unexpectedly."
+        const message = err instanceof Error ? err.message : 'AI generation failed unexpectedly.'
         emitError(message)
         return null
       } finally {
         setAiBusy(false)
       }
     },
-    [categoryId, learningLanguageId, learningLanguageName, userLanguage, categoryName, excludeTerms, emitError],
+    [
+      categoryId,
+      learningLanguageId,
+      learningLanguageName,
+      userLanguage,
+      categoryName,
+      excludeTerms,
+      emitError,
+    ]
   )
 
   return {
@@ -120,5 +117,3 @@ export function useAiWordGeneration({
     resetError,
   }
 }
-
-

@@ -1,10 +1,9 @@
-name: Pull Request CI
+name: Deploy to Vercel
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types: [opened, synchronize, reopened]
 
 jobs:
   lint:
@@ -86,20 +85,15 @@ jobs:
           path: coverage/
           retention-days: 30
 
-  e2e-test:
-    name: E2E Tests
-    needs: lint
+  deploy:
+    name: Deploy to Vercel
+    needs: [lint, build, unit-test]
     runs-on: ubuntu-latest
-    environment: integration
+    environment: production
     env:
-      CI: true
-      BASE_URL: http://localhost:3000
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -110,38 +104,56 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Run E2E tests
-        run: npm run test:e2e
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
-      - name: Upload E2E test results
-        uses: actions/upload-artifact@v5
-        if: always()
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "deployment_url=$url" >> $GITHUB_OUTPUT
+          echo "Deployed to: $url"
+
+      - name: Comment deployment URL
+        uses: actions/github-script@v8
+        if: success()
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const deploymentUrl = '${{ steps.deploy.outputs.deployment_url }}';
+            const sha = context.sha.substring(0, 7);
+            
+            const commentBody = `## 🚀 Deployment Successful
+            
+            ✅ The application has been deployed to Vercel.
+            
+            **Deployment URL:** ${deploymentUrl}
+            **Commit:** \`${sha}\`
+            **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: commentBody
+            });
 
-      - name: Upload E2E test coverage
-        uses: actions/upload-artifact@v5
-        if: always()
-        with:
-          name: e2e-test-coverage
-          path: coverage/
-          retention-days: 30
-
-  status-comment:
-    name: Post Status Comment
-    needs: [lint, build, unit-test, e2e-test]
+  status-notification:
+    name: Post Status Notification
+    needs: [lint, build, unit-test, deploy]
     runs-on: ubuntu-latest
     if: always()
-    permissions:
-      pull-requests: write
     steps:
       - name: Check job statuses
         id: check
@@ -149,15 +161,15 @@ jobs:
           if [[ "${{ needs.lint.result }}" == "success" ]] && \
              [[ "${{ needs.build.result }}" == "success" ]] && \
              [[ "${{ needs.unit-test.result }}" == "success" ]] && \
-             [[ "${{ needs.e2e-test.result }}" == "success" ]]; then
+             [[ "${{ needs.deploy.result }}" == "success" ]]; then
             echo "status=success" >> $GITHUB_OUTPUT
-            echo "message=✅ All checks passed successfully!" >> $GITHUB_OUTPUT
+            echo "message=✅ All checks passed and deployment successful!" >> $GITHUB_OUTPUT
           else
             echo "status=failure" >> $GITHUB_OUTPUT
-            echo "message=❌ Some checks failed. Please review the details above." >> $GITHUB_OUTPUT
+            echo "message=❌ Some checks or deployment failed. Please review the details above." >> $GITHUB_OUTPUT
           fi
 
-      - name: Post comment to PR
+      - name: Send status notification
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -169,7 +181,7 @@ jobs:
               'Lint': '${{ needs.lint.result }}',
               'Build': '${{ needs.build.result }}',
               'Unit Tests': '${{ needs.unit-test.result }}',
-              'E2E Tests': '${{ needs.e2e-test.result }}'
+              'Deploy': '${{ needs.deploy.result }}'
             };
             
             const getEmoji = (result) => {
@@ -186,7 +198,7 @@ jobs:
               return `| ${getEmoji(result)} ${job} | \`${result}\` |`;
             }).join('\n');
             
-            const commentBody = `## 🔍 Pull Request CI Results
+            const commentBody = `## 🔍 Deployment Pipeline Results
             
             ${message}
             
@@ -196,36 +208,13 @@ jobs:
             ${tableRows}
             
             **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            **Commit:** \`${{ github.event.pull_request.head.sha }}\`
+            **Commit:** \`${{ github.sha }}\`
             `;
             
-            // Find existing comment
-            const { data: comments } = await github.rest.issues.listComments({
+            await github.rest.repos.createCommitComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              commit_sha: context.sha,
+              body: commentBody
             });
-            
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && 
-              comment.body.includes('Pull Request CI Results')
-            );
-            
-            if (botComment) {
-              // Update existing comment
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: commentBody
-              });
-            } else {
-              // Create new comment
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: commentBody
-              });
-            }
 

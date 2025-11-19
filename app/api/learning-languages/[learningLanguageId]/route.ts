@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { LearningLanguageService } from "@/lib/services/learning-language.service"
-import { deleteLearningLanguageParamsSchema } from "@/lib/validation"
-import { noContentResponse, errorResponse } from "@/lib/response"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { LearningLanguageService } from '@/lib/services/learning-language.service'
+import { deleteLearningLanguageParamsSchema } from '@/lib/validation'
+import { noContentResponse, errorResponse } from '@/lib/response'
 
 /**
  * DELETE /api/learning-languages/[learningLanguageId]
@@ -22,14 +22,10 @@ export async function DELETE(
     const validatedParams = deleteLearningLanguageParamsSchema.parse(resolvedParams)
 
     // Delete learning language
-    await LearningLanguageService.deleteLearningLanguage(
-      userId,
-      validatedParams.learningLanguageId
-    )
+    await LearningLanguageService.deleteLearningLanguage(userId, validatedParams.learningLanguageId)
 
     return noContentResponse()
   } catch (error) {
     return errorResponse(error)
   }
 }
-

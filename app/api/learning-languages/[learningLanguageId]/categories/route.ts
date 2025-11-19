@@ -1,13 +1,13 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { CategoryService } from "@/lib/services/category.service"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { CategoryService } from '@/lib/services/category.service'
 import {
   learningLanguageParamsSchema,
   categoriesQuerySchema,
   createCategoryCommandSchema,
-} from "@/lib/validation"
-import { okResponse, createdResponse, errorResponse } from "@/lib/response"
-import type { CategoriesListDto, CategoryDto } from "@/lib/types"
+} from '@/lib/validation'
+import { okResponse, createdResponse, errorResponse } from '@/lib/response'
+import type { CategoriesListDto, CategoryDto } from '@/lib/types'
 
 /**
  * GET /api/learning-languages/[learningLanguageId]/categories
@@ -30,11 +30,11 @@ export async function GET(
     // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams
     const queryParams = {
-      search: searchParams.get("search") || undefined,
-      page: searchParams.get("page") || undefined,
-      pageSize: searchParams.get("pageSize") || undefined,
-      orderBy: searchParams.get("orderBy") || undefined,
-      direction: searchParams.get("direction") || undefined,
+      search: searchParams.get('search') || undefined,
+      page: searchParams.get('page') || undefined,
+      pageSize: searchParams.get('pageSize') || undefined,
+      orderBy: searchParams.get('orderBy') || undefined,
+      direction: searchParams.get('direction') || undefined,
     }
 
     const validatedQuery = categoriesQuerySchema.parse(queryParams)
@@ -85,4 +85,3 @@ export async function POST(
     return errorResponse(error)
   }
 }
-

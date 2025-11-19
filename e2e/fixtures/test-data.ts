@@ -12,7 +12,7 @@ export const testUsers = {
     email: 'invalid@example.com',
     password: 'WrongPassword',
   },
-};
+}
 
 export const testCategories = {
   technology: {
@@ -23,17 +23,14 @@ export const testCategories = {
     name: 'Business',
     description: 'Business vocabulary',
   },
-};
+}
 
 export const testWords = {
   word1: {
     word: 'algorithm',
     translation: 'algorytm',
     definition: 'A step-by-step procedure for solving a problem',
-    examples: [
-      'The algorithm efficiently sorts the data.',
-      'We need to optimize this algorithm.',
-    ],
+    examples: ['The algorithm efficiently sorts the data.', 'We need to optimize this algorithm.'],
   },
   word2: {
     word: 'database',
@@ -44,5 +41,4 @@ export const testWords = {
       'We migrated to a new database system.',
     ],
   },
-};
-
+}

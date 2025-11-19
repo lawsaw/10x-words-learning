@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { loginCommandSchema } from "@/lib/validation"
-import { okResponse, errorResponse } from "@/lib/response"
-import type { LoginResponseDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { loginCommandSchema } from '@/lib/validation'
+import { okResponse, errorResponse } from '@/lib/response'
+import type { LoginResponseDto } from '@/lib/types'
 
 /**
  * POST /api/auth/login
@@ -23,4 +23,3 @@ export async function POST(request: NextRequest) {
     return errorResponse(error)
   }
 }
-

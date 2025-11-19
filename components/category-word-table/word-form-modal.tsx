@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from 'react'
 
-import { AiLoaderOverlay } from "@/components/category-word-table/ai-loader-overlay"
-import { Button } from "@/components/ui/button"
+import { AiLoaderOverlay } from '@/components/category-word-table/ai-loader-overlay'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -11,35 +11,30 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select'
 import type {
   CreateWordCommand,
   DifficultyLevel,
   GeneratedWordSuggestionDto,
   UpdateWordCommand,
   WordFormState,
-} from "@/lib/types"
+} from '@/lib/types'
 
 type WordFormModalProps = {
   open: boolean
-  mode: "create" | "edit"
+  mode: 'create' | 'edit'
   initialValue?: WordFormState
   onClose: () => void
-  onSubmit: (
-    payload: CreateWordCommand | UpdateWordCommand,
-    wordId?: string,
-  ) => Promise<void>
-  onAiGenerate: (
-    difficulty: DifficultyLevel,
-  ) => Promise<GeneratedWordSuggestionDto | null>
+  onSubmit: (payload: CreateWordCommand | UpdateWordCommand, wordId?: string) => Promise<void>
+  onAiGenerate: (difficulty: DifficultyLevel) => Promise<GeneratedWordSuggestionDto | null>
   busy: boolean
   aiBusy: boolean
 }
@@ -56,9 +51,9 @@ const MAX_TRANSLATION_LENGTH = 500
 const MAX_EXAMPLES_LENGTH = 2000
 
 const DIFFICULTY_LABELS: Record<DifficultyLevel, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  advanced: "Advanced",
+  easy: 'Easy',
+  medium: 'Medium',
+  advanced: 'Advanced',
 }
 
 export function WordFormModal({
@@ -71,13 +66,17 @@ export function WordFormModal({
   busy,
   aiBusy,
 }: WordFormModalProps) {
-  const [term, setTerm] = useState<string>(initialValue?.term ?? "")
-  const [translation, setTranslation] = useState<string>(initialValue?.translation ?? "")
-  const [examplesMd, setExamplesMd] = useState<string>(initialValue?.examplesMd ?? "")
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>(initialValue?.difficulty ?? "medium")
-  const [touched, setTouched] = useState<{ term: boolean; translation: boolean; examplesMd: boolean }>(
-    { term: false, translation: false, examplesMd: false },
+  const [term, setTerm] = useState<string>(initialValue?.term ?? '')
+  const [translation, setTranslation] = useState<string>(initialValue?.translation ?? '')
+  const [examplesMd, setExamplesMd] = useState<string>(initialValue?.examplesMd ?? '')
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>(
+    initialValue?.difficulty ?? 'medium'
   )
+  const [touched, setTouched] = useState<{
+    term: boolean
+    translation: boolean
+    examplesMd: boolean
+  }>({ term: false, translation: false, examplesMd: false })
   const [formError, setFormError] = useState<string | null>(null)
   const [aiError, setAiError] = useState<string | null>(null)
 
@@ -86,10 +85,10 @@ export function WordFormModal({
       return
     }
 
-    setTerm(initialValue?.term ?? "")
-    setTranslation(initialValue?.translation ?? "")
-    setExamplesMd(initialValue?.examplesMd ?? "")
-    setDifficulty(initialValue?.difficulty ?? "medium")
+    setTerm(initialValue?.term ?? '')
+    setTranslation(initialValue?.translation ?? '')
+    setExamplesMd(initialValue?.examplesMd ?? '')
+    setDifficulty(initialValue?.difficulty ?? 'medium')
     setTouched({ term: false, translation: false, examplesMd: false })
     setFormError(null)
     setAiError(null)
@@ -103,19 +102,19 @@ export function WordFormModal({
     const errors: FieldErrors = {}
 
     if (!trimmedTerm) {
-      errors.term = "Term is required"
+      errors.term = 'Term is required'
     } else if (trimmedTerm.length > MAX_TERM_LENGTH) {
       errors.term = `Term must be ≤${MAX_TERM_LENGTH} characters`
     }
 
     if (!trimmedTranslation) {
-      errors.translation = "Translation is required"
+      errors.translation = 'Translation is required'
     } else if (trimmedTranslation.length > MAX_TRANSLATION_LENGTH) {
       errors.translation = `Translation must be ≤${MAX_TRANSLATION_LENGTH} characters`
     }
 
     if (!trimmedExamples || trimmedExamples.length < MIN_EXAMPLES_LENGTH) {
-      errors.examplesMd = "Examples are required"
+      errors.examplesMd = 'Examples are required'
     } else if (trimmedExamples.length > MAX_EXAMPLES_LENGTH) {
       errors.examplesMd = `Examples must be ≤${MAX_EXAMPLES_LENGTH} characters`
     }
@@ -131,7 +130,7 @@ export function WordFormModal({
     const suggestion = await onAiGenerate(difficulty)
 
     if (!suggestion) {
-      setAiError("Unable to generate a suggestion. Please try again.")
+      setAiError('Unable to generate a suggestion. Please try again.')
       return
     }
 
@@ -157,7 +156,7 @@ export function WordFormModal({
     try {
       await onSubmit(payload, initialValue?.wordId)
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to save word."
+      const message = error instanceof Error ? error.message : 'Failed to save word.'
       setFormError(message)
     }
   }
@@ -167,10 +166,10 @@ export function WordFormModal({
   const showExamplesError = touched.examplesMd && fieldErrors.examplesMd
 
   return (
-    <Dialog open={open} onOpenChange={(next) => (!next ? onClose() : undefined)}>
+    <Dialog open={open} onOpenChange={next => (!next ? onClose() : undefined)}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{mode === "create" ? "Create word" : "Edit word"}</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Create word' : 'Edit word'}</DialogTitle>
           <DialogDescription>
             Provide the vocabulary details and examples. All fields are required to save changes.
           </DialogDescription>
@@ -181,102 +180,108 @@ export function WordFormModal({
 
           <form
             className="grid gap-4"
-            onSubmit={(event) => {
+            onSubmit={event => {
               event.preventDefault()
               handleSubmit()
             }}
           >
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="word-term">
+              <label className="text-foreground text-sm font-medium" htmlFor="word-term">
                 Term
               </label>
               <Input
                 id="word-term"
                 value={term}
-                onChange={(event) => setTerm(event.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, term: true }))}
+                onChange={event => setTerm(event.target.value)}
+                onBlur={() => setTouched(prev => ({ ...prev, term: true }))}
                 placeholder="Enter the word or phrase"
                 disabled={busy || aiBusy}
               />
               {showTermError ? (
-                <p className="text-xs text-destructive">{fieldErrors.term}</p>
+                <p className="text-destructive text-xs">{fieldErrors.term}</p>
               ) : null}
             </div>
 
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="word-translation">
+              <label className="text-foreground text-sm font-medium" htmlFor="word-translation">
                 Translation
               </label>
               <Input
                 id="word-translation"
                 value={translation}
-                onChange={(event) => setTranslation(event.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, translation: true }))}
+                onChange={event => setTranslation(event.target.value)}
+                onBlur={() => setTouched(prev => ({ ...prev, translation: true }))}
                 placeholder="Provide the translation"
                 disabled={busy || aiBusy}
               />
               {showTranslationError ? (
-                <p className="text-xs text-destructive">{fieldErrors.translation}</p>
+                <p className="text-destructive text-xs">{fieldErrors.translation}</p>
               ) : null}
             </div>
 
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="word-examples">
+              <label className="text-foreground text-sm font-medium" htmlFor="word-examples">
                 Examples (Markdown supported)
               </label>
               <textarea
                 id="word-examples"
                 value={examplesMd}
-                onChange={(event) => setExamplesMd(event.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, examplesMd: true }))}
+                onChange={event => setExamplesMd(event.target.value)}
+                onBlur={() => setTouched(prev => ({ ...prev, examplesMd: true }))}
                 placeholder="Provide example sentences or phrases in Markdown."
-                className="min-h-[160px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-input bg-background text-foreground focus-visible:ring-ring min-h-[160px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={busy || aiBusy}
               />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="text-muted-foreground flex items-center justify-between text-xs">
                 <span>Minimum 1 character. Markdown will be rendered in the table.</span>
                 <span>
                   {trimmedExamples.length}/{MAX_EXAMPLES_LENGTH}
                 </span>
               </div>
               {showExamplesError ? (
-                <p className="text-xs text-destructive">{fieldErrors.examplesMd}</p>
+                <p className="text-destructive text-xs">{fieldErrors.examplesMd}</p>
               ) : null}
             </div>
 
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-foreground" htmlFor="word-difficulty">
+              <label className="text-foreground text-sm font-medium" htmlFor="word-difficulty">
                 Difficulty
               </label>
               <Select
                 value={difficulty}
-                onValueChange={(value) => setDifficulty(value as DifficultyLevel)}
+                onValueChange={value => setDifficulty(value as DifficultyLevel)}
                 disabled={busy || aiBusy}
               >
                 <SelectTrigger id="word-difficulty" className="h-9 w-full px-3 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(Object.keys(DIFFICULTY_LABELS) as DifficultyLevel[]).map((key) => (
+                  {(Object.keys(DIFFICULTY_LABELS) as DifficultyLevel[]).map(key => (
                     <SelectItem key={key} value={key}>
                       {DIFFICULTY_LABELS[key]}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 Difficulty guides AI generation and helps contextualise your study sessions.
               </p>
             </div>
 
-            {aiError ? <p className="text-xs text-destructive">{aiError}</p> : null}
-            {formError ? <p className="text-xs text-destructive">{formError}</p> : null}
+            {aiError ? <p className="text-destructive text-xs">{aiError}</p> : null}
+            {formError ? <p className="text-destructive text-xs">{formError}</p> : null}
           </form>
         </div>
 
         <DialogFooter className="gap-2">
           <div className="flex flex-1 items-center gap-2 sm:justify-start">
-            <Button type="button" variant="outline" size="sm" onClick={handleGenerate} disabled={aiBusy}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleGenerate}
+              disabled={aiBusy}
+            >
               Generate with AI
             </Button>
           </div>
@@ -284,12 +289,10 @@ export function WordFormModal({
             Cancel
           </Button>
           <Button type="button" onClick={handleSubmit} disabled={saveDisabled}>
-            {mode === "create" ? "Save word" : "Save changes"}
+            {mode === 'create' ? 'Save word' : 'Save changes'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-
-

@@ -102,7 +102,7 @@ describe('Sanitize Utilities', () => {
 
       it('should remove onclick handlers with single quotes', () => {
         // Arrange
-        const malicious = "<div onclick='alert(\"XSS\")'>Click me</div>"
+        const malicious = '<div onclick=\'alert("XSS")\'>Click me</div>'
 
         // Act
         const result = sanitizeMarkdown(malicious)
@@ -177,7 +177,7 @@ describe('Sanitize Utilities', () => {
         ]
 
         // Act & Assert
-        handlers.forEach((malicious) => {
+        handlers.forEach(malicious => {
           const result = sanitizeMarkdown(malicious)
           expect(result).not.toMatch(/on\w+=/)
         })
@@ -886,7 +886,8 @@ describe('Sanitize Utilities', () => {
   describe('Integration: Combined Sanitization Workflow', () => {
     it('should sanitize then strip then truncate safely', () => {
       // Arrange
-      const malicious = '<script>alert("XSS")</script><p>This is <strong>important</strong> content that is very long</p>'
+      const malicious =
+        '<script>alert("XSS")</script><p>This is <strong>important</strong> content that is very long</p>'
 
       // Act - Sanitize first
       const sanitized = sanitizeMarkdown(malicious)
@@ -928,4 +929,3 @@ describe('Sanitize Utilities', () => {
     })
   })
 })
-

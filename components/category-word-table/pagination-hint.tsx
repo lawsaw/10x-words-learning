@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import type { WordListMetaDto } from "@/lib/types"
+import type { WordListMetaDto } from '@/lib/types'
 
 type PaginationHintProps = {
   meta: WordListMetaDto
@@ -9,17 +9,16 @@ type PaginationHintProps = {
 export function PaginationHint({ meta }: PaginationHintProps) {
   if (!meta.hasMore) {
     return (
-      <p className="text-xs text-muted-foreground">
+      <p className="text-muted-foreground text-xs">
         Showing all loaded words. Additional entries will appear here when available.
       </p>
     )
   }
 
   return (
-    <div className="rounded-md border border-dashed border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
-      There are more words beyond the current page. Pagination controls will be added in a future iteration.
+    <div className="border-border bg-muted/40 text-muted-foreground rounded-md border border-dashed px-4 py-2 text-xs">
+      There are more words beyond the current page. Pagination controls will be added in a future
+      iteration.
     </div>
   )
 }
-
-

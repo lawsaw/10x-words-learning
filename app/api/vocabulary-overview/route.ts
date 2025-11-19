@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { VocabularyOverviewService } from "@/lib/services/vocabulary-overview.service"
-import { vocabularyOverviewQuerySchema } from "@/lib/validation"
-import { okResponse, errorResponse } from "@/lib/response"
-import type { VocabularyOverviewListDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { VocabularyOverviewService } from '@/lib/services/vocabulary-overview.service'
+import { vocabularyOverviewQuerySchema } from '@/lib/validation'
+import { okResponse, errorResponse } from '@/lib/response'
+import type { VocabularyOverviewListDto } from '@/lib/types'
 
 /**
  * GET /api/vocabulary-overview
@@ -20,23 +20,24 @@ export async function GET(request: NextRequest) {
     // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams
     const queryParams = {
-      learningLanguageId: searchParams.get("learningLanguageId") || undefined,
-      categoryId: searchParams.get("categoryId") || undefined,
-      orderBy: searchParams.get("orderBy") || undefined,
-      direction: searchParams.get("direction") || undefined,
-      page: searchParams.get("page") || undefined,
-      pageSize: searchParams.get("pageSize") || undefined,
+      learningLanguageId: searchParams.get('learningLanguageId') || undefined,
+      categoryId: searchParams.get('categoryId') || undefined,
+      orderBy: searchParams.get('orderBy') || undefined,
+      direction: searchParams.get('direction') || undefined,
+      page: searchParams.get('page') || undefined,
+      pageSize: searchParams.get('pageSize') || undefined,
     }
 
     const validatedQuery = vocabularyOverviewQuerySchema.parse(queryParams)
 
     // Fetch vocabulary overview
-    const result: VocabularyOverviewListDto =
-      await VocabularyOverviewService.getVocabularyOverview(userId, validatedQuery)
+    const result: VocabularyOverviewListDto = await VocabularyOverviewService.getVocabularyOverview(
+      userId,
+      validatedQuery
+    )
 
     return okResponse(result)
   } catch (error) {
     return errorResponse(error)
   }
 }
-

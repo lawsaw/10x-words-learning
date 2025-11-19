@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 
 export function LogoutButton() {
   const router = useRouter()
@@ -15,18 +15,18 @@ export function LogoutButton() {
     }
     setLoading(true)
     try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
       })
 
       if (!response.ok) {
-        console.error("Failed to logout", await response.text())
+        console.error('Failed to logout', await response.text())
       }
     } catch (error) {
-      console.error("Logout error", error)
+      console.error('Logout error', error)
     } finally {
       setLoading(false)
-      router.push("/")
+      router.push('/')
       router.refresh()
     }
   }
@@ -40,8 +40,7 @@ export function LogoutButton() {
       disabled={loading}
       aria-label="Log out of 10x Words Learning"
     >
-      {loading ? "Logging out…" : "Log out"}
+      {loading ? 'Logging out…' : 'Log out'}
     </Button>
   )
 }
-

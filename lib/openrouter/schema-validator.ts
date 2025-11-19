@@ -1,6 +1,6 @@
-import { z } from "zod"
-import type { JsonSchema, ResponseFormatSchema } from "@/lib/types"
-import { OpenRouterSchemaError, OpenRouterValidationError } from "./errors"
+import { z } from 'zod'
+import type { JsonSchema, ResponseFormatSchema } from '@/lib/types'
+import { OpenRouterSchemaError, OpenRouterValidationError } from './errors'
 
 /**
  * Utility for validating JSON schemas and response formats.
@@ -13,10 +13,10 @@ export class SchemaValidator {
    */
   static validateResponseFormat(responseFormat: ResponseFormatSchema): void {
     if (!responseFormat.type) {
-      throw new OpenRouterValidationError("Response format must have a type")
+      throw new OpenRouterValidationError('Response format must have a type')
     }
 
-    if (responseFormat.type === "json_schema") {
+    if (responseFormat.type === 'json_schema') {
       if (!responseFormat.json_schema) {
         throw new OpenRouterValidationError(
           "Response format type 'json_schema' requires json_schema property"
@@ -25,12 +25,12 @@ export class SchemaValidator {
 
       const { name, schema } = responseFormat.json_schema
 
-      if (!name || typeof name !== "string") {
-        throw new OpenRouterValidationError("JSON schema must have a name")
+      if (!name || typeof name !== 'string') {
+        throw new OpenRouterValidationError('JSON schema must have a name')
       }
 
       if (!schema) {
-        throw new OpenRouterValidationError("JSON schema must have a schema property")
+        throw new OpenRouterValidationError('JSON schema must have a schema property')
       }
 
       // Validate basic schema structure
@@ -45,24 +45,21 @@ export class SchemaValidator {
    */
   static validateJsonSchema(schema: JsonSchema): void {
     if (!schema.type) {
-      throw new OpenRouterValidationError("JSON schema must have a type property")
+      throw new OpenRouterValidationError('JSON schema must have a type property')
     }
 
     // Validate type is valid
-    const validTypes = ["object", "array", "string", "number", "integer", "boolean", "null"]
+    const validTypes = ['object', 'array', 'string', 'number', 'integer', 'boolean', 'null']
     if (!validTypes.includes(schema.type)) {
-      throw new OpenRouterValidationError(
-        `Invalid JSON schema type: ${schema.type}`,
-        { validTypes }
-      )
+      throw new OpenRouterValidationError(`Invalid JSON schema type: ${schema.type}`, {
+        validTypes,
+      })
     }
 
     // If type is object, validate properties
-    if (schema.type === "object") {
-      if (!schema.properties || typeof schema.properties !== "object") {
-        throw new OpenRouterValidationError(
-          "JSON schema with type 'object' must have properties"
-        )
+    if (schema.type === 'object') {
+      if (!schema.properties || typeof schema.properties !== 'object') {
+        throw new OpenRouterValidationError("JSON schema with type 'object' must have properties")
       }
 
       // Validate required fields exist in properties
@@ -79,7 +76,7 @@ export class SchemaValidator {
     }
 
     // If type is array, validate items
-    if (schema.type === "array") {
+    if (schema.type === 'array') {
       if (!schema.items) {
         throw new OpenRouterValidationError(
           "JSON schema with type 'array' must have items property"
@@ -100,13 +97,10 @@ export class SchemaValidator {
       zodSchema.parse(data)
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw new OpenRouterSchemaError(
-          "Response data does not match expected schema",
-          {
-            errors: error.issues,
-            data,
-          }
-        )
+        throw new OpenRouterSchemaError('Response data does not match expected schema', {
+          errors: error.issues,
+          data,
+        })
       }
       throw error
     }
@@ -120,28 +114,28 @@ export class SchemaValidator {
    */
   private static jsonSchemaToZod(jsonSchema: JsonSchema): z.ZodType<any> {
     switch (jsonSchema.type) {
-      case "string":
+      case 'string':
         return z.string()
 
-      case "number":
+      case 'number':
         return z.number()
 
-      case "integer":
+      case 'integer':
         return z.number().int()
 
-      case "boolean":
+      case 'boolean':
         return z.boolean()
 
-      case "null":
+      case 'null':
         return z.null()
 
-      case "array":
+      case 'array':
         if (!jsonSchema.items) {
           return z.array(z.unknown())
         }
         return z.array(this.jsonSchemaToZod(jsonSchema.items))
 
-      case "object": {
+      case 'object': {
         if (!jsonSchema.properties) {
           return z.record(z.string(), z.unknown())
         }
@@ -188,7 +182,7 @@ export class SchemaValidator {
     try {
       parsed = JSON.parse(content)
     } catch (error) {
-      throw new OpenRouterSchemaError("Response content is not valid JSON", {
+      throw new OpenRouterSchemaError('Response content is not valid JSON', {
         content: content.substring(0, 500),
         error: error instanceof Error ? error.message : String(error),
       })
@@ -202,4 +196,3 @@ export class SchemaValidator {
     return parsed
   }
 }
-

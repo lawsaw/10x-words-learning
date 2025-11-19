@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import {
   Dialog,
@@ -7,10 +7,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
-import type { DeleteWordContext } from "@/lib/types"
+import type { DeleteWordContext } from '@/lib/types'
 
 type ConfirmDeleteDialogProps = {
   open: boolean
@@ -47,8 +47,8 @@ export function ConfirmDeleteDialog({
         <DialogHeader>
           <DialogTitle>Delete word?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. The word <strong>{context.term}</strong> will be removed from the
-            category permanently.
+            This action cannot be undone. The word <strong>{context.term}</strong> will be removed
+            from the category permanently.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -62,12 +62,10 @@ export function ConfirmDeleteDialog({
             onClick={handleConfirm}
             disabled={busy}
           >
-            {busy ? "Deleting…" : "Delete"}
+            {busy ? 'Deleting…' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-
-

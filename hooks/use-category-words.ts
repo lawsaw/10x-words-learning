@@ -1,12 +1,7 @@
-import { useCallback } from "react"
-import useSWR from "swr"
+import { useCallback } from 'react'
+import useSWR from 'swr'
 
-import type {
-  CategoryWordsListDto,
-  SortDirection,
-  WordViewMode,
-  WordOrderField,
-} from "@/lib/types"
+import type { CategoryWordsListDto, SortDirection, WordViewMode, WordOrderField } from '@/lib/types'
 
 type UseCategoryWordsOptions = {
   categoryId: string
@@ -18,22 +13,21 @@ type UseCategoryWordsOptions = {
   onSuccess?: (data: CategoryWordsListDto) => void
 }
 
-type Key = ["category-words", string, WordViewMode, WordOrderField, SortDirection]
+type Key = ['category-words', string, WordViewMode, WordOrderField, SortDirection]
 
 async function fetchCategoryWords([, categoryId, view, orderBy, direction]: Key) {
   const url = `/api/categories/${categoryId}/words?view=${view}&orderBy=${encodeURIComponent(orderBy)}&direction=${direction}`
 
   const response = await fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: {
-      Accept: "application/json",
+      Accept: 'application/json',
     },
   })
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null)
-    const message =
-      payload?.error?.message ?? "Unable to fetch category words"
+    const message = payload?.error?.message ?? 'Unable to fetch category words'
     throw new Error(message)
   }
 
@@ -49,29 +43,26 @@ export function useCategoryWords({
   onError,
   onSuccess,
 }: UseCategoryWordsOptions) {
-  const key: Key = ["category-words", categoryId, view, orderBy, direction]
+  const key: Key = ['category-words', categoryId, view, orderBy, direction]
 
   const swr = useSWR<CategoryWordsListDto, Error>(key, fetchCategoryWords, {
     keepPreviousData: true,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     fallbackData: initialData,
-    onError: (error) => {
+    onError: error => {
       if (onError) {
         onError(error.message)
       }
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (onSuccess) {
         onSuccess(data)
       }
     },
   })
 
-  const refresh = useCallback(
-    () => swr.mutate(undefined, { revalidate: true }),
-    [swr],
-  )
+  const refresh = useCallback(() => swr.mutate(undefined, { revalidate: true }), [swr])
 
   return {
     data: swr.data,
@@ -82,5 +73,3 @@ export function useCategoryWords({
     mutate: refresh,
   }
 }
-
-

@@ -1,10 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
-import type { ProfileDto, UpdateProfileCommand } from "@/lib/types"
-import {
-  mapSupabaseError,
-  NotFoundError,
-  ValidationError,
-} from "@/lib/errors"
+import { createClient } from '@/lib/supabase/server'
+import type { ProfileDto, UpdateProfileCommand } from '@/lib/types'
+import { mapSupabaseError, NotFoundError, ValidationError } from '@/lib/errors'
 
 /**
  * Service for managing user profile operations.
@@ -17,10 +13,10 @@ export class ProfileService {
     const supabase = await createClient()
 
     const { data, error } = await supabase
-      .schema("app")
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
+      .schema('app')
+      .from('profiles')
+      .select('*')
+      .eq('user_id', userId)
       .single()
 
     if (error) {
@@ -28,7 +24,7 @@ export class ProfileService {
     }
 
     if (!data) {
-      throw new NotFoundError("Profile")
+      throw new NotFoundError('Profile')
     }
 
     return {
@@ -44,15 +40,12 @@ export class ProfileService {
    * Updates the profile for the authenticated user.
    * Note: userLanguage is immutable and cannot be changed.
    */
-  static async updateProfile(
-    userId: string,
-    command: UpdateProfileCommand
-  ): Promise<ProfileDto> {
+  static async updateProfile(userId: string, command: UpdateProfileCommand): Promise<ProfileDto> {
     const supabase = await createClient()
 
     // Validate that at least one field is provided
     if (Object.keys(command).length === 0) {
-      throw new ValidationError("No fields provided for update")
+      throw new ValidationError('No fields provided for update')
     }
 
     // Build update object (only include defined fields)
@@ -62,10 +55,10 @@ export class ProfileService {
     }
 
     const { data, error } = await supabase
-      .schema("app")
-      .from("profiles")
+      .schema('app')
+      .from('profiles')
       .update(updateData)
-      .eq("user_id", userId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -74,7 +67,7 @@ export class ProfileService {
     }
 
     if (!data) {
-      throw new NotFoundError("Profile")
+      throw new NotFoundError('Profile')
     }
 
     return {
@@ -86,4 +79,3 @@ export class ProfileService {
     }
   }
 }
-

@@ -1,15 +1,11 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from '@/lib/supabase/server'
 import type {
   VocabularyOverviewEntryDto,
   VocabularyOverviewListDto,
   VocabularyOverviewQueryDto,
-} from "@/lib/types"
-import { mapSupabaseError } from "@/lib/errors"
-import {
-  calculatePaginationMeta,
-  trimToPageSize,
-  mapOrderByToColumn,
-} from "@/lib/pagination"
+} from '@/lib/types'
+import { mapSupabaseError } from '@/lib/errors'
+import { calculatePaginationMeta, trimToPageSize, mapOrderByToColumn } from '@/lib/pagination'
 
 /**
  * Service for vocabulary overview analytics and reporting.
@@ -26,44 +22,41 @@ export class VocabularyOverviewService {
 
     const page = query.page || 1
     const pageSize = query.pageSize || 20
-    const orderBy = query.orderBy || "createdAt"
-    const direction = query.direction || "desc"
+    const orderBy = query.orderBy || 'createdAt'
+    const direction = query.direction || 'desc'
 
     // Build base query from the vocabulary_overview view
     let selectQuery = supabase
-      .schema("app")
-      .from("vocabulary_overview")
-      .select("*")
-      .eq("user_id", userId)
+      .schema('app')
+      .from('vocabulary_overview')
+      .select('*')
+      .eq('user_id', userId)
 
     // Apply filters
     if (query.learningLanguageId) {
-      selectQuery = selectQuery.eq(
-        "learning_language_id",
-        query.learningLanguageId
-      )
+      selectQuery = selectQuery.eq('learning_language_id', query.learningLanguageId)
     }
 
     if (query.categoryId) {
-      selectQuery = selectQuery.eq("category_id", query.categoryId)
+      selectQuery = selectQuery.eq('category_id', query.categoryId)
     }
 
     // Apply sorting based on orderBy field
     let column: string
     switch (orderBy) {
-      case "category":
-        column = "category_name"
+      case 'category':
+        column = 'category_name'
         break
-      case "language":
-        column = "learning_language_code"
+      case 'language':
+        column = 'learning_language_code'
         break
-      case "createdAt":
+      case 'createdAt':
       default:
-        column = "created_at"
+        column = 'created_at'
         break
     }
 
-    selectQuery = selectQuery.order(column, { ascending: direction === "asc" })
+    selectQuery = selectQuery.order(column, { ascending: direction === 'asc' })
 
     // Apply pagination (fetch one extra to check for more results)
     const offset = (page - 1) * pageSize
@@ -79,7 +72,7 @@ export class VocabularyOverviewService {
     const trimmedItems = trimToPageSize(items, pageSize)
 
     // Build DTOs
-    const entries: VocabularyOverviewEntryDto[] = trimmedItems.map((item) => ({
+    const entries: VocabularyOverviewEntryDto[] = trimmedItems.map(item => ({
       learningLanguageId: item.learning_language_id,
       learningLanguageCode: item.learning_language_code,
       categoryId: item.category_id,
@@ -98,4 +91,3 @@ export class VocabularyOverviewService {
     }
   }
 }
-

@@ -1,21 +1,13 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from '@/lib/supabase/server'
 import type {
   CategoryDto,
   CategoriesListDto,
   CategoriesQueryDto,
   CreateCategoryCommand,
   UpdateCategoryCommand,
-} from "@/lib/types"
-import {
-  mapSupabaseError,
-  NotFoundError,
-  ForbiddenError,
-} from "@/lib/errors"
-import {
-  calculatePaginationMeta,
-  trimToPageSize,
-  mapOrderByToColumn,
-} from "@/lib/pagination"
+} from '@/lib/types'
+import { mapSupabaseError, NotFoundError, ForbiddenError } from '@/lib/errors'
+import { calculatePaginationMeta, trimToPageSize, mapOrderByToColumn } from '@/lib/pagination'
 
 /**
  * Service for managing vocabulary categories.
@@ -36,25 +28,25 @@ export class CategoryService {
 
     const page = query.page || 1
     const pageSize = query.pageSize || 10
-    const orderBy = query.orderBy || "createdAt"
-    const direction = query.direction || "desc"
+    const orderBy = query.orderBy || 'createdAt'
+    const direction = query.direction || 'desc'
 
     // Build base query with word count
     let selectQuery = supabase
-      .schema("app")
-      .from("categories")
-      .select("*, words(count)")
-      .eq("user_learning_language_id", learningLanguageId)
-      .eq("user_id", userId)
+      .schema('app')
+      .from('categories')
+      .select('*, words(count)')
+      .eq('user_learning_language_id', learningLanguageId)
+      .eq('user_id', userId)
 
     // Apply search filter if provided
     if (query.search) {
-      selectQuery = selectQuery.ilike("name", `%${query.search}%`)
+      selectQuery = selectQuery.ilike('name', `%${query.search}%`)
     }
 
     // Apply sorting
     const column = mapOrderByToColumn(orderBy)
-    selectQuery = selectQuery.order(column, { ascending: direction === "asc" })
+    selectQuery = selectQuery.order(column, { ascending: direction === 'asc' })
 
     // Apply pagination (fetch one extra to check for more results)
     const offset = (page - 1) * pageSize
@@ -70,7 +62,7 @@ export class CategoryService {
     const trimmedItems = trimToPageSize(items, pageSize)
 
     // Build DTOs with word count
-    const categories: CategoryDto[] = trimmedItems.map((item) => ({
+    const categories: CategoryDto[] = trimmedItems.map(item => ({
       id: item.id,
       learningLanguageId: item.user_learning_language_id,
       name: item.name,
@@ -102,8 +94,8 @@ export class CategoryService {
 
     // Insert the category
     const { data, error } = await supabase
-      .schema("app")
-      .from("categories")
+      .schema('app')
+      .from('categories')
       .insert({
         user_learning_language_id: learningLanguageId,
         name: command.name,
@@ -136,13 +128,13 @@ export class CategoryService {
 
     // Update the category (RLS ensures user ownership)
     const { data, error } = await supabase
-      .schema("app")
-      .from("categories")
+      .schema('app')
+      .from('categories')
       .update({
         name: command.name,
       })
-      .eq("id", categoryId)
-      .eq("user_id", userId)
+      .eq('id', categoryId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -151,7 +143,7 @@ export class CategoryService {
     }
 
     if (!data) {
-      throw new NotFoundError("Category")
+      throw new NotFoundError('Category')
     }
 
     return {
@@ -166,19 +158,16 @@ export class CategoryService {
   /**
    * Deletes a category.
    */
-  static async deleteCategory(
-    userId: string,
-    categoryId: string
-  ): Promise<void> {
+  static async deleteCategory(userId: string, categoryId: string): Promise<void> {
     const supabase = await createClient()
 
     // Delete the category (RLS ensures user ownership, cascade deletes words)
     const { error } = await supabase
-      .schema("app")
-      .from("categories")
+      .schema('app')
+      .from('categories')
       .delete()
-      .eq("id", categoryId)
-      .eq("user_id", userId)
+      .eq('id', categoryId)
+      .eq('user_id', userId)
 
     if (error) {
       throw mapSupabaseError(error)
@@ -195,18 +184,15 @@ export class CategoryService {
     const supabase = await createClient()
 
     const { data, error } = await supabase
-      .schema("app")
-      .from("user_learning_languages")
-      .select("id")
-      .eq("id", learningLanguageId)
-      .eq("user_id", userId)
+      .schema('app')
+      .from('user_learning_languages')
+      .select('id')
+      .eq('id', learningLanguageId)
+      .eq('user_id', userId)
       .single()
 
     if (error || !data) {
-      throw new ForbiddenError(
-        "Learning language not found or access denied"
-      )
+      throw new ForbiddenError('Learning language not found or access denied')
     }
   }
 }
-

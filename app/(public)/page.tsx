@@ -1,34 +1,30 @@
-import { redirect } from "next/navigation"
+import { redirect } from 'next/navigation'
 
-import LandingPageClient from "./landing-page-client"
-import type { FeatureCardVm } from "./types"
-import {
-  FALLBACK_LANGUAGES_VM,
-  fetchSessionStatus,
-  fetchSupportedLanguages,
-} from "./public-data"
+import LandingPageClient from './landing-page-client'
+import type { FeatureCardVm } from './types'
+import { FALLBACK_LANGUAGES_VM, fetchSessionStatus, fetchSupportedLanguages } from './public-data'
 
 const FEATURE_CARDS_PRESET: FeatureCardVm[] = [
   {
-    id: "study-views",
-    icon: "table",
-    title: "Switch between study views instantly",
+    id: 'study-views',
+    icon: 'table',
+    title: 'Switch between study views instantly',
     description:
-      "Toggle table and slider-based practice modes to reinforce terms the way that works best for you.",
+      'Toggle table and slider-based practice modes to reinforce terms the way that works best for you.',
   },
   {
-    id: "ai-generation",
-    icon: "sparkles",
-    title: "Generate fresh vocabulary with AI",
+    id: 'ai-generation',
+    icon: 'sparkles',
+    title: 'Generate fresh vocabulary with AI',
     description:
-      "Spin up tailored word suggestions using your learning language, user language, and category context.",
+      'Spin up tailored word suggestions using your learning language, user language, and category context.',
   },
   {
-    id: "secure-workspace",
-    icon: "shield",
-    title: "Secure collaborative workspace",
+    id: 'secure-workspace',
+    icon: 'shield',
+    title: 'Secure collaborative workspace',
     description:
-      "Supabase-backed authentication keeps your categories and word history safe while you explore.",
+      'Supabase-backed authentication keeps your categories and word history safe while you explore.',
   },
 ]
 
@@ -39,7 +35,7 @@ export default async function LandingPage() {
   ])
 
   if (sessionStatus?.session) {
-    redirect("/app")
+    redirect('/app')
   }
 
   return (
@@ -49,4 +45,3 @@ export default async function LandingPage() {
     />
   )
 }
-

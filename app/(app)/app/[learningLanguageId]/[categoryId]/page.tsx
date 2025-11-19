@@ -1,21 +1,15 @@
-import { Suspense } from "react"
-import { notFound, redirect } from "next/navigation"
-import type { SupabaseClient } from "@supabase/supabase-js"
+import { Suspense } from 'react'
+import { notFound, redirect } from 'next/navigation'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-import AppShellLayout from "@/components/app/app-shell-layout"
-import { createClient } from "@/lib/supabase/server"
-import type { Database } from "@/lib/supabase/database.types"
-import type {
-  CategoryWordsListDto,
-  WordListMetaDto,
-} from "@/lib/types"
-import { WordService } from "@/lib/services/word.service"
-import {
-  categoryParamsSchema,
-  learningLanguageParamsSchema,
-} from "@/lib/validation"
+import AppShellLayout from '@/components/app/app-shell-layout'
+import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/lib/supabase/database.types'
+import type { CategoryWordsListDto, WordListMetaDto } from '@/lib/types'
+import { WordService } from '@/lib/services/word.service'
+import { categoryParamsSchema, learningLanguageParamsSchema } from '@/lib/validation'
 
-import CategoryWordTableClient from "./category-word-table-client"
+import CategoryWordTableClient from './category-word-table-client'
 
 type PageParams = {
   learningLanguageId: string
@@ -30,11 +24,7 @@ type LearningLanguageContext = {
 
 type ServerSupabaseClient = SupabaseClient<Database>
 
-export default async function CategoryWordTablePage({
-  params,
-}: {
-  params: PageParams
-}) {
+export default async function CategoryWordTablePage({ params }: { params: PageParams }) {
   const resolvedParams = await params
 
   if (!resolvedParams?.learningLanguageId || !resolvedParams?.categoryId) {
@@ -54,16 +44,11 @@ export default async function CategoryWordTablePage({
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/")
+    redirect('/')
   }
 
   const [context, userLanguage] = await Promise.all([
-    fetchLearningLanguageContext(
-      supabase,
-      user.id,
-      learningLanguageId,
-      categoryId,
-    ),
+    fetchLearningLanguageContext(supabase, user.id, learningLanguageId, categoryId),
     fetchUserLanguage(supabase, user.id),
   ])
 
@@ -74,7 +59,7 @@ export default async function CategoryWordTablePage({
   const initialWords = await fetchInitialCategoryWords(user.id, categoryId)
 
   const breadcrumbs = [
-    { label: "Workspace", href: "/app" },
+    { label: 'Workspace', href: '/app' },
     {
       label: context.learningLanguageName,
       href: `/app/${learningLanguageId}`,
@@ -109,14 +94,14 @@ async function fetchLearningLanguageContext(
   supabase: ServerSupabaseClient,
   userId: string,
   learningLanguageId: string,
-  categoryId: string,
+  categoryId: string
 ): Promise<LearningLanguageContext | null> {
   const { data: categoryRow, error: categoryError } = await supabase
-    .schema("app")
-    .from("categories")
-    .select("id, name, user_learning_language_id")
-    .eq("id", categoryId)
-    .eq("user_id", userId)
+    .schema('app')
+    .from('categories')
+    .select('id, name, user_learning_language_id')
+    .eq('id', categoryId)
+    .eq('user_id', userId)
     .single()
 
   if (categoryError || !categoryRow) {
@@ -128,11 +113,11 @@ async function fetchLearningLanguageContext(
   }
 
   const { data: learningRow, error: learningError } = await supabase
-    .schema("app")
-    .from("user_learning_languages")
-    .select("id, language_id")
-    .eq("id", learningLanguageId)
-    .eq("user_id", userId)
+    .schema('app')
+    .from('user_learning_languages')
+    .select('id, language_id')
+    .eq('id', learningLanguageId)
+    .eq('user_id', userId)
     .single()
 
   if (learningError || !learningRow) {
@@ -140,10 +125,10 @@ async function fetchLearningLanguageContext(
   }
 
   const { data: languageRow, error: languageError } = await supabase
-    .schema("app")
-    .from("languages")
-    .select("code, name")
-    .eq("code", learningRow.language_id)
+    .schema('app')
+    .from('languages')
+    .select('code, name')
+    .eq('code', learningRow.language_id)
     .single()
 
   if (languageError || !languageRow) {
@@ -157,19 +142,16 @@ async function fetchLearningLanguageContext(
   }
 }
 
-async function fetchUserLanguage(
-  supabase: ServerSupabaseClient,
-  userId: string,
-): Promise<string> {
+async function fetchUserLanguage(supabase: ServerSupabaseClient, userId: string): Promise<string> {
   const { data: profileRow, error } = await supabase
-    .schema("app")
-    .from("profiles")
-    .select("user_language_id")
-    .eq("user_id", userId)
+    .schema('app')
+    .from('profiles')
+    .select('user_language_id')
+    .eq('user_id', userId)
     .single()
 
   if (error || !profileRow) {
-    throw new Error("Unable to resolve user language")
+    throw new Error('Unable to resolve user language')
   }
 
   return profileRow.user_language_id
@@ -177,20 +159,19 @@ async function fetchUserLanguage(
 
 async function fetchInitialCategoryWords(
   userId: string,
-  categoryId: string,
+  categoryId: string
 ): Promise<CategoryWordsListDto> {
   return WordService.getCategoryWords(userId, categoryId, {
-    view: "table",
-    orderBy: "createdAt",
-    direction: "desc",
+    view: 'table',
+    orderBy: 'createdAt',
+    direction: 'desc',
   })
 }
 
 function TableViewFallback({ meta }: { meta: WordListMetaDto }) {
   return (
-    <div className="flex h-32 w-full items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
-      Loading {meta.view === "table" ? "table" : "words"} view…
+    <div className="border-border text-muted-foreground flex h-32 w-full items-center justify-center rounded-md border border-dashed text-sm">
+      Loading {meta.view === 'table' ? 'table' : 'words'} view…
     </div>
   )
 }
-

@@ -1,20 +1,18 @@
-import { cookies, headers } from "next/headers"
+import { cookies, headers } from 'next/headers'
 
-import type { AuthSessionStatusDto, LanguagesListDto } from "@/lib/types"
-import type { SupportedLanguagesVm } from "./types"
+import type { AuthSessionStatusDto, LanguagesListDto } from '@/lib/types'
+import type { SupportedLanguagesVm } from './types'
 
 export const FALLBACK_LANGUAGES_VM: SupportedLanguagesVm = {
   items: [],
 }
 
 export async function fetchSessionStatus(): Promise<AuthSessionStatusDto | null> {
-  return fetchFromApi<AuthSessionStatusDto>("/api/auth/session")
+  return fetchFromApi<AuthSessionStatusDto>('/api/auth/session')
 }
 
 export async function fetchSupportedLanguages(): Promise<SupportedLanguagesVm | null> {
-  const payload = await fetchFromApi<LanguagesListDto>(
-    "/api/languages?scope=registration",
-  )
+  const payload = await fetchFromApi<LanguagesListDto>('/api/languages?scope=registration')
 
   if (!payload) {
     return null
@@ -25,7 +23,7 @@ export async function fetchSupportedLanguages(): Promise<SupportedLanguagesVm | 
   }
 
   return {
-    items: payload.languages.map((language) => ({
+    items: payload.languages.map(language => ({
       code: language.code,
       label: language.name,
     })),
@@ -43,8 +41,8 @@ export async function fetchFromApi<T>(path: string): Promise<T | null> {
 
   try {
     const response = await fetch(`${requestOrigin}${path}`, {
-      method: "GET",
-      cache: "no-store",
+      method: 'GET',
+      cache: 'no-store',
       headers: {
         ...(cookieHeaderValue ? { cookie: cookieHeaderValue } : {}),
       },
@@ -62,20 +60,15 @@ export async function fetchFromApi<T>(path: string): Promise<T | null> {
 
 async function resolveRequestOrigin(): Promise<string | null> {
   const headerList = await headers()
-  const forwardedHost = headerList.get("x-forwarded-host")
-  const host = forwardedHost ?? headerList.get("host")
+  const forwardedHost = headerList.get('x-forwarded-host')
+  const host = forwardedHost ?? headerList.get('host')
 
   if (!host) {
-    return (
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.NEXT_PUBLIC_SITE_URL ??
-      null
-    )
+    return process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? null
   }
 
-  const forwardedProto = headerList.get("x-forwarded-proto")
-  const protocol =
-    forwardedProto ?? (host.includes("localhost") ? "http" : "https")
+  const forwardedProto = headerList.get('x-forwarded-proto')
+  const protocol = forwardedProto ?? (host.includes('localhost') ? 'http' : 'https')
 
   return `${protocol}://${host}`
 }
@@ -84,10 +77,8 @@ async function serializeCookies(): Promise<string | null> {
   const cookieStore = await cookies()
   const serialized = cookieStore
     .getAll()
-    .map((entry) => `${entry.name}=${entry.value}`)
-    .join("; ")
+    .map(entry => `${entry.name}=${entry.value}`)
+    .join('; ')
 
   return serialized.length > 0 ? serialized : null
 }
-
-
