@@ -224,5 +224,3 @@ The project is in active MVP development guided by the PRD. Upcoming milestones 
 
 ## License
 License information is not yet specified. Until a license is declared, the project should be treated as "all rights reserved."
- #   C I   T e s t  
- 
