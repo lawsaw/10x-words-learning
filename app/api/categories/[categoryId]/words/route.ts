@@ -1,13 +1,13 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { WordService } from "@/lib/services/word.service"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { WordService } from '@/lib/services/word.service'
 import {
   categoryParamsSchema,
   categoryWordsQuerySchema,
   createWordCommandSchema,
-} from "@/lib/validation"
-import { okResponse, createdResponse, errorResponse } from "@/lib/response"
-import type { CategoryWordsListDto, WordDto } from "@/lib/types"
+} from '@/lib/validation'
+import { okResponse, createdResponse, errorResponse } from '@/lib/response'
+import type { CategoryWordsListDto, WordDto } from '@/lib/types'
 
 /**
  * GET /api/categories/[categoryId]/words
@@ -30,12 +30,12 @@ export async function GET(
     // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams
     const queryParams = {
-      view: searchParams.get("view") || undefined,
-      orderBy: searchParams.get("orderBy") || undefined,
-      direction: searchParams.get("direction") || undefined,
-      page: searchParams.get("page") || undefined,
-      pageSize: searchParams.get("pageSize") || undefined,
-      cursor: searchParams.get("cursor") || undefined,
+      view: searchParams.get('view') || undefined,
+      orderBy: searchParams.get('orderBy') || undefined,
+      direction: searchParams.get('direction') || undefined,
+      page: searchParams.get('page') || undefined,
+      pageSize: searchParams.get('pageSize') || undefined,
+      cursor: searchParams.get('cursor') || undefined,
     }
 
     const validatedQuery = categoryWordsQuerySchema.parse(queryParams)
@@ -86,4 +86,3 @@ export async function POST(
     return errorResponse(error)
   }
 }
-

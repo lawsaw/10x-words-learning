@@ -64,12 +64,7 @@ describe('Error Handling', () => {
 
     it('should not include details in JSON output', () => {
       // Arrange
-      const error = new DomainError(
-        ErrorCode.InternalError,
-        'Error',
-        500,
-        { sensitive: 'data' }
-      )
+      const error = new DomainError(ErrorCode.InternalError, 'Error', 500, { sensitive: 'data' })
 
       // Act
       const json = error.toJSON()
@@ -238,7 +233,7 @@ describe('Error Handling', () => {
       const resources = ['Category', 'Word', 'Learning Language']
 
       // Act & Assert
-      resources.forEach((resource) => {
+      resources.forEach(resource => {
         const error = new NotFoundError(resource)
         expect(error.message).toBe(`${resource} not found`)
       })
@@ -284,7 +279,7 @@ describe('Error Handling', () => {
       ]
 
       // Act & Assert
-      conflictCodes.forEach((code) => {
+      conflictCodes.forEach(code => {
         const error = new ConflictError('Conflict', code)
         expect(error.code).toBe(code)
         expect(error.statusCode).toBe(409)
@@ -350,7 +345,7 @@ describe('Error Handling', () => {
       const services = ['Supabase', 'Stripe', 'SendGrid']
 
       // Act & Assert
-      services.forEach((service) => {
+      services.forEach(service => {
         const error = new ExternalServiceError(service)
         expect(error.message).toContain(service)
       })
@@ -550,9 +545,9 @@ describe('Error Handling', () => {
         // Act
         const result = mapSupabaseError(supabaseError)
 
-      // Assert
-      expect(result instanceof DomainError).toBe(true)
-      expect(result.code).toBe(ErrorCode.InternalError)
+        // Assert
+        expect(result instanceof DomainError).toBe(true)
+        expect(result.code).toBe(ErrorCode.InternalError)
         expect(result.message).toBe('An unexpected error occurred')
         expect(result.statusCode).toBe(500)
         expect(result.details).toEqual(supabaseError)
@@ -1005,4 +1000,3 @@ describe('Error Handling', () => {
     })
   })
 })
-

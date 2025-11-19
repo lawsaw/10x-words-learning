@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server"
-import { TestingResetService } from "@/lib/services/testing-reset.service"
-import { testResetCommandSchema } from "@/lib/validation"
-import { noContentResponse, errorResponse } from "@/lib/response"
+import { NextRequest } from 'next/server'
+import { TestingResetService } from '@/lib/services/testing-reset.service'
+import { testResetCommandSchema } from '@/lib/validation'
+import { noContentResponse, errorResponse } from '@/lib/response'
 
 /**
  * POST /api/testing/reset
@@ -23,4 +23,3 @@ export async function POST(request: NextRequest) {
     return errorResponse(error)
   }
 }
-

@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { noContentResponse, errorResponse } from "@/lib/response"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { noContentResponse, errorResponse } from '@/lib/response'
 
 /**
  * POST /api/auth/logout
@@ -20,4 +20,3 @@ export async function POST(request: NextRequest) {
     return errorResponse(error)
   }
 }
-

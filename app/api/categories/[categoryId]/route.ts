@@ -1,12 +1,9 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { CategoryService } from "@/lib/services/category.service"
-import {
-  categoryParamsSchema,
-  updateCategoryCommandSchema,
-} from "@/lib/validation"
-import { okResponse, noContentResponse, errorResponse } from "@/lib/response"
-import type { CategoryDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { CategoryService } from '@/lib/services/category.service'
+import { categoryParamsSchema, updateCategoryCommandSchema } from '@/lib/validation'
+import { okResponse, noContentResponse, errorResponse } from '@/lib/response'
+import type { CategoryDto } from '@/lib/types'
 
 /**
  * PATCH /api/categories/[categoryId]
@@ -67,4 +64,3 @@ export async function DELETE(
     return errorResponse(error)
   }
 }
-

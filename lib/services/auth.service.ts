@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from '@/lib/supabase/server'
 import type {
   RegisterCommand,
   RegisterResponseDto,
@@ -8,13 +8,8 @@ import type {
   AuthUserDto,
   AuthSessionDto,
   ProfileDto,
-} from "@/lib/types"
-import {
-  mapSupabaseError,
-  ValidationError,
-  UnauthorizedError,
-  ConflictError,
-} from "@/lib/errors"
+} from '@/lib/types'
+import { mapSupabaseError, ValidationError, UnauthorizedError, ConflictError } from '@/lib/errors'
 
 /**
  * Service for managing authentication operations.
@@ -23,23 +18,19 @@ export class AuthService {
   /**
    * Registers a new user, creates their profile, and returns session data.
    */
-  static async register(
-    command: RegisterCommand
-  ): Promise<RegisterResponseDto> {
+  static async register(command: RegisterCommand): Promise<RegisterResponseDto> {
     const supabase = await createClient()
 
     // Validate that the user language exists
     const { data: languageExists, error: languageError } = await supabase
-      .schema("app")
-      .from("languages")
-      .select("code")
-      .eq("code", command.userLanguage)
+      .schema('app')
+      .from('languages')
+      .select('code')
+      .eq('code', command.userLanguage)
       .single()
 
     if (languageError || !languageExists) {
-      throw new ValidationError(
-        `Language '${command.userLanguage}' is not available`
-      )
+      throw new ValidationError(`Language '${command.userLanguage}' is not available`)
     }
 
     // Create the user account via Supabase Auth
@@ -50,17 +41,16 @@ export class AuthService {
 
     if (authError) {
       // Handle duplicate email case
-      if (authError.message?.toLowerCase().includes("already registered")) {
-        throw new ConflictError("Email address is already registered")
+      if (authError.message?.toLowerCase().includes('already registered')) {
+        throw new ConflictError('Email address is already registered')
       }
 
       const detailedMessage =
-        authError.message ||
-        (authError as { error_description?: string }).error_description
+        authError.message || (authError as { error_description?: string }).error_description
 
       if (detailedMessage) {
         const normalized = detailedMessage.trim()
-        if (normalized.toLowerCase().includes("password")) {
+        if (normalized.toLowerCase().includes('password')) {
           throw new ValidationError(normalized)
         }
         if (authError.status === 400) {
@@ -71,13 +61,13 @@ export class AuthService {
     }
 
     if (!authData.user || !authData.session) {
-      throw new ValidationError("Failed to create user account")
+      throw new ValidationError('Failed to create user account')
     }
 
     // Create the user profile with the specified language
     const { data: profileData, error: profileError } = await supabase
-      .schema("app")
-      .from("profiles")
+      .schema('app')
+      .from('profiles')
       .insert({
         user_id: authData.user.id,
         user_language_id: command.userLanguage,
@@ -132,16 +122,16 @@ export class AuthService {
     if (error) {
       // Map auth errors to appropriate domain errors
       if (
-        error.message?.toLowerCase().includes("invalid") ||
-        error.message?.toLowerCase().includes("credentials")
+        error.message?.toLowerCase().includes('invalid') ||
+        error.message?.toLowerCase().includes('credentials')
       ) {
-        throw new UnauthorizedError("Invalid email or password")
+        throw new UnauthorizedError('Invalid email or password')
       }
       throw mapSupabaseError(error)
     }
 
     if (!data.user || !data.session) {
-      throw new UnauthorizedError("Authentication failed")
+      throw new UnauthorizedError('Authentication failed')
     }
 
     const user: AuthUserDto = {
@@ -215,10 +205,9 @@ export class AuthService {
     } = await supabase.auth.getUser()
 
     if (error || !user) {
-      throw new UnauthorizedError("Authentication required")
+      throw new UnauthorizedError('Authentication required')
     }
 
     return user.id
   }
 }
-

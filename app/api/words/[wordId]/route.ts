@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { WordService } from "@/lib/services/word.service"
-import { wordParamsSchema, updateWordCommandSchema } from "@/lib/validation"
-import { okResponse, noContentResponse, errorResponse } from "@/lib/response"
-import type { WordDetailDto, WordDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { WordService } from '@/lib/services/word.service'
+import { wordParamsSchema, updateWordCommandSchema } from '@/lib/validation'
+import { okResponse, noContentResponse, errorResponse } from '@/lib/response'
+import type { WordDetailDto, WordDto } from '@/lib/types'
 
 /**
  * GET /api/words/[wordId]
@@ -23,10 +23,7 @@ export async function GET(
     const validatedParams = wordParamsSchema.parse(resolvedParams)
 
     // Fetch word detail
-    const result: WordDetailDto = await WordService.getWordDetail(
-      userId,
-      validatedParams.wordId
-    )
+    const result: WordDetailDto = await WordService.getWordDetail(userId, validatedParams.wordId)
 
     return okResponse(result)
   } catch (error) {
@@ -93,4 +90,3 @@ export async function DELETE(
     return errorResponse(error)
   }
 }
-

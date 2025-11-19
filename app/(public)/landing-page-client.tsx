@@ -1,24 +1,21 @@
-"use client"
+'use client'
 
-import { FeatureGrid } from "@/components/public/feature-grid"
-import { HeroSection } from "@/components/public/hero-section"
-import { PrivacySection } from "@/components/public/privacy-section"
-import { PublicFooter } from "@/components/public/public-footer"
-import { PublicHeader } from "@/components/public/public-header"
+import { FeatureGrid } from '@/components/public/feature-grid'
+import { HeroSection } from '@/components/public/hero-section'
+import { PrivacySection } from '@/components/public/privacy-section'
+import { PublicFooter } from '@/components/public/public-footer'
+import { PublicHeader } from '@/components/public/public-header'
 
-import type { FeatureCardVm, SupportedLanguagesVm } from "./types"
+import type { FeatureCardVm, SupportedLanguagesVm } from './types'
 
 type LandingPageClientProps = {
   languages: SupportedLanguagesVm
   features: FeatureCardVm[]
 }
 
-export default function LandingPageClient({
-  languages,
-  features,
-}: LandingPageClientProps) {
+export default function LandingPageClient({ languages, features }: LandingPageClientProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       <PublicHeader />
       <main className="flex flex-1 flex-col">
         <HeroSection className="px-4 py-12 sm:px-6 lg:px-8" languages={languages} />
@@ -33,4 +30,3 @@ export default function LandingPageClient({
     </div>
   )
 }
-

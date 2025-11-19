@@ -1,16 +1,16 @@
-"use client"
+'use client'
 
-import { useMemo } from "react"
+import { useMemo } from 'react'
 
-import { CreateWordButton } from "@/components/category-word-table/create-word-button"
+import { CreateWordButton } from '@/components/category-word-table/create-word-button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { SortDirection, WordOrderField } from "@/lib/types"
+} from '@/components/ui/select'
+import type { SortDirection, WordOrderField } from '@/lib/types'
 
 type WordToolbarProps = {
   onCreate: () => void
@@ -26,10 +26,10 @@ const SORT_OPTIONS: Array<{
   orderBy: WordOrderField
   direction: SortDirection
 }> = [
-  { label: "Newest first", orderBy: "createdAt", direction: "desc" },
-  { label: "Oldest first", orderBy: "createdAt", direction: "asc" },
-  { label: "Term A → Z", orderBy: "term", direction: "asc" },
-  { label: "Term Z → A", orderBy: "term", direction: "desc" },
+  { label: 'Newest first', orderBy: 'createdAt', direction: 'desc' },
+  { label: 'Oldest first', orderBy: 'createdAt', direction: 'asc' },
+  { label: 'Term A → Z', orderBy: 'term', direction: 'asc' },
+  { label: 'Term Z → A', orderBy: 'term', direction: 'desc' },
 ]
 
 export function WordToolbar({
@@ -42,30 +42,33 @@ export function WordToolbar({
 }: WordToolbarProps) {
   const summary = useMemo(() => {
     if (wordCount === 0) {
-      return "No words stored yet"
+      return 'No words stored yet'
     }
 
     if (wordCount === 1) {
-      return "1 word stored"
+      return '1 word stored'
     }
 
     return `${wordCount} words stored`
   }, [wordCount])
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border bg-card px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-border bg-card flex flex-col gap-3 rounded-lg border px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1 text-sm">
-        <p className="font-medium text-foreground">Category words</p>
+        <p className="text-foreground font-medium">Category words</p>
         <p className="text-muted-foreground">{summary}</p>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
         <CreateWordButton onClick={onCreate} disabled={busy} />
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-2 text-xs">
           <span id="word-toolbar-sort-label">Sort</span>
           <Select
             value={`${orderBy}:${direction}`}
-            onValueChange={(value) => {
-              const [nextOrderBy, nextDirection] = value.split(":") as [WordOrderField, SortDirection]
+            onValueChange={value => {
+              const [nextOrderBy, nextDirection] = value.split(':') as [
+                WordOrderField,
+                SortDirection,
+              ]
               onSortChange(nextOrderBy, nextDirection)
             }}
             disabled={busy}
@@ -77,7 +80,7 @@ export function WordToolbar({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {SORT_OPTIONS.map((option) => (
+              {SORT_OPTIONS.map(option => (
                 <SelectItem
                   key={`${option.orderBy}:${option.direction}`}
                   value={`${option.orderBy}:${option.direction}`}
@@ -92,5 +95,3 @@ export function WordToolbar({
     </div>
   )
 }
-
-

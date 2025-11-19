@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from '@/lib/supabase/server'
 import type {
   WordDto,
   WordDetailDto,
@@ -8,18 +8,9 @@ import type {
   WordsListDto,
   CreateWordCommand,
   UpdateWordCommand,
-} from "@/lib/types"
-import {
-  mapSupabaseError,
-  NotFoundError,
-  ForbiddenError,
-  ValidationError,
-} from "@/lib/errors"
-import {
-  calculateCursorPaginationMeta,
-  trimToPageSize,
-  mapOrderByToColumn,
-} from "@/lib/pagination"
+} from '@/lib/types'
+import { mapSupabaseError, NotFoundError, ForbiddenError, ValidationError } from '@/lib/errors'
+import { calculateCursorPaginationMeta, trimToPageSize, mapOrderByToColumn } from '@/lib/pagination'
 
 /**
  * Service for managing vocabulary words.
@@ -40,27 +31,27 @@ export class WordService {
 
     const page = query.page || 1
     const pageSize = query.pageSize || 10
-    const view = query.view || "table"
-    const orderBy = query.orderBy || "createdAt"
-    const direction = query.direction || "desc"
+    const view = query.view || 'table'
+    const orderBy = query.orderBy || 'createdAt'
+    const direction = query.direction || 'desc'
 
     // Build base query
     let selectQuery = supabase
-      .schema("app")
-      .from("words")
-      .select("*")
-      .eq("category_id", categoryId)
-      .eq("user_id", userId)
+      .schema('app')
+      .from('words')
+      .select('*')
+      .eq('category_id', categoryId)
+      .eq('user_id', userId)
 
     // Apply sorting (handle random ordering specially)
-    if (orderBy === "random") {
+    if (orderBy === 'random') {
       // For random ordering, we can't use standard order
       // Fetch all and shuffle, or use a postgres random function
       // For now, we'll fetch with a seed-based approach
-      selectQuery = selectQuery.order("id", { ascending: true })
+      selectQuery = selectQuery.order('id', { ascending: true })
     } else {
       const column = mapOrderByToColumn(orderBy)
-      selectQuery = selectQuery.order(column, { ascending: direction === "asc" })
+      selectQuery = selectQuery.order(column, { ascending: direction === 'asc' })
     }
 
     // Apply pagination (fetch one extra to check for more results)
@@ -76,14 +67,14 @@ export class WordService {
     let items = data || []
 
     // Apply random shuffle if needed (client-side for simplicity)
-    if (orderBy === "random") {
+    if (orderBy === 'random') {
       items = this.shuffleArray([...items])
     }
 
     const trimmedItems = trimToPageSize(items, pageSize)
 
     // Build DTOs
-    const words: WordDto[] = trimmedItems.map((item) => ({
+    const words: WordDto[] = trimmedItems.map(item => ({
       id: item.id,
       learningLanguageId: item.user_learning_language_id,
       categoryId: item.category_id,
@@ -114,34 +105,24 @@ export class WordService {
   /**
    * Global search for words across learning languages and categories.
    */
-  static async searchWords(
-    userId: string,
-    query: SearchWordsQueryDto
-  ): Promise<WordsListDto> {
+  static async searchWords(userId: string, query: SearchWordsQueryDto): Promise<WordsListDto> {
     const supabase = await createClient()
 
     const page = query.page || 1
     const pageSize = query.pageSize || 10
-    const orderBy = query.orderBy || "createdAt"
-    const direction = query.direction || "desc"
+    const orderBy = query.orderBy || 'createdAt'
+    const direction = query.direction || 'desc'
 
     // Build base query
-    let selectQuery = supabase
-      .schema("app")
-      .from("words")
-      .select("*")
-      .eq("user_id", userId)
+    let selectQuery = supabase.schema('app').from('words').select('*').eq('user_id', userId)
 
     // Apply filters
     if (query.learningLanguageId) {
-      selectQuery = selectQuery.eq(
-        "user_learning_language_id",
-        query.learningLanguageId
-      )
+      selectQuery = selectQuery.eq('user_learning_language_id', query.learningLanguageId)
     }
 
     if (query.categoryId) {
-      selectQuery = selectQuery.eq("category_id", query.categoryId)
+      selectQuery = selectQuery.eq('category_id', query.categoryId)
     }
 
     if (query.search) {
@@ -153,7 +134,7 @@ export class WordService {
 
     // Apply sorting
     const column = mapOrderByToColumn(orderBy)
-    selectQuery = selectQuery.order(column, { ascending: direction === "asc" })
+    selectQuery = selectQuery.order(column, { ascending: direction === 'asc' })
 
     // Apply pagination (fetch one extra to check for more results)
     const offset = (page - 1) * pageSize
@@ -169,7 +150,7 @@ export class WordService {
     const trimmedItems = trimToPageSize(items, pageSize)
 
     // Build DTOs
-    const words: WordDto[] = trimmedItems.map((item) => ({
+    const words: WordDto[] = trimmedItems.map(item => ({
       id: item.id,
       learningLanguageId: item.user_learning_language_id,
       categoryId: item.category_id,
@@ -184,12 +165,7 @@ export class WordService {
     const lastItem = trimmedItems[trimmedItems.length - 1]
     const nextCursor = lastItem ? lastItem.id : undefined
 
-    const meta = calculateCursorPaginationMeta(
-      page,
-      pageSize,
-      items.length,
-      nextCursor
-    )
+    const meta = calculateCursorPaginationMeta(page, pageSize, items.length, nextCursor)
 
     return {
       data: words,
@@ -200,18 +176,15 @@ export class WordService {
   /**
    * Retrieves a single word with full details.
    */
-  static async getWordDetail(
-    userId: string,
-    wordId: string
-  ): Promise<WordDetailDto> {
+  static async getWordDetail(userId: string, wordId: string): Promise<WordDetailDto> {
     const supabase = await createClient()
 
     const { data, error } = await supabase
-      .schema("app")
-      .from("words")
-      .select("*")
-      .eq("id", wordId)
-      .eq("user_id", userId)
+      .schema('app')
+      .from('words')
+      .select('*')
+      .eq('id', wordId)
+      .eq('user_id', userId)
       .single()
 
     if (error) {
@@ -219,7 +192,7 @@ export class WordService {
     }
 
     if (!data) {
-      throw new NotFoundError("Word")
+      throw new NotFoundError('Word')
     }
 
     return {
@@ -250,8 +223,8 @@ export class WordService {
 
     // Insert the word (triggers will set user_id and user_learning_language_id)
     const { data, error } = await supabase
-      .schema("app")
-      .from("words")
+      .schema('app')
+      .from('words')
       .insert({
         category_id: categoryId,
         term: command.term,
@@ -289,7 +262,7 @@ export class WordService {
 
     // Validate that at least one field is provided
     if (Object.keys(command).length === 0) {
-      throw new ValidationError("No fields provided for update")
+      throw new ValidationError('No fields provided for update')
     }
 
     // Build update object (only include defined fields)
@@ -306,11 +279,11 @@ export class WordService {
 
     // Update the word (RLS ensures user ownership)
     const { data, error } = await supabase
-      .schema("app")
-      .from("words")
+      .schema('app')
+      .from('words')
       .update(updateData)
-      .eq("id", wordId)
-      .eq("user_id", userId)
+      .eq('id', wordId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -319,7 +292,7 @@ export class WordService {
     }
 
     if (!data) {
-      throw new NotFoundError("Word")
+      throw new NotFoundError('Word')
     }
 
     return {
@@ -342,11 +315,11 @@ export class WordService {
 
     // Delete the word (RLS ensures user ownership)
     const { error } = await supabase
-      .schema("app")
-      .from("words")
+      .schema('app')
+      .from('words')
       .delete()
-      .eq("id", wordId)
-      .eq("user_id", userId)
+      .eq('id', wordId)
+      .eq('user_id', userId)
 
     if (error) {
       throw mapSupabaseError(error)
@@ -356,22 +329,19 @@ export class WordService {
   /**
    * Helper to verify that a user owns a category.
    */
-  private static async verifyCategoryOwnership(
-    userId: string,
-    categoryId: string
-  ): Promise<void> {
+  private static async verifyCategoryOwnership(userId: string, categoryId: string): Promise<void> {
     const supabase = await createClient()
 
     const { data, error } = await supabase
-      .schema("app")
-      .from("categories")
-      .select("id")
-      .eq("id", categoryId)
-      .eq("user_id", userId)
+      .schema('app')
+      .from('categories')
+      .select('id')
+      .eq('id', categoryId)
+      .eq('user_id', userId)
       .single()
 
     if (error || !data) {
-      throw new ForbiddenError("Category not found or access denied")
+      throw new ForbiddenError('Category not found or access denied')
     }
   }
 
@@ -387,4 +357,3 @@ export class WordService {
     return shuffled
   }
 }
-

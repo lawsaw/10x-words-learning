@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server"
-import { LanguageService } from "@/lib/services/language.service"
-import { languagesQuerySchema } from "@/lib/validation"
-import { okResponse, errorResponse } from "@/lib/response"
-import type { LanguagesListDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { LanguageService } from '@/lib/services/language.service'
+import { languagesQuerySchema } from '@/lib/validation'
+import { okResponse, errorResponse } from '@/lib/response'
+import type { LanguagesListDto } from '@/lib/types'
 
 /**
  * GET /api/languages
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     // Parse and validate query parameters
     const searchParams = request.nextUrl.searchParams
     const queryParams = {
-      scope: searchParams.get("scope") || undefined,
+      scope: searchParams.get('scope') || undefined,
     }
 
     const validatedQuery = languagesQuerySchema.parse(queryParams)
@@ -27,5 +27,3 @@ export async function GET(request: NextRequest) {
     return errorResponse(error)
   }
 }
-
-

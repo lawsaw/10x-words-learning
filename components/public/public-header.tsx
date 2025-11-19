@@ -1,7 +1,7 @@
-import Link from "next/link"
+import Link from 'next/link'
 
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type PublicHeaderProps = {
   className?: string
@@ -11,17 +11,17 @@ export function PublicHeader({ className }: PublicHeaderProps) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur",
-        className,
+        'border-border/40 bg-background/80 sticky top-0 z-40 border-b backdrop-blur',
+        className
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-md text-base font-semibold tracking-tight text-foreground transition-colors hover:text-primary"
+          className="text-foreground hover:text-primary flex items-center gap-2 rounded-md text-base font-semibold tracking-tight transition-colors"
           aria-label="Go to 10x Words Learning home page"
         >
-          <span className="inline-flex items-center rounded-md bg-primary px-2 py-1 text-xs font-semibold uppercase leading-none text-primary-foreground">
+          <span className="bg-primary text-primary-foreground inline-flex items-center rounded-md px-2 py-1 text-xs leading-none font-semibold uppercase">
             10x
           </span>
           <span>Words Learning</span>
@@ -38,4 +38,3 @@ export function PublicHeader({ className }: PublicHeaderProps) {
     </header>
   )
 }
-

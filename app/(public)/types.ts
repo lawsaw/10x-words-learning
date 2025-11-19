@@ -1,17 +1,13 @@
-import type { LanguageDto } from "@/lib/types"
+import type { LanguageDto } from '@/lib/types'
 
 export type SupportedLanguagesVm = {
   items: Array<{
-    code: LanguageDto["code"]
+    code: LanguageDto['code']
     label: string
   }>
 }
 
-export type FeatureCardIcon =
-  | "sparkles"
-  | "table"
-  | "bot"
-  | "shield"
+export type FeatureCardIcon = 'sparkles' | 'table' | 'bot' | 'shield'
 
 export type FeatureCardVm = {
   id: string
@@ -19,4 +15,3 @@ export type FeatureCardVm = {
   title: string
   description: string
 }
-

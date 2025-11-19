@@ -1,7 +1,7 @@
-import type { ReactNode } from "react"
-import { redirect } from "next/navigation"
+import type { ReactNode } from 'react'
+import { redirect } from 'next/navigation'
 
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from '@/lib/supabase/server'
 
 type AppLayoutProps = {
   children: ReactNode
@@ -14,10 +14,8 @@ export default async function AppLayout({ children }: AppLayoutProps) {
   } = await supabase.auth.getSession()
 
   if (!session) {
-    redirect("/")
+    redirect('/')
   }
 
   return children
 }
-
-

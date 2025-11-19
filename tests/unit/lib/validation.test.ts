@@ -1196,7 +1196,7 @@ describe('Validation Schemas', () => {
       const difficulties = ['easy', 'medium', 'advanced']
 
       // Act & Assert
-      difficulties.forEach((difficulty) => {
+      difficulties.forEach(difficulty => {
         const data = {
           learningLanguageId: '123e4567-e89b-12d3-a456-426614174000',
           userLanguage: 'en',
@@ -1452,7 +1452,7 @@ describe('Validation Schemas', () => {
       const validValues = ['createdAt', 'category', 'language']
 
       // Act & Assert
-      validValues.forEach((orderBy) => {
+      validValues.forEach(orderBy => {
         const result = vocabularyOverviewQuerySchema.safeParse({ orderBy })
         expect(result.success).toBe(true)
       })
@@ -1554,7 +1554,8 @@ describe('Validation Schemas', () => {
       const validData = {
         term: 'bonjour',
         translation: 'hello',
-        examplesMd: '**Example:** Bonjour, comment allez-vous?\n\n_Translation:_ Hello, how are you?',
+        examplesMd:
+          '**Example:** Bonjour, comment allez-vous?\n\n_Translation:_ Hello, how are you?',
       }
 
       // Act
@@ -1586,4 +1587,3 @@ describe('Validation Schemas', () => {
     })
   })
 })
-

@@ -1,20 +1,20 @@
-import type { Tables } from "./supabase/database.types"
+import type { Tables } from './supabase/database.types'
 
 /**
  * Database entity aliases keep DTOs and commands in sync with Supabase types.
  */
-type LanguageEntity = Tables<"languages">
-type ProfileEntity = Tables<"profiles">
-type LearningLanguageEntity = Tables<"user_learning_languages">
-type CategoryEntity = Tables<"categories">
-type WordEntity = Tables<"words">
-type VocabularyOverviewRow = Tables<{ schema: "app" }, "vocabulary_overview">
+type LanguageEntity = Tables<'languages'>
+type ProfileEntity = Tables<'profiles'>
+type LearningLanguageEntity = Tables<'user_learning_languages'>
+type CategoryEntity = Tables<'categories'>
+type WordEntity = Tables<'words'>
+type VocabularyOverviewRow = Tables<{ schema: 'app' }, 'vocabulary_overview'>
 
 /**
  * Shared primitives and helpers.
  */
 export type EmptyResponse = Record<string, never>
-export type SortDirection = "asc" | "desc"
+export type SortDirection = 'asc' | 'desc'
 export type PaginationMetaDto = {
   page: number
   pageSize: number
@@ -29,7 +29,7 @@ export type CursorPaginationMetaDto = PaginationMetaDto & {
  * Auth DTOs and commands.
  */
 export type AuthUserDto = {
-  id: ProfileEntity["user_id"]
+  id: ProfileEntity['user_id']
   email: string
 }
 
@@ -42,7 +42,7 @@ export type AuthSessionDto = {
 export type RegisterCommand = {
   email: string
   password: string
-  userLanguage: ProfileEntity["user_language_id"]
+  userLanguage: ProfileEntity['user_language_id']
 }
 
 export type RegisterResponseDto = {
@@ -65,7 +65,7 @@ export type LogoutResponseDto = EmptyResponse
 
 export type AuthSessionStatusDto = {
   session: {
-    userId: ProfileEntity["user_id"]
+    userId: ProfileEntity['user_id']
     accessTokenExpiresAt: number
   } | null
 }
@@ -74,12 +74,12 @@ export type AuthSessionStatusDto = {
  * Language DTOs and queries.
  */
 export type LanguagesQueryDto = {
-  scope?: "registration" | "learning"
+  scope?: 'registration' | 'learning'
 }
 
 export type LanguageDto = {
-  code: LanguageEntity["code"]
-  name: LanguageEntity["name"]
+  code: LanguageEntity['code']
+  name: LanguageEntity['name']
 }
 
 export type LanguagesListDto = {
@@ -90,15 +90,15 @@ export type LanguagesListDto = {
  * Profile DTOs and commands.
  */
 export type ProfileDto = {
-  userId: ProfileEntity["user_id"]
-  userLanguage: ProfileEntity["user_language_id"]
-  displayName: ProfileEntity["display_name"]
-  createdAt: ProfileEntity["created_at"]
-  updatedAt: ProfileEntity["updated_at"]
+  userId: ProfileEntity['user_id']
+  userLanguage: ProfileEntity['user_language_id']
+  displayName: ProfileEntity['display_name']
+  createdAt: ProfileEntity['created_at']
+  updatedAt: ProfileEntity['updated_at']
 }
 
 export type UpdateProfileCommand = {
-  displayName?: ProfileEntity["display_name"]
+  displayName?: ProfileEntity['display_name']
 }
 
 /**
@@ -110,10 +110,10 @@ export type LearningLanguageStatsDto = {
 }
 
 export type LearningLanguageDto = {
-  id: LearningLanguageEntity["id"]
-  languageId: LearningLanguageEntity["language_id"]
-  createdAt: LearningLanguageEntity["created_at"]
-  updatedAt: LearningLanguageEntity["updated_at"]
+  id: LearningLanguageEntity['id']
+  languageId: LearningLanguageEntity['language_id']
+  createdAt: LearningLanguageEntity['created_at']
+  updatedAt: LearningLanguageEntity['updated_at']
   stats?: LearningLanguageStatsDto
 }
 
@@ -130,13 +130,13 @@ export type LearningLanguagesListDto = {
 }
 
 export type CreateLearningLanguageCommand = {
-  languageId: LearningLanguageEntity["language_id"]
+  languageId: LearningLanguageEntity['language_id']
 }
 
 /**
  * Category DTOs, queries, and commands.
  */
-export type CategoryOrderField = "createdAt" | "name"
+export type CategoryOrderField = 'createdAt' | 'name'
 
 export type CategoriesQueryDto = {
   search?: string
@@ -147,11 +147,11 @@ export type CategoriesQueryDto = {
 }
 
 export type CategoryDto = {
-  id: CategoryEntity["id"]
-  learningLanguageId: CategoryEntity["user_learning_language_id"]
-  name: CategoryEntity["name"]
-  createdAt: CategoryEntity["created_at"]
-  updatedAt: CategoryEntity["updated_at"]
+  id: CategoryEntity['id']
+  learningLanguageId: CategoryEntity['user_learning_language_id']
+  name: CategoryEntity['name']
+  createdAt: CategoryEntity['created_at']
+  updatedAt: CategoryEntity['updated_at']
   wordCount?: number
 }
 
@@ -161,18 +161,18 @@ export type CategoriesListDto = {
 }
 
 export type CreateCategoryCommand = {
-  name: CategoryEntity["name"]
+  name: CategoryEntity['name']
 }
 
 export type UpdateCategoryCommand = {
-  name: CategoryEntity["name"]
+  name: CategoryEntity['name']
 }
 
 /**
  * Word DTOs, queries, and commands.
  */
-export type WordViewMode = "table" | "slider"
-export type WordOrderField = "createdAt" | "term" | "random"
+export type WordViewMode = 'table' | 'slider'
+export type WordOrderField = 'createdAt' | 'term' | 'random'
 
 export type CategoryWordsQueryDto = {
   view?: WordViewMode
@@ -184,18 +184,18 @@ export type CategoryWordsQueryDto = {
 }
 
 export type WordDto = {
-  id: WordEntity["id"]
-  learningLanguageId: WordEntity["user_learning_language_id"]
-  categoryId: WordEntity["category_id"]
-  term: WordEntity["term"]
-  translation: WordEntity["translation"]
-  examplesMd: WordEntity["examples_md"]
-  createdAt: WordEntity["created_at"]
-  updatedAt: WordEntity["updated_at"]
+  id: WordEntity['id']
+  learningLanguageId: WordEntity['user_learning_language_id']
+  categoryId: WordEntity['category_id']
+  term: WordEntity['term']
+  translation: WordEntity['translation']
+  examplesMd: WordEntity['examples_md']
+  createdAt: WordEntity['created_at']
+  updatedAt: WordEntity['updated_at']
 }
 
 export type WordDetailDto = WordDto & {
-  userId: WordEntity["user_id"]
+  userId: WordEntity['user_id']
 }
 
 export type WordListMetaDto = CursorPaginationMetaDto & {
@@ -256,20 +256,20 @@ export type AiGenerationRequest = {
 }
 
 export type CreateWordCommand = {
-  term: WordEntity["term"]
-  translation: WordEntity["translation"]
-  examplesMd: WordEntity["examples_md"]
+  term: WordEntity['term']
+  translation: WordEntity['translation']
+  examplesMd: WordEntity['examples_md']
 }
 
 export type UpdateWordCommand = Partial<CreateWordCommand>
 
 export type SearchWordsQueryDto = {
-  learningLanguageId?: WordEntity["user_learning_language_id"]
-  categoryId?: WordEntity["category_id"]
+  learningLanguageId?: WordEntity['user_learning_language_id']
+  categoryId?: WordEntity['category_id']
   search?: string
   page?: number
   pageSize?: number
-  orderBy?: Exclude<WordOrderField, "random">
+  orderBy?: Exclude<WordOrderField, 'random'>
   direction?: SortDirection
   cursor?: string
 }
@@ -282,13 +282,13 @@ export type WordsListDto = {
 /**
  * AI generation DTOs and commands.
  */
-export type DifficultyLevel = "easy" | "medium" | "advanced"
+export type DifficultyLevel = 'easy' | 'medium' | 'advanced'
 
 export type GenerateWordsCommand = {
   difficulty?: DifficultyLevel
-  learningLanguageId: WordEntity["user_learning_language_id"]
+  learningLanguageId: WordEntity['user_learning_language_id']
   learningLanguageName?: string
-  userLanguage: ProfileEntity["user_language_id"]
+  userLanguage: ProfileEntity['user_language_id']
   userLanguageName?: string
   categoryContext?: string
   temperature?: number
@@ -297,9 +297,9 @@ export type GenerateWordsCommand = {
 }
 
 export type GeneratedWordSuggestionDto = {
-  term: WordEntity["term"]
-  translation: WordEntity["translation"]
-  examplesMd: WordEntity["examples_md"]
+  term: WordEntity['term']
+  translation: WordEntity['translation']
+  examplesMd: WordEntity['examples_md']
 }
 
 export type AiUsageDto = {
@@ -316,11 +316,11 @@ export type AiGeneratedWordsDto = {
 /**
  * Vocabulary overview DTOs and queries.
  */
-export type VocabularyOverviewOrderField = "createdAt" | "category" | "language"
+export type VocabularyOverviewOrderField = 'createdAt' | 'category' | 'language'
 
 export type VocabularyOverviewQueryDto = {
-  learningLanguageId?: VocabularyOverviewRow["learning_language_id"]
-  categoryId?: VocabularyOverviewRow["category_id"]
+  learningLanguageId?: VocabularyOverviewRow['learning_language_id']
+  categoryId?: VocabularyOverviewRow['category_id']
   orderBy?: VocabularyOverviewOrderField
   direction?: SortDirection
   page?: number
@@ -328,14 +328,14 @@ export type VocabularyOverviewQueryDto = {
 }
 
 export type VocabularyOverviewEntryDto = {
-  learningLanguageId: VocabularyOverviewRow["learning_language_id"]
-  learningLanguageCode: VocabularyOverviewRow["learning_language_code"]
-  categoryId: VocabularyOverviewRow["category_id"]
-  categoryName: VocabularyOverviewRow["category_name"]
-  wordId: VocabularyOverviewRow["word_id"]
-  term: VocabularyOverviewRow["term"]
-  translation: VocabularyOverviewRow["translation"]
-  createdAt: VocabularyOverviewRow["created_at"]
+  learningLanguageId: VocabularyOverviewRow['learning_language_id']
+  learningLanguageCode: VocabularyOverviewRow['learning_language_code']
+  categoryId: VocabularyOverviewRow['category_id']
+  categoryName: VocabularyOverviewRow['category_name']
+  wordId: VocabularyOverviewRow['word_id']
+  term: VocabularyOverviewRow['term']
+  translation: VocabularyOverviewRow['translation']
+  createdAt: VocabularyOverviewRow['created_at']
 }
 
 export type VocabularyOverviewListDto = {
@@ -363,7 +363,7 @@ export type ErrorResponseDto = {
 /**
  * OpenRouter service types.
  */
-export type ChatMessageRole = "system" | "user" | "assistant" | "tool"
+export type ChatMessageRole = 'system' | 'user' | 'assistant' | 'tool'
 
 export type ChatMessage = {
   role: ChatMessageRole
@@ -371,7 +371,7 @@ export type ChatMessage = {
   name?: string
 }
 
-export type ResponseFormatType = "text" | "json_object" | "json_schema"
+export type ResponseFormatType = 'text' | 'json_object' | 'json_schema'
 
 export type JsonSchema = {
   type: string
@@ -473,4 +473,3 @@ export type OpenRouterPayload = {
   response_format?: ResponseFormatSchema
   stream?: boolean
 }
-

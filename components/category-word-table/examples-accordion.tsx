@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { useId } from "react"
+import { useId } from 'react'
 
-import { sanitizeMarkdown } from "@/lib/sanitize"
+import { sanitizeMarkdown } from '@/lib/sanitize'
 
 type ExamplesAccordionProps = {
   markdown: string
@@ -18,20 +18,17 @@ export function ExamplesAccordion({ markdown }: ExamplesAccordionProps) {
 
   return (
     <details className="group" aria-labelledby={contentId}>
-      <summary className="flex cursor-pointer items-center gap-1 text-sm font-medium text-primary outline-none transition hover:text-primary/80">
+      <summary className="text-primary hover:text-primary/80 flex cursor-pointer items-center gap-1 text-sm font-medium transition outline-none">
         <span>Examples</span>
         <span
           aria-hidden
-          className="text-xs text-muted-foreground transition group-open:rotate-180"
+          className="text-muted-foreground text-xs transition group-open:rotate-180"
         >
           ▾
         </span>
       </summary>
-      <div
-        id={contentId}
-        className="mt-2 rounded-md bg-muted/60 p-3 text-sm text-muted-foreground"
-      >
-        <pre className="whitespace-pre-wrap break-words text-left text-xs text-foreground">
+      <div id={contentId} className="bg-muted/60 text-muted-foreground mt-2 rounded-md p-3 text-sm">
+        <pre className="text-foreground text-left text-xs break-words whitespace-pre-wrap">
           {sanitized}
         </pre>
       </div>

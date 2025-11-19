@@ -1,20 +1,23 @@
-"use client"
+'use client'
 
-import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react"
+import { ArrowDownWideNarrow, ArrowUpNarrowWide } from 'lucide-react'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import type { SortDirection, WordOrderField } from "@/lib/types"
+} from '@/components/ui/select'
+import type { SortDirection, WordOrderField } from '@/lib/types'
 
-const ORDER_OPTIONS: Array<{ label: string; value: Extract<WordOrderField, "createdAt" | "term"> }> = [
-  { label: "Created", value: "createdAt" },
-  { label: "Term", value: "term" },
+const ORDER_OPTIONS: Array<{
+  label: string
+  value: Extract<WordOrderField, 'createdAt' | 'term'>
+}> = [
+  { label: 'Created', value: 'createdAt' },
+  { label: 'Term', value: 'term' },
 ]
 
 type OrderControlsProps = {
@@ -32,7 +35,7 @@ export function OrderControls({
   onDirectionToggle,
   disabled,
 }: OrderControlsProps) {
-  const DirectionIcon = direction === "asc" ? ArrowUpNarrowWide : ArrowDownWideNarrow
+  const DirectionIcon = direction === 'asc' ? ArrowUpNarrowWide : ArrowDownWideNarrow
 
   return (
     <div className="flex items-center gap-2 text-xs">
@@ -42,7 +45,7 @@ export function OrderControls({
         </span>
         <Select
           value={orderBy}
-          onValueChange={(value) => onOrderChange(value as WordOrderField)}
+          onValueChange={value => onOrderChange(value as WordOrderField)}
           disabled={disabled}
         >
           <SelectTrigger
@@ -52,7 +55,7 @@ export function OrderControls({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {ORDER_OPTIONS.map((option) => (
+            {ORDER_OPTIONS.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -66,7 +69,7 @@ export function OrderControls({
         size="sm"
         onClick={onDirectionToggle}
         disabled={disabled}
-        aria-label={`Sort direction ${direction === "asc" ? "ascending" : "descending"}`}
+        aria-label={`Sort direction ${direction === 'asc' ? 'ascending' : 'descending'}`}
       >
         <DirectionIcon className="h-4 w-4" aria-hidden />
       </Button>

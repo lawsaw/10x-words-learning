@@ -1,11 +1,11 @@
-import { redirect, notFound } from "next/navigation"
+import { redirect, notFound } from 'next/navigation'
 
-import AppShellLayout from "@/components/app/app-shell-layout"
-import { createClient } from "@/lib/supabase/server"
-import { WordService } from "@/lib/services/word.service"
-import type { CategoryWordsListDto } from "@/lib/types"
+import AppShellLayout from '@/components/app/app-shell-layout'
+import { createClient } from '@/lib/supabase/server'
+import { WordService } from '@/lib/services/word.service'
+import type { CategoryWordsListDto } from '@/lib/types'
 
-import CategorySliderClient from "./slider-client"
+import CategorySliderClient from './slider-client'
 
 type PageParams = {
   learningLanguageId: string
@@ -18,11 +18,7 @@ type SliderContext = {
   learningLanguageCode: string
 }
 
-export default async function CategorySliderPage({
-  params,
-}: {
-  params: PageParams
-}) {
+export default async function CategorySliderPage({ params }: { params: PageParams }) {
   const resolvedParams = await params
 
   const supabase = await createClient()
@@ -31,14 +27,14 @@ export default async function CategorySliderPage({
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/")
+    redirect('/')
   }
 
   const context = await fetchSliderContext(
     supabase,
     user.id,
     resolvedParams.learningLanguageId,
-    resolvedParams.categoryId,
+    resolvedParams.categoryId
   )
 
   if (!context) {
@@ -46,13 +42,13 @@ export default async function CategorySliderPage({
   }
 
   const initialWords = await WordService.getCategoryWords(user.id, resolvedParams.categoryId, {
-    view: "slider",
-    orderBy: "createdAt",
-    direction: "asc",
+    view: 'slider',
+    orderBy: 'createdAt',
+    direction: 'asc',
   })
 
   const breadcrumbs = [
-    { label: "Workspace", href: "/app" },
+    { label: 'Workspace', href: '/app' },
     {
       label: context.learningLanguageName,
       href: `/app/${resolvedParams.learningLanguageId}`,
@@ -61,7 +57,7 @@ export default async function CategorySliderPage({
       label: context.categoryName,
       href: `/app/${resolvedParams.learningLanguageId}/${resolvedParams.categoryId}`,
     },
-    { label: "Study (slider)" },
+    { label: 'Study (slider)' },
   ]
 
   const description = `Study words from ${context.categoryName} in slider mode.`
@@ -88,14 +84,14 @@ async function fetchSliderContext(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   learningLanguageId: string,
-  categoryId: string,
+  categoryId: string
 ): Promise<SliderContext | null> {
   const { data: categoryRow, error: categoryError } = await supabase
-    .schema("app")
-    .from("categories")
-    .select("id, name, user_learning_language_id")
-    .eq("id", categoryId)
-    .eq("user_id", userId)
+    .schema('app')
+    .from('categories')
+    .select('id, name, user_learning_language_id')
+    .eq('id', categoryId)
+    .eq('user_id', userId)
     .single()
 
   if (categoryError || !categoryRow) {
@@ -107,11 +103,11 @@ async function fetchSliderContext(
   }
 
   const { data: learningRow, error: learningError } = await supabase
-    .schema("app")
-    .from("user_learning_languages")
-    .select("language_id")
-    .eq("id", learningLanguageId)
-    .eq("user_id", userId)
+    .schema('app')
+    .from('user_learning_languages')
+    .select('language_id')
+    .eq('id', learningLanguageId)
+    .eq('user_id', userId)
     .single()
 
   if (learningError || !learningRow) {
@@ -119,10 +115,10 @@ async function fetchSliderContext(
   }
 
   const { data: languageRow, error: languageError } = await supabase
-    .schema("app")
-    .from("languages")
-    .select("code, name")
-    .eq("code", learningRow.language_id)
+    .schema('app')
+    .from('languages')
+    .select('code, name')
+    .eq('code', learningRow.language_id)
     .single()
 
   if (languageError || !languageRow) {
@@ -135,4 +131,3 @@ async function fetchSliderContext(
     learningLanguageCode: languageRow.code,
   }
 }
-

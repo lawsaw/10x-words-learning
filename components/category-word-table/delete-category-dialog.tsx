@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog'
 
 type DeleteCategoryDialogProps = {
   open: boolean
@@ -28,16 +28,17 @@ export function DeleteCategoryDialog({
   onCancel,
 }: DeleteCategoryDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(next) => (!next ? onCancel() : undefined)}>
+    <Dialog open={open} onOpenChange={next => (!next ? onCancel() : undefined)}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Delete category?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. All words inside <strong>{categoryName}</strong> will also be removed.
+            This action cannot be undone. All words inside <strong>{categoryName}</strong> will also
+            be removed.
           </DialogDescription>
         </DialogHeader>
 
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? <p className="text-destructive text-sm">{error}</p> : null}
 
         <DialogFooter>
           <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
@@ -49,11 +50,10 @@ export function DeleteCategoryDialog({
             onClick={() => void onConfirm()}
             disabled={busy}
           >
-            {busy ? "Deleting…" : "Delete"}
+            {busy ? 'Deleting…' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-

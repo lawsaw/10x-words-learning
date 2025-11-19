@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { okResponse, errorResponse } from "@/lib/response"
-import type { AuthSessionStatusDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { okResponse, errorResponse } from '@/lib/response'
+import type { AuthSessionStatusDto } from '@/lib/types'
 
 /**
  * GET /api/auth/session
@@ -14,12 +14,10 @@ export async function GET(request: NextRequest) {
     await AuthService.getCurrentUserId()
 
     // Get session status
-    const result: AuthSessionStatusDto =
-      await AuthService.getSessionStatus()
+    const result: AuthSessionStatusDto = await AuthService.getSessionStatus()
 
     return okResponse(result)
   } catch (error) {
     return errorResponse(error)
   }
 }
-

@@ -1,20 +1,8 @@
-import {
-  Bot,
-  ShieldCheck,
-  Sparkles,
-  TableProperties,
-  type LucideIcon,
-} from "lucide-react"
+import { Bot, ShieldCheck, Sparkles, TableProperties, type LucideIcon } from 'lucide-react'
 
-import type { FeatureCardIcon, FeatureCardVm } from "@/app/(public)/types"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import type { FeatureCardIcon, FeatureCardVm } from '@/app/(public)/types'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 const ICON_MAP: Record<FeatureCardIcon, LucideIcon> = {
   sparkles: Sparkles,
@@ -27,23 +15,18 @@ type FeatureCardProps = FeatureCardVm & {
   className?: string
 }
 
-export function FeatureCard({
-  icon,
-  title,
-  description,
-  className,
-}: FeatureCardProps) {
+export function FeatureCard({ icon, title, description, className }: FeatureCardProps) {
   const Icon = ICON_MAP[icon]
 
   return (
     <Card
       className={cn(
-        "relative flex h-full flex-col overflow-hidden border-border/50 bg-background/80 backdrop-blur transition hover:border-primary/40 hover:shadow-lg",
-        className,
+        'border-border/50 bg-background/80 hover:border-primary/40 relative flex h-full flex-col overflow-hidden backdrop-blur transition hover:shadow-lg',
+        className
       )}
     >
       <CardHeader className="space-y-6 p-4 sm:p-6">
-        <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+        <div className="border-primary/20 bg-primary/10 text-primary inline-flex h-12 w-12 items-center justify-center rounded-2xl border">
           <Icon className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
         </div>
         <div className="space-y-2">
@@ -52,12 +35,10 @@ export function FeatureCard({
         </div>
       </CardHeader>
       <CardContent className="mt-auto p-4 sm:p-6 sm:pt-0">
-        <div className="rounded-xl border border-dashed border-border/60 bg-muted/40 p-4 text-xs text-muted-foreground">
-          Coming soon: walkthrough videos and sample lists tailored to this
-          feature.
+        <div className="border-border/60 bg-muted/40 text-muted-foreground rounded-xl border border-dashed p-4 text-xs">
+          Coming soon: walkthrough videos and sample lists tailored to this feature.
         </div>
       </CardContent>
     </Card>
   )
 }
-

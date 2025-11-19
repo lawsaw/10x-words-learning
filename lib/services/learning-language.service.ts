@@ -1,19 +1,12 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from '@/lib/supabase/server'
 import type {
   LearningLanguageDto,
   LearningLanguagesListDto,
   LearningLanguagesQueryDto,
   CreateLearningLanguageCommand,
-} from "@/lib/types"
-import {
-  mapSupabaseError,
-  NotFoundError,
-  ValidationError,
-} from "@/lib/errors"
-import {
-  calculateCursorPaginationMeta,
-  trimToPageSize,
-} from "@/lib/pagination"
+} from '@/lib/types'
+import { mapSupabaseError, NotFoundError, ValidationError } from '@/lib/errors'
+import { calculateCursorPaginationMeta, trimToPageSize } from '@/lib/pagination'
 
 /**
  * Service for managing user learning languages.
@@ -34,11 +27,11 @@ export class LearningLanguageService {
 
     // Build base query
     let selectQuery = supabase
-      .schema("app")
-      .from("user_learning_languages")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
+      .schema('app')
+      .from('user_learning_languages')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
 
     // Apply pagination (fetch one extra to check for more results)
     const offset = (page - 1) * pageSize
@@ -55,7 +48,7 @@ export class LearningLanguageService {
 
     // Build DTOs with optional stats
     const learningLanguages: LearningLanguageDto[] = await Promise.all(
-      trimmedItems.map(async (item) => {
+      trimmedItems.map(async item => {
         const dto: LearningLanguageDto = {
           id: item.id,
           languageId: item.language_id,
@@ -77,12 +70,7 @@ export class LearningLanguageService {
     const lastItem = trimmedItems[trimmedItems.length - 1]
     const nextCursor = lastItem ? lastItem.id : undefined
 
-    const meta = calculateCursorPaginationMeta(
-      page,
-      pageSize,
-      items.length,
-      nextCursor
-    )
+    const meta = calculateCursorPaginationMeta(page, pageSize, items.length, nextCursor)
 
     return {
       data: learningLanguages,
@@ -101,24 +89,22 @@ export class LearningLanguageService {
 
     // Validate that the language exists
     const { data: languageExists, error: languageError } = await supabase
-      .schema("app")
-      .from("languages")
-      .select("code")
-      .eq("code", command.languageId)
+      .schema('app')
+      .from('languages')
+      .select('code')
+      .eq('code', command.languageId)
       .single()
 
     if (languageError || !languageExists) {
-      throw new ValidationError(
-        `Language '${command.languageId}' is not available`
-      )
+      throw new ValidationError(`Language '${command.languageId}' is not available`)
     }
 
     // Check if user is trying to add their profile language
     const { data: profileData, error: profileError } = await supabase
-      .schema("app")
-      .from("profiles")
-      .select("user_language_id")
-      .eq("user_id", userId)
+      .schema('app')
+      .from('profiles')
+      .select('user_language_id')
+      .eq('user_id', userId)
       .single()
 
     if (profileError) {
@@ -126,15 +112,13 @@ export class LearningLanguageService {
     }
 
     if (profileData.user_language_id === command.languageId) {
-      throw new ValidationError(
-        "Cannot add your interface language as a learning language"
-      )
+      throw new ValidationError('Cannot add your interface language as a learning language')
     }
 
     // Insert the learning language
     const { data, error } = await supabase
-      .schema("app")
-      .from("user_learning_languages")
+      .schema('app')
+      .from('user_learning_languages')
       .insert({
         user_id: userId,
         language_id: command.languageId,
@@ -157,19 +141,16 @@ export class LearningLanguageService {
   /**
    * Deletes a learning language for the authenticated user.
    */
-  static async deleteLearningLanguage(
-    userId: string,
-    learningLanguageId: string
-  ): Promise<void> {
+  static async deleteLearningLanguage(userId: string, learningLanguageId: string): Promise<void> {
     const supabase = await createClient()
 
     // Delete the learning language (RLS ensures user ownership)
     const { error } = await supabase
-      .schema("app")
-      .from("user_learning_languages")
+      .schema('app')
+      .from('user_learning_languages')
       .delete()
-      .eq("id", learningLanguageId)
-      .eq("user_id", userId)
+      .eq('id', learningLanguageId)
+      .eq('user_id', userId)
 
     if (error) {
       throw mapSupabaseError(error)
@@ -186,10 +167,10 @@ export class LearningLanguageService {
 
     // Count categories
     const { count: categoriesCount, error: categoriesError } = await supabase
-      .schema("app")
-      .from("categories")
-      .select("*", { count: "exact", head: true })
-      .eq("user_learning_language_id", learningLanguageId)
+      .schema('app')
+      .from('categories')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_learning_language_id', learningLanguageId)
 
     if (categoriesError) {
       throw mapSupabaseError(categoriesError)
@@ -197,10 +178,10 @@ export class LearningLanguageService {
 
     // Count words
     const { count: wordsCount, error: wordsError } = await supabase
-      .schema("app")
-      .from("words")
-      .select("*", { count: "exact", head: true })
-      .eq("user_learning_language_id", learningLanguageId)
+      .schema('app')
+      .from('words')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_learning_language_id', learningLanguageId)
 
     if (wordsError) {
       throw mapSupabaseError(wordsError)
@@ -212,4 +193,3 @@ export class LearningLanguageService {
     }
   }
 }
-

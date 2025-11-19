@@ -1,8 +1,4 @@
-import type {
-  PaginationMetaDto,
-  CursorPaginationMetaDto,
-  SortDirection,
-} from "./types"
+import type { PaginationMetaDto, CursorPaginationMetaDto, SortDirection } from './types'
 
 /**
  * Calculates pagination metadata for offset-based pagination.
@@ -41,11 +37,11 @@ export function calculateCursorPaginationMeta(
  */
 export function mapOrderByToColumn(orderBy: string): string {
   const mapping: Record<string, string> = {
-    createdAt: "created_at",
-    updatedAt: "updated_at",
-    learningLanguageId: "user_learning_language_id",
-    categoryId: "category_id",
-    userId: "user_id",
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    learningLanguageId: 'user_learning_language_id',
+    categoryId: 'category_id',
+    userId: 'user_id',
   }
   return mapping[orderBy] || orderBy
 }
@@ -58,14 +54,14 @@ export function applyPagination<T>(
   page: number,
   pageSize: number,
   orderBy?: string,
-  direction: SortDirection = "desc"
+  direction: SortDirection = 'desc'
 ): any {
   let paginatedQuery = query
 
   // Apply sorting if specified
   if (orderBy) {
     const column = mapOrderByToColumn(orderBy)
-    paginatedQuery = paginatedQuery.order(column, { ascending: direction === "asc" })
+    paginatedQuery = paginatedQuery.order(column, { ascending: direction === 'asc' })
   }
 
   // Fetch one extra item to determine if there are more results
@@ -87,7 +83,7 @@ export function trimToPageSize<T>(data: T[], pageSize: number): T[] {
  */
 export function generateCursor(item: any, orderByField: string): string {
   const value = item[mapOrderByToColumn(orderByField)]
-  return Buffer.from(JSON.stringify({ [orderByField]: value })).toString("base64")
+  return Buffer.from(JSON.stringify({ [orderByField]: value })).toString('base64')
 }
 
 /**
@@ -95,11 +91,9 @@ export function generateCursor(item: any, orderByField: string): string {
  */
 export function parseCursor(cursor: string): Record<string, any> | null {
   try {
-    const decoded = Buffer.from(cursor, "base64").toString("utf-8")
+    const decoded = Buffer.from(cursor, 'base64').toString('utf-8')
     return JSON.parse(decoded)
   } catch {
     return null
   }
 }
-
-

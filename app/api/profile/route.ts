@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server"
-import { AuthService } from "@/lib/services/auth.service"
-import { ProfileService } from "@/lib/services/profile.service"
-import { updateProfileCommandSchema } from "@/lib/validation"
-import { okResponse, errorResponse } from "@/lib/response"
-import type { ProfileDto } from "@/lib/types"
+import { NextRequest } from 'next/server'
+import { AuthService } from '@/lib/services/auth.service'
+import { ProfileService } from '@/lib/services/profile.service'
+import { updateProfileCommandSchema } from '@/lib/validation'
+import { okResponse, errorResponse } from '@/lib/response'
+import type { ProfileDto } from '@/lib/types'
 
 /**
  * GET /api/profile
@@ -40,14 +40,10 @@ export async function PATCH(request: NextRequest) {
     const validatedCommand = updateProfileCommandSchema.parse(body)
 
     // Update profile
-    const result: ProfileDto = await ProfileService.updateProfile(
-      userId,
-      validatedCommand
-    )
+    const result: ProfileDto = await ProfileService.updateProfile(userId, validatedCommand)
 
     return okResponse(result)
   } catch (error) {
     return errorResponse(error)
   }
 }
-

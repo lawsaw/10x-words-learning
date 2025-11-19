@@ -7,7 +7,7 @@ import type {
   OpenRouterPayload,
   ChatMessage,
   ModelParameters,
-} from "@/lib/types"
+} from '@/lib/types'
 import {
   OpenRouterConfigurationError,
   OpenRouterValidationError,
@@ -18,9 +18,9 @@ import {
   OpenRouterSafetyError,
   OpenRouterSchemaError,
   OpenRouterUnexpectedResponseError,
-} from "./errors"
-import { MessageComposer } from "./message-composer"
-import { SchemaValidator } from "./schema-validator"
+} from './errors'
+import { MessageComposer } from './message-composer'
+import { SchemaValidator } from './schema-validator'
 
 /**
  * Service for communicating with OpenRouter API.
@@ -33,18 +33,18 @@ export class OpenRouterService {
   public static readonly INITIAL_RETRY_DELAY_MS = 1000
   public static readonly MAX_RETRY_DELAY_MS = 10000
   public static readonly SUPPORTED_PARAMETERS = new Set([
-    "temperature",
-    "top_p",
-    "max_tokens",
-    "frequency_penalty",
-    "presence_penalty",
-    "stop",
+    'temperature',
+    'top_p',
+    'max_tokens',
+    'frequency_penalty',
+    'presence_penalty',
+    'stop',
   ])
 
   private readonly _config: Readonly<OpenRouterConfig>
   private readonly _fetchImpl: typeof fetch
-  private readonly _logger?: OpenRouterOptions["logger"]
-  private readonly _metricsClient?: OpenRouterOptions["metricsClient"]
+  private readonly _logger?: OpenRouterOptions['logger']
+  private readonly _metricsClient?: OpenRouterOptions['metricsClient']
 
   /**
    * Constructs an OpenRouterService instance.
@@ -55,17 +55,15 @@ export class OpenRouterService {
   constructor(config: OpenRouterConfig, options?: OpenRouterOptions) {
     // Validate required configuration
     if (!config.apiKey) {
-      throw new OpenRouterConfigurationError(
-        "OpenRouter API key is required",
-        { configKeys: Object.keys(config) }
-      )
+      throw new OpenRouterConfigurationError('OpenRouter API key is required', {
+        configKeys: Object.keys(config),
+      })
     }
 
     if (!config.baseUrl) {
-      throw new OpenRouterConfigurationError(
-        "OpenRouter base URL is required",
-        { configKeys: Object.keys(config) }
-      )
+      throw new OpenRouterConfigurationError('OpenRouter base URL is required', {
+        configKeys: Object.keys(config),
+      })
     }
 
     // Freeze config for immutability and thread safety
@@ -80,7 +78,7 @@ export class OpenRouterService {
     this._logger = options?.logger
     this._metricsClient = options?.metricsClient
 
-    this._logger?.info("OpenRouterService initialized", {
+    this._logger?.info('OpenRouterService initialized', {
       baseUrl: this._config.baseUrl,
       defaultModel: this._config.defaultModel,
       timeoutMs: this._config.timeoutMs,
@@ -115,7 +113,7 @@ export class OpenRouterService {
 
       // Emit success metrics
       const latency = Date.now() - startTime
-      this._emitMetric("chat_completion_success", {
+      this._emitMetric('chat_completion_success', {
         model: chatResponse.model,
         latency,
         promptTokens: chatResponse.usage?.prompt_tokens ?? 0,
@@ -126,8 +124,8 @@ export class OpenRouterService {
     } catch (error) {
       // Emit failure metrics
       const latency = Date.now() - startTime
-      this._emitMetric("chat_completion_failure", {
-        error: error instanceof Error ? error.name : "UnknownError",
+      this._emitMetric('chat_completion_failure', {
+        error: error instanceof Error ? error.name : 'UnknownError',
         latency,
       })
 
@@ -162,17 +160,17 @@ export class OpenRouterService {
    */
   private _buildHeaders(extra?: Record<string, string>): HeadersInit {
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${this._config.apiKey}`,
     }
 
     // Add OpenRouter-specific headers
     if (this._config.appUrl) {
-      headers["HTTP-Referer"] = this._config.appUrl
+      headers['HTTP-Referer'] = this._config.appUrl
     }
 
     if (this._config.appTitle) {
-      headers["X-Title"] = this._config.appTitle
+      headers['X-Title'] = this._config.appTitle
     }
 
     // Merge with extra headers
@@ -234,10 +232,7 @@ export class OpenRouterService {
    * Merges default and request-specific parameters.
    * @private
    */
-  private _mergeParameters(
-    defaults: ModelParameters,
-    overrides: ModelParameters
-  ): ModelParameters {
+  private _mergeParameters(defaults: ModelParameters, overrides: ModelParameters): ModelParameters {
     return { ...defaults, ...overrides }
   }
 
@@ -245,65 +240,62 @@ export class OpenRouterService {
    * Executes fetch request with timeout and retry logic.
    * @private
    */
-  private async _executeFetch(
-    payload: OpenRouterPayload,
-    signal?: AbortSignal
-  ): Promise<Response> {
+  private async _executeFetch(payload: OpenRouterPayload, signal?: AbortSignal): Promise<Response> {
     let lastError: Error | undefined
-    
+
     for (let attempt = 0; attempt <= OpenRouterService.MAX_RETRIES; attempt++) {
       try {
         const response = await this._executeSingleFetch(payload, signal)
-        
+
         // Handle HTTP errors with retry logic
         if (!response.ok) {
           // Check if error is retryable
           if (response.status === 429 || response.status >= 500) {
             if (attempt < OpenRouterService.MAX_RETRIES) {
-              const retryAfter = response.headers.get("retry-after")
-              const delayMs = retryAfter 
-                ? parseInt(retryAfter, 10) * 1000 
+              const retryAfter = response.headers.get('retry-after')
+              const delayMs = retryAfter
+                ? parseInt(retryAfter, 10) * 1000
                 : this._calculateRetryDelay(attempt)
-              
-              this._logger?.warn("Retrying after error", {
+
+              this._logger?.warn('Retrying after error', {
                 status: response.status,
                 attempt: attempt + 1,
                 delayMs,
               })
-              
+
               await this._sleep(delayMs)
               continue
             }
           }
-          
+
           await this._handleHttpError(response)
         }
 
         return response
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error))
-        
+
         // Check if error is retryable
         const isRetryable = error instanceof OpenRouterNetworkError && error.retryable
-        
+
         if (isRetryable && attempt < OpenRouterService.MAX_RETRIES) {
           const delayMs = this._calculateRetryDelay(attempt)
-          
-          this._logger?.warn("Retrying after network error", {
+
+          this._logger?.warn('Retrying after network error', {
             attempt: attempt + 1,
             delayMs,
             error: lastError.message,
           })
-          
+
           await this._sleep(delayMs)
           continue
         }
-        
+
         throw error
       }
     }
-    
-    throw lastError ?? new OpenRouterNetworkError("Max retries exceeded")
+
+    throw lastError ?? new OpenRouterNetworkError('Max retries exceeded')
   }
 
   /**
@@ -316,10 +308,7 @@ export class OpenRouterService {
   ): Promise<Response> {
     // Create timeout controller
     const controller = new AbortController()
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      this._config.timeoutMs
-    )
+    const timeoutId = setTimeout(() => controller.abort(), this._config.timeoutMs)
 
     // Combine signals if provided
     const combinedSignal = signal
@@ -328,15 +317,15 @@ export class OpenRouterService {
 
     try {
       const url = `${this._config.baseUrl}/chat/completions`
-      
-      this._logger?.info("Sending request to OpenRouter", {
+
+      this._logger?.info('Sending request to OpenRouter', {
         url,
         model: payload.model,
         messagesCount: payload.messages.length,
       })
 
       const response = await this._fetchImpl(url, {
-        method: "POST",
+        method: 'POST',
         headers: this._buildHeaders(),
         body: JSON.stringify(payload),
         signal: combinedSignal,
@@ -348,19 +337,17 @@ export class OpenRouterService {
       clearTimeout(timeoutId)
 
       // Handle abort/timeout
-      if (error instanceof Error && error.name === "AbortError") {
-        this._logger?.error("Request timed out", { timeoutMs: this._config.timeoutMs })
-        throw new OpenRouterNetworkError(
-          "Request timed out. Please try again.",
-          true,
-          { timeoutMs: this._config.timeoutMs }
-        )
+      if (error instanceof Error && error.name === 'AbortError') {
+        this._logger?.error('Request timed out', { timeoutMs: this._config.timeoutMs })
+        throw new OpenRouterNetworkError('Request timed out. Please try again.', true, {
+          timeoutMs: this._config.timeoutMs,
+        })
       }
 
       // Handle network errors
-      this._logger?.error("Network error", { error })
+      this._logger?.error('Network error', { error })
       throw new OpenRouterNetworkError(
-        "Network request failed. Please check your connection.",
+        'Network request failed. Please check your connection.',
         true,
         { originalError: error instanceof Error ? error.message : String(error) }
       )
@@ -383,7 +370,7 @@ export class OpenRouterService {
    * @private
    */
   private _sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+    return new Promise(resolve => setTimeout(resolve, ms))
   }
 
   /**
@@ -399,7 +386,7 @@ export class OpenRouterService {
         break
       }
 
-      signal.addEventListener("abort", () => controller.abort(), { once: true })
+      signal.addEventListener('abort', () => controller.abort(), { once: true })
     }
 
     return controller.signal
@@ -422,13 +409,13 @@ export class OpenRouterService {
       try {
         errorBody = { message: await clonedResponse.text() }
       } catch {
-        errorBody = { message: "Failed to read error response" }
+        errorBody = { message: 'Failed to read error response' }
       }
     }
 
-    const errorMessage = errorBody?.error?.message ?? errorBody?.message ?? "Unknown error"
+    const errorMessage = errorBody?.error?.message ?? errorBody?.message ?? 'Unknown error'
 
-    this._logger?.error("HTTP error from OpenRouter", {
+    this._logger?.error('HTTP error from OpenRouter', {
       status,
       errorMessage,
       errorBody,
@@ -436,14 +423,11 @@ export class OpenRouterService {
 
     // Map status codes to specific errors
     if (status === 401 || status === 403) {
-      throw new OpenRouterAuthError(
-        `Authentication failed: ${errorMessage}`,
-        { status, errorBody }
-      )
+      throw new OpenRouterAuthError(`Authentication failed: ${errorMessage}`, { status, errorBody })
     }
 
     if (status === 429) {
-      const retryAfter = response.headers.get("retry-after")
+      const retryAfter = response.headers.get('retry-after')
       throw new OpenRouterRateLimitError(
         `Rate limit exceeded: ${errorMessage}`,
         retryAfter ? parseInt(retryAfter, 10) : undefined,
@@ -452,10 +436,7 @@ export class OpenRouterService {
     }
 
     if (status >= 500) {
-      throw new OpenRouterServerError(
-        `Server error: ${errorMessage}`,
-        { status, errorBody }
-      )
+      throw new OpenRouterServerError(`Server error: ${errorMessage}`, { status, errorBody })
     }
 
     throw new OpenRouterUnexpectedResponseError(
@@ -474,34 +455,31 @@ export class OpenRouterService {
     try {
       data = await response.json()
     } catch (error) {
-      this._logger?.error("Failed to parse response JSON", { error })
-      throw new OpenRouterUnexpectedResponseError(
-        "Failed to parse response as JSON",
-        { originalError: error instanceof Error ? error.message : String(error) }
-      )
+      this._logger?.error('Failed to parse response JSON', { error })
+      throw new OpenRouterUnexpectedResponseError('Failed to parse response as JSON', {
+        originalError: error instanceof Error ? error.message : String(error),
+      })
     }
 
     // Validate response structure
     if (!data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
-      this._logger?.error("Response missing choices", { data })
-      throw new OpenRouterUnexpectedResponseError(
-        "Response is missing choices array",
-        { responseData: data }
-      )
+      this._logger?.error('Response missing choices', { data })
+      throw new OpenRouterUnexpectedResponseError('Response is missing choices array', {
+        responseData: data,
+      })
     }
 
     // Check for content filter
     const firstChoice = data.choices[0]
-    if (firstChoice.finish_reason === "content_filter") {
-      throw new OpenRouterSafetyError(
-        "Content was filtered due to safety policies",
-        { finishReason: firstChoice.finish_reason }
-      )
+    if (firstChoice.finish_reason === 'content_filter') {
+      throw new OpenRouterSafetyError('Content was filtered due to safety policies', {
+        finishReason: firstChoice.finish_reason,
+      })
     }
 
     // Construct response
     const chatResponse: ChatResponse = {
-      id: data.id ?? "unknown",
+      id: data.id ?? 'unknown',
       model: data.model ?? this._config.defaultModel,
       choices: data.choices,
       usage: data.usage
@@ -523,7 +501,7 @@ export class OpenRouterService {
    */
   private _handleStream(response: Response): ReadableStream<ChatChunk> {
     if (!response.body) {
-      throw new OpenRouterUnexpectedResponseError("Response body is null for streaming request")
+      throw new OpenRouterUnexpectedResponseError('Response body is null for streaming request')
     }
 
     // For now, return a basic implementation
@@ -543,8 +521,7 @@ export class OpenRouterService {
     try {
       this._metricsClient.recordMetric(event, meta)
     } catch (error) {
-      this._logger?.warn("Failed to emit metric", { event, error })
+      this._logger?.warn('Failed to emit metric', { event, error })
     }
   }
 }
-
