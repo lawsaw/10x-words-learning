@@ -128,30 +128,21 @@ jobs:
           echo "deployment_url=$url" >> $GITHUB_OUTPUT
           echo "Deployed to: $url"
 
-      - name: Comment deployment URL
-        uses: actions/github-script@v8
+      - name: Display deployment URL
         if: success()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const deploymentUrl = '${{ steps.deploy.outputs.deployment_url }}';
-            const sha = context.sha.substring(0, 7);
-            
-            const commentBody = `## 🚀 Deployment Successful
-            
-            ✅ The application has been deployed to Vercel.
-            
-            **Deployment URL:** ${deploymentUrl}
-            **Commit:** \`${sha}\`
-            **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            `;
-            
-            await github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: commentBody
-            });
+        run: |
+          echo "=========================================="
+          echo "🚀 Deployment Successful!"
+          echo "=========================================="
+          echo ""
+          echo "✅ Application deployed to Vercel"
+          echo ""
+          echo "📍 Deployment URL:"
+          echo "${{ steps.deploy.outputs.deployment_url }}"
+          echo ""
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "=========================================="
 
   status-notification:
     name: Post Status Summary
