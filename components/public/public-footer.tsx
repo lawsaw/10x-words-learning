@@ -26,10 +26,24 @@ export function PublicFooter() {
         </nav>
       </div>
       <div className="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <p className="text-muted-foreground/80 text-xs">
-          &copy; {new Date().getFullYear()} 10x Words Learning. Built with Next.js, Supabase, and a
-          love for languages.
-        </p>
+        <div className="border-border/40 border-t pt-6">
+          <p className="text-muted-foreground/80 text-xs">
+            &copy; {new Date().getFullYear()} 10x Words Learning. Built with Next.js, Supabase, and
+            a love for languages.
+          </p>
+          <div className="text-muted-foreground/70 mt-3 text-xs">
+            <p className="font-medium">Created by Oleksandr Troitskyi</p>
+            <p className="mt-1">
+              Contact:{' '}
+              <a
+                href="mailto:Oleksandr.Troitskyi@morizon-gratka.pl"
+                className="hover:text-foreground text-muted-foreground underline transition-colors"
+              >
+                Oleksandr.Troitskyi@morizon-gratka.pl
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
   )
