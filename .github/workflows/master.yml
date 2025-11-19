@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   lint:
     name: Lint Code
@@ -124,97 +128,48 @@ jobs:
           echo "deployment_url=$url" >> $GITHUB_OUTPUT
           echo "Deployed to: $url"
 
-      - name: Comment deployment URL
-        uses: actions/github-script@v8
+      - name: Display deployment URL
         if: success()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const deploymentUrl = '${{ steps.deploy.outputs.deployment_url }}';
-            const sha = context.sha.substring(0, 7);
-            
-            const commentBody = `## 🚀 Deployment Successful
-            
-            ✅ The application has been deployed to Vercel.
-            
-            **Deployment URL:** ${deploymentUrl}
-            **Commit:** \`${sha}\`
-            **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            `;
-            
-            await github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: commentBody
-            });
+        run: |
+          echo "=========================================="
+          echo "🚀 Deployment Successful!"
+          echo "=========================================="
+          echo ""
+          echo "✅ Application deployed to Vercel"
+          echo ""
+          echo "📍 Deployment URL:"
+          echo "${{ steps.deploy.outputs.deployment_url }}"
+          echo ""
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "=========================================="
 
   status-notification:
-    name: Post Status Notification
+    name: Post Status Summary
     needs: [lint, build, unit-test, deploy]
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Check job statuses
-        id: check
+      - name: Display pipeline status
         run: |
+          echo "## 🔍 Deployment Pipeline Results"
+          echo ""
+          
           if [[ "${{ needs.lint.result }}" == "success" ]] && \
              [[ "${{ needs.build.result }}" == "success" ]] && \
              [[ "${{ needs.unit-test.result }}" == "success" ]] && \
              [[ "${{ needs.deploy.result }}" == "success" ]]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-            echo "message=✅ All checks passed and deployment successful!" >> $GITHUB_OUTPUT
+            echo "✅ All checks passed and deployment successful!"
           else
-            echo "status=failure" >> $GITHUB_OUTPUT
-            echo "message=❌ Some checks or deployment failed. Please review the details above." >> $GITHUB_OUTPUT
+            echo "❌ Some checks or deployment failed."
           fi
-
-      - name: Send status notification
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const status = '${{ steps.check.outputs.status }}';
-            const message = '${{ steps.check.outputs.message }}';
-            
-            const jobResults = {
-              'Lint': '${{ needs.lint.result }}',
-              'Build': '${{ needs.build.result }}',
-              'Unit Tests': '${{ needs.unit-test.result }}',
-              'Deploy': '${{ needs.deploy.result }}'
-            };
-            
-            const getEmoji = (result) => {
-              switch(result) {
-                case 'success': return '✅';
-                case 'failure': return '❌';
-                case 'cancelled': return '⚠️';
-                case 'skipped': return '⏭️';
-                default: return '❓';
-              }
-            };
-            
-            let tableRows = Object.entries(jobResults).map(([job, result]) => {
-              return `| ${getEmoji(result)} ${job} | \`${result}\` |`;
-            }).join('\n');
-            
-            const commentBody = `## 🔍 Deployment Pipeline Results
-            
-            ${message}
-            
-            ### Job Details
-            | Job | Status |
-            |-----|--------|
-            ${tableRows}
-            
-            **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            **Commit:** \`${{ github.sha }}\`
-            `;
-            
-            await github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: commentBody
-            });
+          
+          echo ""
+          echo "### Job Results:"
+          echo "- Lint: ${{ needs.lint.result }}"
+          echo "- Build: ${{ needs.build.result }}"
+          echo "- Unit Tests: ${{ needs.unit-test.result }}"
+          echo "- Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          echo "Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
