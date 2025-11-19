@@ -229,12 +229,15 @@ export function WordFormModal({
                 onChange={event => setExamplesMd(event.target.value)}
                 onBlur={() => setTouched(prev => ({ ...prev, examplesMd: true }))}
                 placeholder="Provide example sentences or phrases in Markdown."
-                className="border-input bg-background text-foreground focus-visible:ring-ring min-h-[160px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-input bg-background text-foreground focus-visible:ring-ring min-h-[120px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[160px]"
                 disabled={busy || aiBusy}
               />
-              <div className="text-muted-foreground flex items-center justify-between text-xs">
-                <span>Minimum 1 character. Markdown will be rendered in the table.</span>
-                <span>
+              <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs">
+                <span className="hidden sm:inline">
+                  Minimum 1 character. Markdown will be rendered in the table.
+                </span>
+                <span className="sm:hidden">Min 1 char. Markdown supported.</span>
+                <span className="shrink-0">
                   {trimmedExamples.length}/{MAX_EXAMPLES_LENGTH}
                 </span>
               </div>
@@ -273,24 +276,38 @@ export function WordFormModal({
           </form>
         </div>
 
-        <DialogFooter className="gap-2">
-          <div className="flex flex-1 items-center gap-2 sm:justify-start">
+        <DialogFooter className="flex-col gap-2 sm:flex-row">
+          <div className="flex w-full items-center gap-2 sm:flex-1 sm:justify-start">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleGenerate}
               disabled={aiBusy}
+              className="flex-1 sm:flex-none"
             >
               Generate with AI
             </Button>
           </div>
-          <Button type="button" variant="ghost" onClick={onClose} disabled={busy || aiBusy}>
-            Cancel
-          </Button>
-          <Button type="button" onClick={handleSubmit} disabled={saveDisabled}>
-            {mode === 'create' ? 'Save word' : 'Save changes'}
-          </Button>
+          <div className="flex w-full gap-2 sm:w-auto">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={busy || aiBusy}
+              className="flex-1 sm:flex-none"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={saveDisabled}
+              className="flex-1 sm:flex-none"
+            >
+              {mode === 'create' ? 'Save word' : 'Save changes'}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
