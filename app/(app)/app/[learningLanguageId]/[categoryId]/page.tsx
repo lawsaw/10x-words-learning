@@ -22,7 +22,7 @@ type LearningLanguageContext = {
 
 type ServerSupabaseClient = SupabaseClient<Database>
 
-export default async function CategoryWordTablePage({ params }: { params: PageParams }) {
+export default async function CategoryWordTablePage({ params }: { params: Promise<PageParams> }) {
   const resolvedParams = await params
 
   if (!resolvedParams?.learningLanguageId || !resolvedParams?.categoryId) {
