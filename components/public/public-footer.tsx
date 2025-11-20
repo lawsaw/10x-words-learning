@@ -25,7 +25,7 @@ export function PublicFooter() {
           <FooterLink href="/terms">Terms</FooterLink>
         </nav>
       </div>
-      <div className="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto mt-6 w-full max-w-6xl px-4 text-center sm:px-6 lg:px-8">
         <div className="border-border/40 border-t pt-6">
           <p className="text-muted-foreground/80 text-xs">
             &copy; {new Date().getFullYear()} 10x Words Learning. Built with Next.js, Supabase, and

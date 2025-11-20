@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
-import { ModeToggle } from '@/components/category-word-table/mode-toggle'
 import { WordToolbar } from '@/components/category-word-table/word-toolbar'
 import { WordTable } from '@/components/category-word-table/word-table'
 import { TableEmptyState } from '@/components/category-word-table/table-empty-state'
@@ -59,7 +58,6 @@ export default function CategoryWordTableClient({
   learningLanguageCode,
 }: CategoryWordTableClientProps) {
   const router = useRouter()
-  const pathname = usePathname()
 
   const [orderBy, setOrderBy] = useState<WordOrderField>(DEFAULT_ORDER)
   const [direction, setDirection] = useState<SortDirection>(DEFAULT_DIRECTION)
@@ -81,9 +79,6 @@ export default function CategoryWordTableClient({
   const [deleteCategoryError, setDeleteCategoryError] = useState<string | null>(null)
   const [recentAiTerms, setRecentAiTerms] = useState<string[]>([])
   const [headingActionsContainer, setHeadingActionsContainer] = useState<Element | null>(null)
-  const [descriptionActionsContainer, setDescriptionActionsContainer] = useState<Element | null>(
-    null
-  )
 
   useEffect(() => {
     setDisplayCategoryName(categoryName)
@@ -91,7 +86,6 @@ export default function CategoryWordTableClient({
 
   useEffect(() => {
     setHeadingActionsContainer(document.getElementById('app-shell-heading-actions'))
-    setDescriptionActionsContainer(document.getElementById('app-shell-description-actions'))
   }, [])
   const [pendingCategoryName, setPendingCategoryName] = useState(categoryName)
   const [categoryActionsBusy, setCategoryActionsBusy] = useState(false)
@@ -213,26 +207,7 @@ export default function CategoryWordTableClient({
     return createWordTableViewModel(payload)
   }, [payload])
 
-  const currentMode: WordViewMode = 'table'
   const isMutating = Boolean(wordMutations.busy)
-
-  const handleModeChange = useCallback(
-    (mode: WordViewMode) => {
-      if (mode === currentMode) {
-        return
-      }
-
-      if (mode === 'slider') {
-        router.push(`/app/${learningLanguageId}/${categoryId}/study`)
-        return
-      }
-
-      if (!pathname.endsWith(categoryId)) {
-        router.push(`/app/${learningLanguageId}/${categoryId}`)
-      }
-    },
-    [router, currentMode, learningLanguageId, categoryId, pathname]
-  )
 
   const handleOpenCreateModal = useCallback(() => {
     setModalMode('create')
@@ -387,11 +362,6 @@ export default function CategoryWordTableClient({
             busy={categoryActionsBusy}
           />,
           headingActionsContainer
-        )}
-      {descriptionActionsContainer &&
-        createPortal(
-          <ModeToggle value={currentMode} onChange={handleModeChange} />,
-          descriptionActionsContainer
         )}
       {feedback ? (
         <div

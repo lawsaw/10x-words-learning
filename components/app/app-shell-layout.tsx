@@ -94,9 +94,12 @@ export default function AppShellLayout({
             >
               {descriptionActions}
             </div>
-            {description ? (
-              <p className="text-muted-foreground max-w-2xl text-sm sm:text-base">{description}</p>
-            ) : null}
+            <div
+              id="app-shell-description"
+              className="text-muted-foreground max-w-2xl text-sm sm:text-base"
+            >
+              {description ? <p className="m-0">{description}</p> : null}
+            </div>
           </div>
         ) : null}
       </div>
