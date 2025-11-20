@@ -325,10 +325,6 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
       <div className="border-border bg-card flex flex-col gap-3 rounded-lg border p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 text-sm">
           <h2 className="text-foreground text-base font-semibold">Workspace overview</h2>
-          <p className="text-muted-foreground">
-            Manage learning languages and their categories. Use the buttons to add new items and
-            then dive into the table view.
-          </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Button

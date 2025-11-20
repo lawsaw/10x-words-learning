@@ -13,11 +13,11 @@ type WordTableProps = {
 }
 
 export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy }: WordTableProps) {
+  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({})
+
   if (!rows || rows.length === 0) {
     return null
   }
-
-  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({})
 
   const toggleRow = (id: string) => {
     setExpandedMap(prev => ({ ...prev, [id]: !prev[id] }))
@@ -26,7 +26,7 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
   return (
     <div className="border-border bg-card overflow-hidden rounded-lg border shadow-sm">
       {/* Desktop table view - hidden on mobile */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full border-collapse text-sm">
           <thead className="bg-muted/70 text-muted-foreground text-xs font-semibold tracking-wide uppercase">
             <tr>
@@ -53,18 +53,22 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
       </div>
 
       {/* Mobile card view - visible only on mobile */}
-      <div className="md:hidden divide-y divide-border/70">
-        {rows.map(row => (
-          <WordTableRow
-            key={row.id}
-            row={row}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            busy={busy}
-            expanded={Boolean(expandedMap[row.id])}
-            onToggle={() => toggleRow(row.id)}
-          />
-        ))}
+      <div className="md:hidden">
+        <table className="w-full border-collapse">
+          <tbody className="divide-border/70 divide-y">
+            {rows.map(row => (
+              <WordTableRow
+                key={row.id}
+                row={row}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                busy={busy}
+                expanded={Boolean(expandedMap[row.id])}
+                onToggle={() => toggleRow(row.id)}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

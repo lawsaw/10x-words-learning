@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AiLoaderOverlay } from '@/components/category-word-table/ai-loader-overlay'
 import { Button } from '@/components/ui/button'
@@ -80,19 +80,29 @@ export function WordFormModal({
   const [formError, setFormError] = useState<string | null>(null)
   const [aiError, setAiError] = useState<string | null>(null)
 
+  const resetFormValues = useCallback((value?: WordFormState) => {
+    setTerm(value?.term ?? '')
+    setTranslation(value?.translation ?? '')
+    setExamplesMd(value?.examplesMd ?? '')
+    setDifficulty(value?.difficulty ?? 'medium')
+    setTouched({ term: false, translation: false, examplesMd: false })
+    setFormError(null)
+    setAiError(null)
+  }, [])
+
   useEffect(() => {
     if (!open) {
       return
     }
 
-    setTerm(initialValue?.term ?? '')
-    setTranslation(initialValue?.translation ?? '')
-    setExamplesMd(initialValue?.examplesMd ?? '')
-    setDifficulty(initialValue?.difficulty ?? 'medium')
-    setTouched({ term: false, translation: false, examplesMd: false })
-    setFormError(null)
-    setAiError(null)
-  }, [open, initialValue])
+    const timeoutId = window.setTimeout(() => {
+      resetFormValues(initialValue)
+    }, 0)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [open, initialValue, resetFormValues])
 
   const trimmedTerm = term.trim()
   const trimmedTranslation = translation.trim()
@@ -171,7 +181,7 @@ export function WordFormModal({
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Create word' : 'Edit word'}</DialogTitle>
           <DialogDescription>
-            Provide the vocabulary details and examples. All fields are required to save changes.
+            Provide the vocabulary details and examples
           </DialogDescription>
         </DialogHeader>
 
@@ -221,7 +231,7 @@ export function WordFormModal({
 
             <div className="grid gap-2">
               <label className="text-foreground text-sm font-medium" htmlFor="word-examples">
-                Examples (Markdown supported)
+                Examples
               </label>
               <textarea
                 id="word-examples"
@@ -232,11 +242,7 @@ export function WordFormModal({
                 className="border-input bg-background text-foreground focus-visible:ring-ring min-h-[120px] w-full rounded-md border px-3 py-2 text-sm shadow-sm focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[160px]"
                 disabled={busy || aiBusy}
               />
-              <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs">
-                <span className="hidden sm:inline">
-                  Minimum 1 character. Markdown will be rendered in the table.
-                </span>
-                <span className="sm:hidden">Min 1 char. Markdown supported.</span>
+              <div className="text-muted-foreground flex items-center justify-end text-xs">
                 <span className="shrink-0">
                   {trimmedExamples.length}/{MAX_EXAMPLES_LENGTH}
                 </span>
@@ -276,19 +282,17 @@ export function WordFormModal({
           </form>
         </div>
 
-        <DialogFooter className="flex-col gap-2 sm:flex-row">
-          <div className="flex w-full items-center gap-2 sm:flex-1 sm:justify-start">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleGenerate}
-              disabled={aiBusy}
-              className="flex-1 sm:flex-none"
-            >
-              Generate with AI
-            </Button>
-          </div>
+        <DialogFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGenerate}
+            disabled={aiBusy}
+            className="flex w-full items-center justify-center gap-2 rounded-md border-transparent bg-gradient-to-r from-indigo-500 to-sky-500 px-4 py-2 text-base font-semibold !text-white shadow-lg shadow-indigo-500/30 transition hover:from-indigo-600 hover:to-sky-600 focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 disabled:opacity-60 sm:w-auto sm:px-5 sm:text-sm"
+          >
+            <span aria-hidden>✨</span>
+            <span>Generate with AI</span>
+          </Button>
           <div className="flex w-full gap-2 sm:w-auto">
             <Button
               type="button"

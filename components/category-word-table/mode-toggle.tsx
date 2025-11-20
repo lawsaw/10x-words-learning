@@ -1,6 +1,7 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+
 import { cn } from '@/lib/utils'
 import type { WordViewMode } from '@/lib/types'
 
@@ -11,11 +12,12 @@ const VIEW_OPTIONS: Array<{ label: string; value: WordViewMode }> = [
 
 type ModeToggleProps = {
   value: WordViewMode
-  onChange: (mode: WordViewMode) => void
+  tableHref: string
+  sliderHref: string
   className?: string
 }
 
-export function ModeToggle({ value, onChange, className }: ModeToggleProps) {
+export function ModeToggle({ value, tableHref, sliderHref, className }: ModeToggleProps) {
   return (
     <div
       className={cn(
@@ -27,18 +29,23 @@ export function ModeToggle({ value, onChange, className }: ModeToggleProps) {
     >
       {VIEW_OPTIONS.map(option => {
         const isActive = option.value === value
+        const href = option.value === 'table' ? tableHref : sliderHref
+
         return (
-          <Button
+          <Link
             key={option.value}
-            type="button"
-            variant={isActive ? 'default' : 'ghost'}
-            size="sm"
+            href={href}
+            prefetch={true}
             aria-pressed={isActive}
-            onClick={() => onChange(option.value)}
-            className={cn('px-3 py-1 text-xs', isActive ? 'shadow-sm' : 'text-muted-foreground')}
+            className={cn(
+              'ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+              isActive
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+            )}
           >
             {option.label}
-          </Button>
+          </Link>
         )
       })}
     </div>

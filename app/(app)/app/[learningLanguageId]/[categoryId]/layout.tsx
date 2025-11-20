@@ -1,40 +1,36 @@
+import { Children, ReactElement, ReactNode, cloneElement, isValidElement } from 'react'
 import { notFound, redirect } from 'next/navigation'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import AppShellLayout from '@/components/app/app-shell-layout'
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/database.types'
-import type { CategoryWordsListDto } from '@/lib/types'
-import { WordService } from '@/lib/services/word.service'
-import { categoryParamsSchema, learningLanguageParamsSchema } from '@/lib/validation'
 
-import CategoryWordTableClient from './category-word-table-client'
+import { CategoryLayoutClient } from './category-layout-client'
 
-type PageParams = {
-  learningLanguageId: string
-  categoryId: string
-}
-
-type LearningLanguageContext = {
-  categoryName: string
-  learningLanguageName: string
-  learningLanguageCode: string
+type CategoryLayoutProps = {
+  children: ReactNode
+  params: {
+    learningLanguageId: string
+    categoryId: string
+  }
 }
 
 type ServerSupabaseClient = SupabaseClient<Database>
 
-export default async function CategoryWordTablePage({ params }: { params: PageParams }) {
+export type CategoryLayoutData = {
+  userId: string
+  categoryId: string
+  learningLanguageId: string
+  categoryName: string
+  learningLanguageName: string
+  learningLanguageCode: string
+  userLanguage: string
+}
+
+export default async function CategoryLayout({ children, params }: CategoryLayoutProps) {
   const resolvedParams = await params
-
-  if (!resolvedParams?.learningLanguageId || !resolvedParams?.categoryId) {
-    notFound()
-  }
-
-  const { learningLanguageId } = learningLanguageParamsSchema.parse({
-    learningLanguageId: resolvedParams.learningLanguageId,
-  })
-  const { categoryId } = categoryParamsSchema.parse({
-    categoryId: resolvedParams.categoryId,
-  })
+  const { learningLanguageId, categoryId } = resolvedParams
 
   const supabase = await createClient()
   const {
@@ -54,19 +50,52 @@ export default async function CategoryWordTablePage({ params }: { params: PagePa
     notFound()
   }
 
-  const initialWords = await fetchInitialCategoryWords(user.id, categoryId)
+  const breadcrumbs = [
+    { label: 'Workspace', href: '/app' },
+    {
+      label: context.learningLanguageName,
+      href: `/app/${learningLanguageId}`,
+    },
+    { label: context.categoryName },
+  ]
+
+  const layoutValue: CategoryLayoutData = {
+    userId: user.id,
+    categoryId,
+    learningLanguageId,
+    categoryName: context.categoryName,
+    learningLanguageName: context.learningLanguageName,
+    learningLanguageCode: context.learningLanguageCode,
+    userLanguage,
+  }
+
+  const childrenWithContext = Children.map(children, child => {
+    if (!isValidElement(child)) {
+      return child
+    }
+
+    return cloneElement(child as ReactElement<{ layoutContext?: CategoryLayoutData }>, {
+      layoutContext: layoutValue,
+    })
+  })
 
   return (
-    <CategoryWordTableClient
-      categoryId={categoryId}
-      learningLanguageId={learningLanguageId}
-      categoryName={context.categoryName}
-      userLanguage={userLanguage}
-      initialWords={initialWords}
-      learningLanguageLabel={context.learningLanguageName}
-      learningLanguageCode={context.learningLanguageCode}
-    />
+    <AppShellLayout heading={context.categoryName} breadcrumbs={breadcrumbs}>
+      <CategoryLayoutClient
+        learningLanguageId={learningLanguageId}
+        learningLanguageName={context.learningLanguageName}
+        categoryId={categoryId}
+      >
+        {childrenWithContext}
+      </CategoryLayoutClient>
+    </AppShellLayout>
   )
+}
+
+type LearningLanguageContext = {
+  categoryName: string
+  learningLanguageName: string
+  learningLanguageCode: string
 }
 
 async function fetchLearningLanguageContext(
@@ -134,15 +163,4 @@ async function fetchUserLanguage(supabase: ServerSupabaseClient, userId: string)
   }
 
   return profileRow.user_language_id
-}
-
-async function fetchInitialCategoryWords(
-  userId: string,
-  categoryId: string
-): Promise<CategoryWordsListDto> {
-  return WordService.getCategoryWords(userId, categoryId, {
-    view: 'table',
-    orderBy: 'createdAt',
-    direction: 'desc',
-  })
 }

@@ -1,9 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
-
-import AppShellLayout from '@/components/app/app-shell-layout'
 import { createClient } from '@/lib/supabase/server'
-import { WordService } from '@/lib/services/word.service'
 import type { CategoryWordsListDto } from '@/lib/types'
+import { WordService } from '@/lib/services/word.service'
 
 import CategorySliderClient from './slider-client'
 
@@ -47,36 +45,15 @@ export default async function CategorySliderPage({ params }: { params: PageParam
     direction: 'asc',
   })
 
-  const breadcrumbs = [
-    { label: 'Workspace', href: '/app' },
-    {
-      label: context.learningLanguageName,
-      href: `/app/${resolvedParams.learningLanguageId}`,
-    },
-    {
-      label: context.categoryName,
-      href: `/app/${resolvedParams.learningLanguageId}/${resolvedParams.categoryId}`,
-    },
-    { label: 'Study (slider)' },
-  ]
-
-  const description = `Study words from ${context.categoryName} in slider mode.`
-
   return (
-    <AppShellLayout
-      heading={`${context.categoryName}`}
-      description={description}
-      breadcrumbs={breadcrumbs}
-    >
-      <CategorySliderClient
-        categoryId={resolvedParams.categoryId}
-        learningLanguageId={resolvedParams.learningLanguageId}
-        learningLanguageLabel={context.learningLanguageName}
-        learningLanguageCode={context.learningLanguageCode}
-        categoryName={context.categoryName}
-        initialWords={initialWords}
-      />
-    </AppShellLayout>
+    <CategorySliderClient
+      categoryId={resolvedParams.categoryId}
+      learningLanguageId={resolvedParams.learningLanguageId}
+      learningLanguageLabel={context.learningLanguageName}
+      learningLanguageCode={context.learningLanguageCode}
+      categoryName={context.categoryName}
+      initialWords={initialWords}
+    />
   )
 }
 

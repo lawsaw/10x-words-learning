@@ -4,13 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 
-import { ModeToggle } from '@/components/category-word-table/mode-toggle'
 import { SliderCard } from '@/components/category-slider/slider-card'
 import { WordActionsMenu } from '@/components/category-word-table/word-actions-menu'
 import { RenameCategoryDialog } from '@/components/category-word-table/rename-category-dialog'
 import { DeleteCategoryDialog } from '@/components/category-word-table/delete-category-dialog'
 import { useCategoryWords } from '@/hooks/use-category-words'
-import type { CategoryWordsListDto, SortDirection, WordOrderField, WordViewMode } from '@/lib/types'
+import type { CategoryWordsListDto, SortDirection, WordOrderField } from '@/lib/types'
 
 type CategorySliderClientProps = {
   categoryId: string
@@ -42,9 +41,6 @@ export default function CategorySliderClient({
   const [currentIndex, setCurrentIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [headingActionsContainer, setHeadingActionsContainer] = useState<Element | null>(null)
-  const [descriptionActionsContainer, setDescriptionActionsContainer] = useState<Element | null>(
-    null
-  )
   const [categoryActionsBusy, setCategoryActionsBusy] = useState(false)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
   const [renameError, setRenameError] = useState<string | null>(null)
@@ -52,18 +48,8 @@ export default function CategorySliderClient({
   const [deleteCategoryError, setDeleteCategoryError] = useState<string | null>(null)
   const [displayCategoryName, setDisplayCategoryName] = useState(categoryName)
 
-  const handleModeChange = useCallback(
-    (mode: 'table' | 'slider') => {
-      if (mode === 'table') {
-        router.push(`/app/${learningLanguageId}/${categoryId}`)
-      }
-    },
-    [router, learningLanguageId, categoryId]
-  )
-
   useEffect(() => {
     setHeadingActionsContainer(document.getElementById('app-shell-heading-actions'))
-    setDescriptionActionsContainer(document.getElementById('app-shell-description-actions'))
   }, [])
 
   useEffect(() => {
@@ -229,11 +215,6 @@ export default function CategorySliderClient({
             busy={categoryActionsBusy}
           />,
           headingActionsContainer
-        )}
-      {descriptionActionsContainer &&
-        createPortal(
-          <ModeToggle value="slider" onChange={handleModeChange} />,
-          descriptionActionsContainer
         )}
 
       <div className="flex flex-wrap items-center justify-center gap-2">
