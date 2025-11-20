@@ -10,10 +10,10 @@ import { CategoryLayoutClient } from './category-layout-client'
 
 type CategoryLayoutProps = {
   children: ReactNode
-  params: {
+  params: Promise<{
     learningLanguageId: string
     categoryId: string
-  }
+  }>
 }
 
 type ServerSupabaseClient = SupabaseClient<Database>
@@ -29,8 +29,7 @@ export type CategoryLayoutData = {
 }
 
 export default async function CategoryLayout({ children, params }: CategoryLayoutProps) {
-  const resolvedParams = await params
-  const { learningLanguageId, categoryId } = resolvedParams
+  const { learningLanguageId, categoryId } = await params
 
   const supabase = await createClient()
   const {

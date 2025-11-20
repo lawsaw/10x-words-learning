@@ -16,9 +16,8 @@ type SliderContext = {
   learningLanguageCode: string
 }
 
-export default async function CategorySliderPage({ params }: { params: PageParams }) {
+export default async function CategorySliderPage({ params }: { params: Promise<PageParams> }) {
   const resolvedParams = await params
-
   const supabase = await createClient()
   const {
     data: { user },
