@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { LogoutButton } from '@/components/app/logout-button'
+import { ThemeToggle } from '@/components/app/theme-toggle'
 
 type BreadcrumbItem = {
   label: string
@@ -40,7 +41,10 @@ export default function AppShellLayout({
             </span>
             <span>Words Learning</span>
           </Link>
-          <LogoutButton />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <LogoutButton />
+          </div>
         </div>
       </header>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8">

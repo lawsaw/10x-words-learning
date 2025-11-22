@@ -21,7 +21,7 @@ export function ModeToggle({ value, tableHref, sliderHref, className }: ModeTogg
   return (
     <div
       className={cn(
-        'border-border bg-muted/40 inline-flex items-center gap-1 rounded-md border p-1 text-xs',
+        'border-border bg-muted/40 inline-flex items-center gap-2 rounded-lg border p-1.5 text-sm',
         className
       )}
       role="group"
@@ -38,7 +38,7 @@ export function ModeToggle({ value, tableHref, sliderHref, className }: ModeTogg
             prefetch={true}
             aria-pressed={isActive}
             className={cn(
-              'ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-md px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+              'ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
               isActive
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
                 : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
