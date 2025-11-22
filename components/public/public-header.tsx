@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { ThemeToggle } from '@/components/app/theme-toggle'
 
 type PublicHeaderProps = {
   className?: string
@@ -27,6 +28,7 @@ export function PublicHeader({ className }: PublicHeaderProps) {
           <span>Words Learning</span>
         </Link>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" asChild aria-label="Go to login page">
             <Link href="/auth/login">Log in</Link>
           </Button>
