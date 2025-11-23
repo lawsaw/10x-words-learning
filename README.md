@@ -12,6 +12,7 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
   - [Installation](#installation)
   - [Environment Variables](#environment-variables)
   - [Testing & QA](#testing--qa)
+- [Docker Deployment](#docker-deployment)
 - [Continuous Integration](#continuous-integration)
 - [Available Scripts](#available-scripts)
 - [API Documentation](#api-documentation)
@@ -139,6 +140,61 @@ E2E tests use Playwright with the Page Object Model pattern to ensure critical u
 - Empty state handling
 
 Additional test and migration scripts will build on the Supabase configuration outlined in the PRD.
+
+## Docker Deployment
+
+The application is fully containerized and optimized for production environments (specifically DigitalOcean, AWS, etc.) as well as local Docker development.
+
+### 1. Build the Image
+
+You **must** provide the `NEXT_PUBLIC_` variables at build time so they can be baked into the client-side bundles.
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 \
+  --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key \
+  -t lawsaw/10x-words-learning .
+```
+
+> **Note for Production Builds:** Replace `http://127.0.0.1:54321` with your actual production Supabase URL (e.g., `https://your-project.supabase.co`).
+
+### 2. Run the Container (Local Supabase)
+
+When running locally with a local Supabase instance, you need to handle networking carefully so both the browser (Host) and the server (Container) can reach the database.
+
+**Recommended Command (Windows/Mac):**
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e PORT=3000 \
+  -e NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 \
+  -e SUPABASE_URL=http://host.docker.internal:54321 \
+  -e NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key \
+  -e OPENROUTER_API_KEY=your_openrouter_key \
+  --add-host host.docker.internal:host-gateway \
+  --name 10x-words-app \
+  lawsaw/10x-words-learning
+```
+
+**Key Configuration Details:**
+*   `NEXT_PUBLIC_SUPABASE_URL`: Used by the **Browser** to connect to Supabase (via localhost).
+*   `SUPABASE_URL`: A server-side override used by the **Container** to connect to Supabase (via the internal Docker network gateway).
+*   `--add-host host.docker.internal:host-gateway`: Adds a direct DNS mapping to `/etc/hosts` to bypass slow internal DNS resolution on some systems.
+*   `OPENROUTER_API_KEY`: Injected only at runtime for security.
+
+### 3. Run the Container (Production)
+
+For production deployment (e.g., DigitalOcean App Platform), you simply provide the standard environment variables. The `SUPABASE_URL` override is typically not needed if your `NEXT_PUBLIC_SUPABASE_URL` is globally accessible.
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co \
+  -e NEXT_PUBLIC_SUPABASE_ANON_KEY=your_prod_anon_key \
+  -e OPENROUTER_API_KEY=your_openrouter_key \
+  lawsaw/10x-words-learning
+```
 
 ## Continuous Integration
 
