@@ -1,9 +1,11 @@
 # Delete Learning Language Feature
 
 ## Overview
+
 Added functionality to delete learning languages, including all associated categories and words.
 
 ## Implementation Date
+
 November 18, 2025
 
 ## Changes Made
@@ -11,25 +13,30 @@ November 18, 2025
 ### 1. UI Components (`app/(app)/app/workspace-client.tsx`)
 
 #### Added Icon Imports
+
 - Imported `MoreHorizontal` icon from `lucide-react` for the menu trigger button (matching word actions menu)
 - Imported `FolderPlus` icon for "Add category" action
 - Imported `Trash2` icon for "Delete language" action
 
 #### Added DropdownMenu Components
+
 - Imported `DropdownMenu`, `DropdownMenuContent`, `DropdownMenuItem`, `DropdownMenuSeparator`, `DropdownMenuTrigger` from `@/components/ui/dropdown-menu`
 
 #### New State Management
+
 - `deleteLanguageOpen`: Controls delete confirmation dialog visibility
 - `deleteLanguageBusy`: Tracks deletion in progress
 - `languageToDelete`: Stores the language being deleted (id and name)
 - `deleteLanguageError`: Stores error messages from deletion attempts
 
 #### New Functions
+
 - `closeDeleteLanguageDialog()`: Resets delete dialog state
 - `handleOpenDeleteDialog(languageId, languageName)`: Opens delete confirmation dialog
 - `handleDeleteLanguage()`: Executes DELETE API call to remove learning language
 
 #### UI Updates to LanguageList Component
+
 - Replaced individual action buttons with a dropdown menu
 - Added "..." (MoreHorizontal icon) trigger button next to each learning language label (matching word actions menu)
 - Button uses default size from Button component for consistency
@@ -44,6 +51,7 @@ November 18, 2025
 - Accessible with aria-labels and aria-hidden on icons
 
 #### New DeleteLearningLanguageDialog Component
+
 - Confirmation dialog with destructive styling
 - Shows language name in confirmation message
 - Warns user about cascade deletion of categories and words
@@ -54,6 +62,7 @@ November 18, 2025
 ### 2. E2E Test Support (`e2e/page-objects/components/AddLearningLanguageDialog.ts`)
 
 #### Updated AddLearningLanguageDialog Class
+
 - Added `getLanguageMenuTrigger(languageCode)` - locate menu trigger button
 - Added `getDeleteLanguageMenuItem(languageCode)` - locate delete menu item
 - Added `getAddCategoryMenuItem(languageCode)` - locate add category menu item
@@ -62,7 +71,9 @@ November 18, 2025
 - Added `addCategoryViaMenu(languageCode)` - complete add category flow via menu
 
 #### New DeleteLearningLanguageDialog Class
+
 Complete page object for delete confirmation dialog:
+
 - Dialog locators (dialog, title, buttons, error)
 - `isVisible()`: Check dialog visibility
 - `waitForOpen()`: Wait for dialog to appear
@@ -74,18 +85,22 @@ Complete page object for delete confirmation dialog:
 - `getErrorMessage()`: Get error text
 
 ### 3. API Endpoint (Already Existed)
+
 - `DELETE /api/learning-languages/{learningLanguageId}` endpoint was already implemented
 - Located at: `app/api/learning-languages/[learningLanguageId]/route.ts`
 - Uses `LearningLanguageService.deleteLearningLanguage()`
 
 ### 4. Database Schema (Already Configured)
+
 Cascade deletion is properly configured in the database:
+
 - `app.categories` references `user_learning_languages(id)` with `ON DELETE CASCADE`
 - `app.words` references both:
   - `user_learning_languages(id)` with `ON DELETE CASCADE`
   - `categories(id)` with `ON DELETE CASCADE`
 
 When a learning language is deleted:
+
 1. All categories belonging to that language are automatically deleted
 2. All words in those categories are automatically deleted
 3. Database handles cascade deletion atomically
@@ -156,6 +171,7 @@ When a learning language is deleted:
 ## Visual Layout
 
 ### Before (Language List Item)
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Learning Language Name (code)          ⋯   │
@@ -166,6 +182,7 @@ When a learning language is deleted:
 ```
 
 ### Dropdown Menu Open
+
 ```
 ┌─────────────────────────────────────────────┐
 │  Learning Language Name (code)          ⋯   │
@@ -177,6 +194,7 @@ When a learning language is deleted:
 ```
 
 ### Delete Confirmation Dialog
+
 ```
 ┌──────────────────────────────────────────┐
 │  Delete learning language                 │
@@ -203,4 +221,3 @@ When a learning language is deleted:
 - Show count of categories/words that will be deleted
 - Add bulk delete for multiple languages
 - Export language data before deletion
-

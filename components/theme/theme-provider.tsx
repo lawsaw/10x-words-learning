@@ -47,8 +47,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     const stored = getStoredTheme()
     const nextTheme = stored ?? 'dark'
-    setTheme(nextTheme)
+    if (theme !== nextTheme) {
+      setTheme(nextTheme)
+    }
     applyThemeClass(nextTheme)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -80,4 +83,3 @@ export function useTheme() {
   }
   return context
 }
-

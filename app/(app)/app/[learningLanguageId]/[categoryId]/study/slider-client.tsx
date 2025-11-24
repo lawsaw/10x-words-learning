@@ -14,8 +14,6 @@ import type { CategoryWordsListDto, SortDirection, WordOrderField } from '@/lib/
 type CategorySliderClientProps = {
   categoryId: string
   learningLanguageId: string
-  learningLanguageLabel: string
-  learningLanguageCode: string
   categoryName: string
   initialWords: CategoryWordsListDto
 }
@@ -30,8 +28,6 @@ type SliderCardVm = {
 export default function CategorySliderClient({
   categoryId,
   learningLanguageId,
-  learningLanguageLabel,
-  learningLanguageCode,
   categoryName,
   initialWords,
 }: CategorySliderClientProps) {

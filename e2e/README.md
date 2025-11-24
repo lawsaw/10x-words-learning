@@ -46,19 +46,19 @@ We use the Page Object Model pattern to make tests more maintainable and readabl
 ### Example Page Object
 
 ```typescript
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Page, Locator } from '@playwright/test'
+import { BasePage } from './BasePage'
 
 export class MyPage extends BasePage {
-  readonly myButton: Locator;
+  readonly myButton: Locator
 
   constructor(page: Page) {
-    super(page, '/my-page');
-    this.myButton = page.getByRole('button', { name: 'Click me' });
+    super(page, '/my-page')
+    this.myButton = page.getByRole('button', { name: 'Click me' })
   }
 
   async clickButton() {
-    await this.myButton.click();
+    await this.myButton.click()
   }
 }
 ```
@@ -66,15 +66,15 @@ export class MyPage extends BasePage {
 ### Using Page Objects in Tests
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { MyPage } from './pages/MyPage';
+import { test, expect } from '@playwright/test'
+import { MyPage } from './pages/MyPage'
 
 test('should interact with page', async ({ page }) => {
-  const myPage = new MyPage(page);
-  await myPage.goto();
-  await myPage.clickButton();
-  expect(await myPage.getTitle()).toContain('Success');
-});
+  const myPage = new MyPage(page)
+  await myPage.goto()
+  await myPage.clickButton()
+  expect(await myPage.getTitle()).toContain('Success')
+})
 ```
 
 ## Writing Tests
@@ -82,33 +82,33 @@ test('should interact with page', async ({ page }) => {
 ### Basic Test Structure
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
 test.describe('Feature Name', () => {
   test('should do something', async ({ page }) => {
     // Navigate
-    await page.goto('/');
-    
+    await page.goto('/')
+
     // Interact
-    await page.getByRole('button', { name: 'Click' }).click();
-    
+    await page.getByRole('button', { name: 'Click' }).click()
+
     // Assert
-    await expect(page.getByText('Success')).toBeVisible();
-  });
-});
+    await expect(page.getByText('Success')).toBeVisible()
+  })
+})
 ```
 
 ### Using Fixtures
 
 ```typescript
-import { testUsers } from './fixtures/test-data';
+import { testUsers } from './fixtures/test-data'
 
 test('should login with valid credentials', async ({ page }) => {
-  await page.goto('/auth/login');
-  await page.getByLabel('Email').fill(testUsers.valid.email);
-  await page.getByLabel('Password').fill(testUsers.valid.password);
-  await page.getByRole('button', { name: 'Login' }).click();
-});
+  await page.goto('/auth/login')
+  await page.getByLabel('Email').fill(testUsers.valid.email)
+  await page.getByLabel('Password').fill(testUsers.valid.password)
+  await page.getByRole('button', { name: 'Login' }).click()
+})
 ```
 
 ## Best Practices
@@ -141,36 +141,35 @@ Playwright can also test APIs:
 
 ```typescript
 test('should fetch user data', async ({ request }) => {
-  const response = await request.get('/api/profile');
-  expect(response.ok()).toBeTruthy();
-  const data = await response.json();
-  expect(data).toHaveProperty('id');
-});
+  const response = await request.get('/api/profile')
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  expect(data).toHaveProperty('id')
+})
 ```
 
 ## Visual Regression Testing
 
 ```typescript
 test('should match screenshot', async ({ page }) => {
-  await page.goto('/');
-  await expect(page).toHaveScreenshot('homepage.png');
-});
+  await page.goto('/')
+  await expect(page).toHaveScreenshot('homepage.png')
+})
 ```
 
 ## Accessibility Testing
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
 test('should not have accessibility violations', async ({ page }) => {
-  await page.goto('/');
-  
-  const accessibilityScanResults = await new AxeBuilder({ page })
-    .analyze();
-  
-  expect(accessibilityScanResults.violations).toEqual([]);
-});
+  await page.goto('/')
+
+  const accessibilityScanResults = await new AxeBuilder({ page }).analyze()
+
+  expect(accessibilityScanResults.violations).toEqual([])
+})
 ```
 
 ## Test Hooks
@@ -178,12 +177,12 @@ test('should not have accessibility violations', async ({ page }) => {
 ```typescript
 test.beforeEach(async ({ page }) => {
   // Setup before each test
-  await page.goto('/');
-});
+  await page.goto('/')
+})
 
 test.afterEach(async ({ page }) => {
   // Cleanup after each test
-});
+})
 ```
 
 ## Configuration
@@ -228,6 +227,7 @@ npx playwright show-trace trace.zip
 ## CI/CD Integration
 
 Tests are configured to run in CI with:
+
 - Retry on failure (2 retries)
 - Single worker (no parallelization)
 - GitHub Actions reporter
@@ -236,18 +236,20 @@ Tests are configured to run in CI with:
 ## Troubleshooting
 
 ### Tests timing out
+
 - Increase timeout in `playwright.config.ts`
 - Use explicit `waitFor` methods
 - Check if elements are truly visible
 
 ### Flaky tests
+
 - Avoid `page.waitForTimeout()`
 - Use auto-waiting locators
 - Ensure proper test isolation
 - Check for race conditions
 
 ### Authentication issues
+
 - Use storage state to persist authentication
 - Clear cookies between tests if needed
 - Check token expiration
-

@@ -46,14 +46,14 @@ npm run test:integration
 ### Unit Test Example
 
 ```typescript
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest'
 
 describe('MyFunction', () => {
   it('should return expected result', () => {
-    const result = myFunction(input);
-    expect(result).toBe(expected);
-  });
-});
+    const result = myFunction(input)
+    expect(result).toBe(expected)
+  })
+})
 ```
 
 ### Component Test Example
@@ -91,15 +91,15 @@ vi.mock('@/lib/supabase/client', () => ({
   supabase: {
     from: vi.fn(),
   },
-}));
+}))
 ```
 
 ### Mocking functions
 
 ```typescript
-const mockFn = vi.fn();
-mockFn.mockReturnValue('mocked value');
-mockFn.mockResolvedValue('async value');
+const mockFn = vi.fn()
+mockFn.mockReturnValue('mocked value')
+mockFn.mockResolvedValue('async value')
 ```
 
 ## Coverage
@@ -107,6 +107,7 @@ mockFn.mockResolvedValue('async value');
 Coverage reports are generated in the `coverage/` directory when running `npm run test:coverage`.
 
 Coverage thresholds:
+
 - Lines: 70%
 - Functions: 70%
 - Branches: 70%
@@ -115,11 +116,13 @@ Coverage thresholds:
 ## Troubleshooting
 
 ### Tests not found
+
 Make sure your test files follow the naming convention: `*.test.ts`, `*.test.tsx`, `*.spec.ts`, or `*.spec.tsx`
 
 ### Import errors
+
 Check that path aliases in `vitest.config.ts` match those in `tsconfig.json`
 
 ### DOM not available
-Make sure `environment: 'jsdom'` is set in `vitest.config.ts` for component tests
 
+Make sure `environment: 'jsdom'` is set in `vitest.config.ts` for component tests

@@ -1,12 +1,14 @@
 1. Tables with columns, data types, and constraints
 
 ### `app.languages`
+
 - `code text primary key` – stable identifier (e.g., `english`, `german`), seeded via migrations.
 - `name text not null` – human-readable label.
 - `created_at timestamptz not null default now()` – audit timestamp.
 - `updated_at timestamptz not null default now()` – maintained by shared timestamp trigger.
 
 ### `app.profiles`
+
 - `user_id uuid primary key references auth.users(id) on delete cascade` – inherits Supabase auth identifier.
 - `user_language_id text not null references app.languages(code)` – immutable preferred language selected at signup.
 - `created_at timestamptz not null default now()`.
@@ -16,6 +18,7 @@
   - Owned by `service_role`; inserts occur through signup trigger to ensure metadata validation.
 
 ### `app.user_learning_languages`
+
 - `id uuid primary key default gen_random_uuid()`.
 - `user_id uuid not null references app.profiles(user_id) on delete cascade`.
 - `language_id text not null references app.languages(code)`.
@@ -26,6 +29,7 @@
   - Trigger propagates `user_id` and guards against adding the same language as the immutable `user_language_id`.
 
 ### `app.categories`
+
 - `id uuid primary key default gen_random_uuid()`.
 - `user_learning_language_id uuid not null references app.user_learning_languages(id) on delete cascade`.
 - `user_id uuid not null references app.profiles(user_id) on delete cascade`.
@@ -37,6 +41,7 @@
   - Trigger keeps `user_id` synchronized with the parent learning language.
 
 ### `app.words`
+
 - `id uuid primary key default gen_random_uuid()`.
 - `user_learning_language_id uuid not null references app.user_learning_languages(id) on delete cascade`.
 - `user_id uuid not null references app.profiles(user_id) on delete cascade`.
@@ -51,6 +56,7 @@
   - Trigger ensures `user_learning_language_id` and `user_id` remain aligned with the referenced category.
 
 ### Support objects
+
 - Extension: `pgcrypto` enabled for `gen_random_uuid()`.
 - Shared trigger functions in `app` schema:
   - `app.tg_set_timestamp()` to maintain `updated_at`.
@@ -60,6 +66,7 @@
 - RPC helpers wrapping the view to enforce parameterized filtering by authenticated user.
 
 2. Relationships between tables
+
 - One `app.languages` record can relate to many `app.profiles` (1:N via `user_language_id`).
 - One `app.profiles` record owns many `app.user_learning_languages` (1:N via `user_id`).
 - One `app.user_learning_languages` record owns many `app.categories` (1:N via `user_learning_language_id`).
@@ -68,6 +75,7 @@
 - Cascading deletes propagate from `auth.users` → `app.profiles` → `app.user_learning_languages` → `app.categories` → `app.words`.
 
 3. Indexes
+
 - `app.languages_pkey` (btree on `code`).
 - `app.profiles_pkey` (btree on `user_id`).
 - `app.user_learning_languages_pkey` (btree on `id`).
@@ -82,6 +90,7 @@
 - `app.words_category_idx` (btree on `(category_id, created_at desc)`) to accelerate per-category fetches.
 
 4. PostgreSQL policies (RLS)
+
 - `app.languages`: RLS disabled; grant `SELECT` to `authenticated` and `anon` roles for static lookups.
 - `app.profiles`:
   - Enable RLS.
@@ -102,6 +111,7 @@
 - Ensure `authenticated` role can execute RPCs/view while `anon` lacks access beyond signup requirements.
 
 5. Additional notes
+
 - Set database `search_path` for Supabase roles to `app, public` to prioritize the application schema.
 - Enforce UTC by defaulting all timestamps with `now()`; consider `statement_timestamp()` for long-running tasks if needed.
 - All tables owned by `service_role` to keep DDL privileges centralized; grant `SELECT/INSERT/UPDATE/DELETE` on mutable tables only to `authenticated`.

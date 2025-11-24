@@ -9,6 +9,7 @@ This document describes the changes made to adapt the 10xWordsLearning project f
 ### 1. Vercel Configuration (`vercel.json`)
 
 Created a new `vercel.json` configuration file with:
+
 - Build and development commands
 - Framework detection (Next.js)
 - Required environment variables:
@@ -21,6 +22,7 @@ Created a new `vercel.json` configuration file with:
 Created a new CI/CD workflow for the `main` branch with the following jobs:
 
 #### Jobs:
+
 1. **Lint Code**: Runs ESLint on the codebase
 2. **Build**: Builds the Next.js application
 3. **Unit Tests**: Runs unit tests with coverage
@@ -28,6 +30,7 @@ Created a new CI/CD workflow for the `main` branch with the following jobs:
 5. **Status Notification**: Posts deployment status to commit comments
 
 #### Key Features:
+
 - Automatic deployment on push to `main` branch
 - Runs lint, build, and unit tests before deployment
 - Uses Vercel CLI for deployment
@@ -39,11 +42,13 @@ Created a new CI/CD workflow for the `main` branch with the following jobs:
 To use this workflow, configure the following secrets in your GitHub repository:
 
 #### Vercel Secrets:
+
 - `VERCEL_TOKEN`: Vercel authentication token
 - `VERCEL_ORG_ID`: Vercel organization ID
 - `VERCEL_PROJECT_ID`: Vercel project ID
 
 #### Application Secrets:
+
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key
 - `OPENROUTER_API_KEY`: OpenRouter API key
@@ -51,6 +56,7 @@ To use this workflow, configure the following secrets in your GitHub repository:
 ### 4. Actions Version Verification
 
 All GitHub Actions are using the latest major versions:
+
 - ✅ `actions/checkout@v5` (latest: v5.0.1)
 - ✅ `actions/setup-node@v6` (latest: v6.0.0)
 - ✅ `actions/upload-artifact@v5` (latest: v5.0.0)
@@ -96,13 +102,15 @@ The current `next.config.ts` is minimal and ready for Vercel deployment. No addi
 ## Environment Variables
 
 All environment variables are properly configured:
-- Build-time variables (NEXT_PUBLIC_*) are available during build
+
+- Build-time variables (NEXT*PUBLIC*\*) are available during build
 - Server-side variables are available at runtime
 - All sensitive keys are stored as secrets
 
 ## Monitoring
 
 After deployment:
+
 - Check the GitHub Actions tab for workflow status
 - View deployment logs in Vercel dashboard
 - Check commit comments for deployment URLs and status
@@ -110,6 +118,7 @@ After deployment:
 ## Troubleshooting
 
 If deployment fails:
+
 1. Check GitHub Actions logs for error messages
 2. Verify all secrets are correctly configured
 3. Ensure Vercel project is properly linked
@@ -119,9 +128,9 @@ If deployment fails:
 ## Differences from Pull Request Workflow
 
 The `master.yml` workflow differs from `pull-request.yml`:
+
 - Triggers on push to `main` (not on pull requests)
 - Excludes E2E tests to speed up deployment
 - Includes a deployment job with Vercel CLI
 - Posts status as commit comments (not PR comments)
 - Uses production environment for deployment
-

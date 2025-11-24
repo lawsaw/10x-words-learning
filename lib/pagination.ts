@@ -49,7 +49,7 @@ export function mapOrderByToColumn(orderBy: string): string {
 /**
  * Applies pagination and sorting to a Supabase query builder.
  */
-export function applyPagination<T>(
+export function applyPagination(
   query: any,
   page: number,
   pageSize: number,

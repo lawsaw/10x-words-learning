@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server'
 import { AuthService } from '@/lib/services/auth.service'
 import { okResponse, errorResponse } from '@/lib/response'
 import type { AuthSessionStatusDto } from '@/lib/types'
@@ -8,7 +7,7 @@ import type { AuthSessionStatusDto } from '@/lib/types'
  * Retrieves the current session status for the authenticated user.
  * Requires authentication.
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Verify user is authenticated
     await AuthService.getCurrentUserId()

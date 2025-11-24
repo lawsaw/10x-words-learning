@@ -225,4 +225,3 @@ Accessible at the public path `/`. Authentication modals appear via the `?modal=
 10. Wire modals into `LandingPage`, ensure route `?modal` toggling works from CTA buttons and internal links.
 11. Style all sections with Tailwind 4 and Shadcn tokens; ensure responsive behavior at mobile/tablet/desktop breakpoints.
 12. Manually test flows: open modals, validation errors, API errors, successful registration/login redirect to `/app`.
-

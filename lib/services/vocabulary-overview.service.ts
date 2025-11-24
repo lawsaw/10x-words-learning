@@ -5,7 +5,7 @@ import type {
   VocabularyOverviewQueryDto,
 } from '@/lib/types'
 import { mapSupabaseError } from '@/lib/errors'
-import { calculatePaginationMeta, trimToPageSize, mapOrderByToColumn } from '@/lib/pagination'
+import { calculatePaginationMeta, trimToPageSize } from '@/lib/pagination'
 
 /**
  * Service for vocabulary overview analytics and reporting.

@@ -5,6 +5,7 @@
 A web-based vocabulary workspace for independent language learners. The MVP blends manual curation and AI-assisted word generation so users can assemble thematic lists, study in table or slider modes, and keep data private through Supabase row-level security. For a detailed breakdown of requirements, see the [Product Requirements](./.ai/prd.md).
 
 ## Table of Contents
+
 - [Project Description](#project-description)
 - [Tech Stack](#tech-stack)
 - [Getting Started Locally](#getting-started-locally)
@@ -21,7 +22,9 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 - [License](#license)
 
 ## Project Description
+
 10x Words Learning delivers a structured environment for building and practicing multilingual vocabulary sets:
+
 - Email/password accounts require learners to pick an immutable user language at registration.
 - Users manage learning languages, subject categories, and words, with guard rails against duplicates and cascading deletions across the hierarchy.
 - Words capture multilingual definitions, personal translations, and Markdown-formatted usage examples with timestamps for chronological sorting.
@@ -30,6 +33,7 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 - Supabase persistence enforces row-level security policies so each learner only accesses their own data.
 
 ## Tech Stack
+
 - **Frontend:** Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui, lucide-react, class-variance-authority, tailwind-merge, tw-animate-css.
 - **Backend & Data:** Supabase with `@supabase/supabase-js` and `@supabase/ssr` for authenticated access, cascading deletes, and role separation.
 - **AI & Integrations:** OpenRouter (DeepSeek) for AI-assisted vocabulary generation.
@@ -37,14 +41,18 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 - **Tooling & Quality:** ESLint 9, Prettier, TypeScript tooling, Husky, lint-staged, GitHub Actions for CI.
 
 ## Getting Started Locally
+
 ### Prerequisites
+
 - Node.js 20 or later
 - npm 10 or later
 - Supabase project with credentials (URL and anon key)
 - OpenRouter API key for DeepSeek access
 
 ### Installation
+
 1. Clone the repository and install dependencies:
+
    ```bash
    git clone https://github.com/lawsaw/10x-words-learning.git
    cd 10x-words-learning
@@ -52,18 +60,21 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
    ```
 
 2. Set up environment variables:
+
    ```bash
    # For development/production
    cp .env.example .env
-   
+
    # For E2E testing (only if running tests)
    cp .env.test.example .env.test
-   
+
    # Edit both files with your actual credentials
    ```
+
    See the [Environment Variables](#environment-variables) section for detailed configuration.
 
 3. Run the development server:
+
    ```bash
    npm run dev
    ```
@@ -73,10 +84,12 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 ### Environment Variables
 
 The project uses different environment files for different contexts. Separate example files are provided:
+
 - `.env.example` → `.env` for development/production
 - `.env.test.example` → `.env.test` for E2E testing
 
 #### `.env` (Development & Production)
+
 Required for running the application locally or in production:
 
 ```bash
@@ -89,10 +102,12 @@ OPENROUTER_API_KEY=<your-openrouter-api-key>
 ```
 
 **How to get these values:**
+
 - **Supabase credentials**: Go to your [Supabase Dashboard](https://supabase.com/dashboard) → Project Settings → API
 - **OpenRouter API Key**: Sign up at [OpenRouter](https://openrouter.ai/) and create an API key
 
 #### `.env.test` (E2E Testing)
+
 Required for running Playwright end-to-end tests:
 
 ```bash
@@ -111,9 +126,11 @@ E2E_PASSWORD=<test-user-password>
 ### Testing & QA
 
 #### End-to-End Tests (Playwright)
+
 E2E tests use Playwright with the Page Object Model pattern to ensure critical user flows work correctly.
 
 **Setup:**
+
 1. Configure `.env.test` file as described in the [Environment Variables](#environment-variables) section
 
 2. Create the test user in your Supabase project:
@@ -127,6 +144,7 @@ E2E tests use Playwright with the Page Object Model pattern to ensure critical u
      - `created_at`: Current timestamp
 
 **Running Tests:**
+
 - Run all E2E tests: `npm run test:e2e`
 - Run specific test file: `npx playwright test add-polish-language`
 - Run with UI (headed mode): `npx playwright test add-polish-language --headed`
@@ -134,6 +152,7 @@ E2E tests use Playwright with the Page Object Model pattern to ensure critical u
 - View test report: `npx playwright show-report`
 
 **Test Coverage:**
+
 - Add/delete learning languages with cleanup
 - Dialog interactions and cancellations
 - Authentication flows
@@ -178,10 +197,11 @@ docker run -d \
 ```
 
 **Key Configuration Details:**
-*   `NEXT_PUBLIC_SUPABASE_URL`: Used by the **Browser** to connect to Supabase (via localhost).
-*   `SUPABASE_URL`: A server-side override used by the **Container** to connect to Supabase (via the internal Docker network gateway).
-*   `--add-host host.docker.internal:host-gateway`: Adds a direct DNS mapping to `/etc/hosts` to bypass slow internal DNS resolution on some systems.
-*   `OPENROUTER_API_KEY`: Injected only at runtime for security.
+
+- `NEXT_PUBLIC_SUPABASE_URL`: Used by the **Browser** to connect to Supabase (via localhost).
+- `SUPABASE_URL`: A server-side override used by the **Container** to connect to Supabase (via the internal Docker network gateway).
+- `--add-host host.docker.internal:host-gateway`: Adds a direct DNS mapping to `/etc/hosts` to bypass slow internal DNS resolution on some systems.
+- `OPENROUTER_API_KEY`: Injected only at runtime for security.
 
 ### 3. Run the Container (Production)
 
@@ -216,11 +236,13 @@ For CI to work, configure these secrets in your GitHub repository:
 Add the following secrets to the **integration** environment:
 
 **Application Secrets:**
+
 - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
 - `OPENROUTER_API_KEY` - Your OpenRouter API key for AI generation
 
 **E2E Test Secrets:**
+
 - `E2E_USERNAME_ID` - Test user UUID from Supabase Authentication
 - `E2E_USERNAME` - Test user email address
 - `E2E_PASSWORD` - Test user password
@@ -228,6 +250,7 @@ Add the following secrets to the **integration** environment:
 The workflow automatically runs on pull requests and posts detailed status comments with job results and links to workflow runs.
 
 ## Available Scripts
+
 - `npm run dev` — Start the Next.js development server.
 - `npm run build` — Create an optimized production build.
 - `npm run start` — Serve the production build.
@@ -255,7 +278,9 @@ A comprehensive REST API is available for all application functionality. See [AP
 All endpoints follow REST conventions with standardized error responses and proper HTTP status codes.
 
 ## Project Scope
+
 **In scope**
+
 - Email/password authentication with immutable user language selection.
 - CRUD for learning languages, categories (including rename), and words with Markdown-rich examples.
 - AI-assisted vocabulary generation that overwrites current form data when successful.
@@ -265,6 +290,7 @@ All endpoints follow REST conventions with standardized error responses and prop
 - Playwright end-to-end coverage for the primary user flows using the Page Object Model pattern.
 
 **Out of scope**
+
 - Progress tracking, spaced repetition, or learning analytics.
 - Administrative dashboards or cross-user management.
 - Password recovery, multi-factor authentication, or email verification flows.
@@ -273,11 +299,14 @@ All endpoints follow REST conventions with standardized error responses and prop
 - External error tracking, analytics, or rate limiting.
 
 ## Project Status
+
 The project is in active MVP development guided by the PRD. Upcoming milestones focus on:
+
 - Implementing the end-to-end CRUD and study flows described in the functional requirements.
 - Integrating Supabase row-level security and cascading deletes across environments.
 - Expanding Playwright test suites following the Page Object Model pattern for comprehensive coverage.
 - Meeting success metrics such as 100% usability for core flows and consistent AI-generated JSON responses.
 
 ## License
+
 License information is not yet specified. Until a license is declared, the project should be treated as "all rights reserved."

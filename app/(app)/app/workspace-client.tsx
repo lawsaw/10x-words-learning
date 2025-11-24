@@ -259,14 +259,11 @@ export default function WorkspaceClient({ initialSummaries }: WorkspaceClientPro
     }
   }
 
-  const handleOpenCategoryDialog = useCallback(
-    (learningLanguageId?: string) => {
-      const targetId = learningLanguageId ?? summaries[0]?.id ?? ''
-      resetCategoryForm(targetId)
-      setCreateCategoryOpen(true)
-    },
-    [summaries]
-  )
+  const handleOpenCategoryDialog = (learningLanguageId?: string) => {
+    const targetId = learningLanguageId ?? summaries[0]?.id ?? ''
+    resetCategoryForm(targetId)
+    setCreateCategoryOpen(true)
+  }
 
   const handleOpenLanguageDialog = () => {
     resetLanguageForm()

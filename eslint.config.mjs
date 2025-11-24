@@ -14,6 +14,15 @@ const eslintConfig = defineConfig([
     },
     rules: {
       'prettier/prettier': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   // Override default ignores of eslint-config-next.

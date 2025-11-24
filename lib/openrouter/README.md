@@ -28,15 +28,15 @@ The OpenRouter service is already integrated into this project. Dependencies:
 ### Basic Usage
 
 ```typescript
-import { OpenRouterService } from "@/lib/openrouter"
+import { OpenRouterService } from '@/lib/openrouter'
 
 // Configure the service
 const config = {
   apiKey: process.env.OPENROUTER_API_KEY!,
-  baseUrl: "https://openrouter.ai/api/v1",
-  defaultModel: "openai/gpt-4o-mini",
+  baseUrl: 'https://openrouter.ai/api/v1',
+  defaultModel: 'openai/gpt-4o-mini',
   appUrl: process.env.NEXT_PUBLIC_APP_URL,
-  appTitle: "YourApp",
+  appTitle: 'YourApp',
 }
 
 // Create service instance
@@ -45,8 +45,8 @@ const service = new OpenRouterService(config)
 // Send a chat request
 const response = await service.sendChat({
   messages: [
-    { role: "system", content: "You are a helpful assistant." },
-    { role: "user", content: "Hello!" },
+    { role: 'system', content: 'You are a helpful assistant.' },
+    { role: 'user', content: 'Hello!' },
   ],
 })
 
@@ -56,11 +56,11 @@ console.log(response.choices[0].message.content)
 ### Using MessageComposer
 
 ```typescript
-import { MessageComposer } from "@/lib/openrouter"
+import { MessageComposer } from '@/lib/openrouter'
 
 // Create messages with helpers
 const messages = [
-  MessageComposer.createSystemMessage("You are a vocabulary tutor."),
+  MessageComposer.createSystemMessage('You are a vocabulary tutor.'),
   MessageComposer.createUserMessage("Define 'lexicon'"),
 ]
 
@@ -77,30 +77,30 @@ console.log(`Estimated tokens: ${tokenCount}`)
 ```typescript
 const response = await service.sendChat({
   messages: [
-    { role: "system", content: "Generate vocabulary words in JSON." },
-    { role: "user", content: "Generate 3 Spanish words" },
+    { role: 'system', content: 'Generate vocabulary words in JSON.' },
+    { role: 'user', content: 'Generate 3 Spanish words' },
   ],
   responseFormat: {
-    type: "json_schema",
+    type: 'json_schema',
     json_schema: {
-      name: "vocabulary_words",
+      name: 'vocabulary_words',
       strict: true,
       schema: {
-        type: "object",
+        type: 'object',
         properties: {
           words: {
-            type: "array",
+            type: 'array',
             items: {
-              type: "object",
+              type: 'object',
               properties: {
-                term: { type: "string" },
-                translation: { type: "string" },
+                term: { type: 'string' },
+                translation: { type: 'string' },
               },
-              required: ["term", "translation"],
+              required: ['term', 'translation'],
             },
           },
         },
-        required: ["words"],
+        required: ['words'],
       },
     },
   },
@@ -111,7 +111,7 @@ const response = await service.sendChat({
 
 ```typescript
 const response = await service.sendChat({
-  messages: [{ role: "user", content: "Tell me a creative story." }],
+  messages: [{ role: 'user', content: 'Tell me a creative story.' }],
   parameters: {
     temperature: 0.9,
     top_p: 0.95,
@@ -169,7 +169,7 @@ import {
   OpenRouterSafetyError,
   OpenRouterSchemaError,
   OpenRouterUnexpectedResponseError,
-} from "@/lib/openrouter"
+} from '@/lib/openrouter'
 
 try {
   const response = await service.sendChat({ messages })
@@ -179,7 +179,7 @@ try {
   } else if (error instanceof OpenRouterNetworkError) {
     console.log(`Network error. Retryable: ${error.retryable}`)
   } else if (error instanceof OpenRouterAuthError) {
-    console.log("Authentication failed")
+    console.log('Authentication failed')
   }
   // ... handle other error types
 }
@@ -187,17 +187,17 @@ try {
 
 ### Error Types
 
-| Error Class                            | When Thrown                              | HTTP Status |
-| -------------------------------------- | ---------------------------------------- | ----------- |
-| `OpenRouterConfigurationError`         | Missing/invalid configuration            | 500         |
-| `OpenRouterValidationError`            | Request validation fails                 | 400         |
-| `OpenRouterNetworkError`               | Network failure or timeout               | 503         |
-| `OpenRouterAuthError`                  | Authentication failure (401/403)         | 401         |
-| `OpenRouterRateLimitError`             | Rate limit exceeded (429)                | 429         |
-| `OpenRouterServerError`                | Server error (>= 500)                    | 502         |
-| `OpenRouterSafetyError`                | Content filter triggered                 | 422         |
-| `OpenRouterSchemaError`                | Response doesn't match schema            | 422         |
-| `OpenRouterUnexpectedResponseError`    | Unexpected response format               | 502         |
+| Error Class                         | When Thrown                      | HTTP Status |
+| ----------------------------------- | -------------------------------- | ----------- |
+| `OpenRouterConfigurationError`      | Missing/invalid configuration    | 500         |
+| `OpenRouterValidationError`         | Request validation fails         | 400         |
+| `OpenRouterNetworkError`            | Network failure or timeout       | 503         |
+| `OpenRouterAuthError`               | Authentication failure (401/403) | 401         |
+| `OpenRouterRateLimitError`          | Rate limit exceeded (429)        | 429         |
+| `OpenRouterServerError`             | Server error (>= 500)            | 502         |
+| `OpenRouterSafetyError`             | Content filter triggered         | 422         |
+| `OpenRouterSchemaError`             | Response doesn't match schema    | 422         |
+| `OpenRouterUnexpectedResponseError` | Unexpected response format       | 502         |
 
 ## Advanced Features
 
@@ -211,6 +211,7 @@ The service automatically retries failed requests with exponential backoff:
 - **Jitter**: Random 0-1000ms added to prevent thundering herd
 
 Retries are performed for:
+
 - Network errors (timeout, connection failures)
 - Rate limit errors (429)
 - Server errors (>= 500)
@@ -256,6 +257,7 @@ const service = new OpenRouterService(config, {
 ```
 
 Emitted metrics:
+
 - `chat_completion_success`: Successful completions
 - `chat_completion_failure`: Failed completions
 
@@ -265,8 +267,8 @@ Emitted metrics:
 
 ```typescript
 // app/api/chat/route.ts
-import { OpenRouterService } from "@/lib/openrouter"
-import { NextResponse } from "next/server"
+import { OpenRouterService } from '@/lib/openrouter'
+import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
   try {
@@ -274,8 +276,8 @@ export async function POST(request: Request) {
 
     const config = {
       apiKey: process.env.OPENROUTER_API_KEY!,
-      baseUrl: "https://openrouter.ai/api/v1",
-      defaultModel: "openai/gpt-4o-mini",
+      baseUrl: 'https://openrouter.ai/api/v1',
+      defaultModel: 'openai/gpt-4o-mini',
     }
 
     const service = new OpenRouterService(config)
@@ -283,8 +285,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error("Chat error:", error)
-    return NextResponse.json({ error: "Failed to process chat" }, { status: 500 })
+    console.error('Chat error:', error)
+    return NextResponse.json({ error: 'Failed to process chat' }, { status: 500 })
   }
 }
 ```
@@ -293,21 +295,21 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/actions/chat.ts
-"use server"
+'use server'
 
-import { OpenRouterService } from "@/lib/openrouter"
+import { OpenRouterService } from '@/lib/openrouter'
 
 export async function chatAction(userMessage: string) {
   const config = {
     apiKey: process.env.OPENROUTER_API_KEY!,
-    baseUrl: "https://openrouter.ai/api/v1",
-    defaultModel: "openai/gpt-4o-mini",
+    baseUrl: 'https://openrouter.ai/api/v1',
+    defaultModel: 'openai/gpt-4o-mini',
   }
 
   const service = new OpenRouterService(config)
 
   const response = await service.sendChat({
-    messages: [{ role: "user", content: userMessage }],
+    messages: [{ role: 'user', content: userMessage }],
   })
 
   return response.choices[0].message.content
@@ -329,6 +331,7 @@ See `lib/services/ai-generation.service.ts` for a real-world example of using Op
 Sends a chat completion request.
 
 **Parameters:**
+
 - `input.messages`: Array of chat messages
 - `input.model?`: Model override
 - `input.parameters?`: Model parameters (temperature, top_p, etc.)
@@ -390,21 +393,24 @@ Returns read-only configuration snapshot.
 ### Common Issues
 
 **"OpenRouter API key is required"**
+
 - Ensure `OPENROUTER_API_KEY` is set in your environment
 
 **"Request timed out"**
+
 - Increase `timeoutMs` in configuration
 - Check network connectivity
 
 **"Rate limit exceeded"**
+
 - Implement request throttling in your application
 - Use the `retryAfter` value from `OpenRouterRateLimitError`
 
 **"Schema validation failed"**
+
 - Verify your JSON schema is valid
 - Check that the model supports structured outputs
 
 ## License
 
 Part of the 10xWordsLearning project.
-

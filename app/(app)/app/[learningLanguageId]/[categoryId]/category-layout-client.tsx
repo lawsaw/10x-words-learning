@@ -21,22 +21,23 @@ export function CategoryLayoutClient({
   categoryId,
 }: CategoryLayoutClientProps) {
   const pathname = usePathname()
-  const [descriptionActionsContainer, setDescriptionActionsContainer] = useState<Element | null>(
-    null
-  )
-  const [descriptionContainer, setDescriptionContainer] = useState<Element | null>(null)
+  const [containers, setContainers] = useState<{
+    actions: Element | null
+    description: Element | null
+  }>({
+    actions: null,
+    description: null,
+  })
 
   useEffect(() => {
     const actions = document.getElementById('app-shell-description-actions')
     const description = document.getElementById('app-shell-description')
-    setDescriptionActionsContainer(actions)
-    setDescriptionContainer(description)
 
-    return () => {
-      setDescriptionActionsContainer(null)
-      setDescriptionContainer(null)
+    if (actions !== containers.actions || description !== containers.description) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setContainers({ actions, description })
     }
-  }, [pathname])
+  }, [pathname, containers.actions, containers.description])
 
   // Determine current mode based on pathname
   const currentMode: WordViewMode = pathname.endsWith('/study') ? 'slider' : 'table'
@@ -49,13 +50,13 @@ export function CategoryLayoutClient({
 
   return (
     <>
-      {descriptionActionsContainer &&
+      {containers.actions &&
         createPortal(
           <ModeToggle value={currentMode} tableHref={tableHref} sliderHref={sliderHref} />,
-          descriptionActionsContainer
+          containers.actions
         )}
-      {descriptionContainer &&
-        createPortal(<p className="m-0">{descriptionText}</p>, descriptionContainer)}
+      {containers.description &&
+        createPortal(<p className="m-0">{descriptionText}</p>, containers.description)}
       {children}
     </>
   )

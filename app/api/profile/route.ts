@@ -10,7 +10,7 @@ import type { ProfileDto } from '@/lib/types'
  * Retrieves the profile for the authenticated user.
  * Requires authentication.
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Verify authentication and get user ID
     const userId = await AuthService.getCurrentUserId()

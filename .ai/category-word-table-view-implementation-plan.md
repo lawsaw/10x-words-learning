@@ -1,16 +1,19 @@
 # View Implementation Plan Category Word Table View
 
 ## 1. Overview
+
 - Deliver the table-mode experience for managing vocabulary inside a specific learning language category.
 - Enable learners to review, create, edit, delete, and AI-generate words while staying within the category context.
 - Provide responsive layout, Markdown example visibility, and access to shared modals and dialogs mandated by the PRD.
 
 ## 2. View Routing
+
 - Primary route: `/app/[learningLanguageId]/[categoryId]` rendered via Next.js app router.
 - Slider sibling route: `/app/[learningLanguageId]/[categoryId]/study`; the Mode Toggle should navigate between these paths while preserving params.
 - Guard the page behind the authenticated workspace shell (`/app`) to ensure Supabase session enforcement.
 
 ## 3. Component Structure
+
 - `CategoryWordTablePage` (server component)
   - `CategoryWordTableClient` (client component)
     - `ModeToggle`
@@ -31,6 +34,7 @@
 ## 4. Component Details
 
 ### CategoryWordTablePage
+
 - Component description: Server entry that resolves route params, preloads metadata (category name, active language), and renders the client component inside the authenticated layout.
 - Main elements: `AppShellLayout`, header breadcrumb, suspense boundary wrapping `CategoryWordTableClient`.
 - Handled interactions: none (server component).
@@ -39,6 +43,7 @@
 - Props: passes `{ categoryId, learningLanguageId, initialWords, categoryName, userLanguage }` to client.
 
 ### CategoryWordTableClient
+
 - Component description: Client coordinator handling state, fetching, and interactions for the table view.
 - Main elements: wraps `ModeToggle`, `WordToolbar`, conditional `WordTable` or `TableEmptyState`, modals via portals.
 - Handled interactions: data refresh, open/close modals, mode toggle navigation, sort/order adjustments.
@@ -47,6 +52,7 @@
 - Props: `{ categoryId: string, learningLanguageId: string, categoryName: string, userLanguage: string, initialWords: CategoryWordsListDto }`.
 
 ### ModeToggle
+
 - Component description: Segmented control switching between table and slider modes.
 - Main elements: Shadcn ToggleGroup or Tabs with two options (`table`, `slider`).
 - Handled interactions: `onValueChange` triggers Next.js router push to `/study` or base route.
@@ -55,6 +61,7 @@
 - Props: `{ value: WordViewMode, onChange: (mode: WordViewMode) => void }`.
 
 ### WordToolbar
+
 - Component description: Top-level actions for the table (create word, sorting/display controls, category metadata).
 - Main elements: Primary button (`CreateWordButton`), optional text for category name + word count, dropdown/order controls.
 - Handled interactions: Open create modal, change ordering, trigger data refetch.
@@ -63,6 +70,7 @@
 - Props: `{ onCreate: () => void, orderBy: WordOrderField, direction: SortDirection, onOrderChange: (orderBy: WordOrderField) => void, onDirectionToggle: () => void, wordCount: number }`.
 
 ### CreateWordButton
+
 - Component description: Shadcn button launching the word form modal in create mode.
 - Main elements: Button with icon.
 - Handled interactions: click -> `onClick` callback.
@@ -71,6 +79,7 @@
 - Props: `{ onClick: () => void, disabled?: boolean }`.
 
 ### OrderControls
+
 - Component description: Dropdown + toggle for order field/direction.
 - Main elements: Select for `createdAt` vs `term`, icon button for asc/desc.
 - Handled interactions: change select, click direction toggle -> triggers data refetch.
@@ -79,6 +88,7 @@
 - Props: `{ orderBy: WordOrderField, direction: SortDirection, onOrderChange: (value: WordOrderField) => void, onDirectionToggle: () => void }`.
 
 ### WordTable
+
 - Component description: Responsive table displaying words with actions per row.
 - Main elements: Shadcn `Table`, header row (Term, Translation, Examples, Created/Updated, Actions), body mapping rows.
 - Handled interactions: row-level events forwarded via callbacks (edit, delete, expand examples).
@@ -87,6 +97,7 @@
 - Props: `{ rows: WordTableRowVm[], onEdit: (wordId: string) => void, onDelete: (context: DeleteWordContext) => void }`.
 
 ### WordTableRow
+
 - Component description: Represents a single word entry with accordion for examples and action menu.
 - Main elements: Table cells, formatted timestamps, `ExamplesAccordion`, `WordActionMenu`.
 - Handled interactions: toggle accordion, select edit/delete from menu.
@@ -95,6 +106,7 @@
 - Props: `{ row: WordTableRowVm, onEdit: (id: string) => void, onDelete: (context: DeleteWordContext) => void }`.
 
 ### ExamplesAccordion
+
 - Component description: Collapsible region rendering Markdown examples.
 - Main elements: Accordion trigger, panel with Markdown renderer (e.g., remark/rehype pipeline).
 - Handled interactions: open/close accordion.
@@ -103,6 +115,7 @@
 - Props: `{ markdown: string }`.
 
 ### WordActionMenu
+
 - Component description: Dropdown menu with edit and delete actions per word.
 - Main elements: Shadcn `DropdownMenu`, items for Edit, Delete (delete styled destructive).
 - Handled interactions: click edit -> callback, click delete -> open confirm dialog with context.
@@ -111,6 +124,7 @@
 - Props: `{ onEdit: () => void, onDelete: () => void, busy?: boolean }`.
 
 ### TableEmptyState
+
 - Component description: Empty state when no words exist.
 - Main elements: Illustration or icon, explanatory copy, CTA button to add first word.
 - Handled interactions: CTA -> open create modal.
@@ -119,6 +133,7 @@
 - Props: `{ onCreate: () => void }`.
 
 ### PaginationHint
+
 - Component description: Simple footer indicating auto-pagination or `meta.hasMore`; optionally a “Load more” button when cursor-based pagination later.
 - Main elements: Text or button.
 - Handled interactions: optional future load more (currently display only).
@@ -127,6 +142,7 @@
 - Props: `{ meta: WordListMetaDto }`.
 
 ### WordFormModal
+
 - Component description: Modal for create/edit word, embedding form and AI controls.
 - Main elements: Dialog shell, fields for term/translation/examples, `DifficultySelect`, `AiGenerateButton`, save/cancel actions.
 - Handled interactions: input change, submit, close, invoke AI, prefill when editing.
@@ -135,6 +151,7 @@
 - Props: `{ open: boolean, mode: "create" | "edit", initialValue?: WordFormState, onClose: () => void, onSubmit: (payload: CreateWordCommand | UpdateWordCommand, wordId?: string) => Promise<void>, onAiGenerate: (difficulty: DifficultyLevel) => Promise<GeneratedWordSuggestionDto | null>, busy: boolean, aiBusy: boolean }`.
 
 ### AiGenerateButton
+
 - Component description: Button within form that triggers AI generation and displays loader overlay during request.
 - Main elements: Button, spinner overlay when `aiBusy` true.
 - Handled interactions: click -> calls `onGenerate` with current form state (difficulty, category context, languages).
@@ -143,6 +160,7 @@
 - Props: `{ difficulty: DifficultyLevel, onGenerate: () => void, disabled?: boolean, busy: boolean }`.
 
 ### ConfirmDeleteDialog
+
 - Component description: Shared dialog confirming destructive actions for words.
 - Main elements: Dialog heading/body, cancel and destructive confirm button.
 - Handled interactions: confirm -> triggers DELETE API call, cancel -> closes dialog.
@@ -151,6 +169,7 @@
 - Props: `{ open: boolean, context: DeleteWordContext | null, onConfirm: (context: DeleteWordContext) => Promise<void>, onCancel: () => void, busy: boolean }`.
 
 ### AiLoaderOverlay (within modal)
+
 - Component description: Full-screen (modal-scoped) overlay blocking interactions during AI request per PRD.
 - Main elements: semi-transparent backdrop, spinner, message.
 - Handled interactions: none (blocks input).
@@ -159,6 +178,7 @@
 - Props: `{ visible: boolean }`.
 
 ## 5. Types
+
 - Reuse DTOs from `lib/types.ts`:
   - `CategoryWordsListDto`, `WordDto`, `WordListMetaDto`, `WordViewMode`, `WordOrderField`, `SortDirection`, `CreateWordCommand`, `UpdateWordCommand`, `DifficultyLevel`, `GeneratedWordSuggestionDto`, `AiGeneratedWordsDto`.
 - New view models:
@@ -194,6 +214,7 @@
     - `count?: number`
 
 ## 6. State Management
+
 - Introduce `useCategoryWords` custom hook built on SWR or React Query to fetch `/api/categories/${categoryId}/words` with `view=table`, `orderBy`, `direction` query params; returns data, loading, error, `mutate`/`refetch`.
 - Maintain component state via `useState`:
   - `orderBy`, `direction` (default `createdAt`, `desc`).
@@ -205,6 +226,7 @@
 - Provide `useAiWordGeneration` hook for calling AI endpoint, handling loader toggling and response parsing before returning `GeneratedWordSuggestionDto`.
 
 ## 7. API Integration
+
 - Fetch words: `GET /api/categories/${categoryId}/words?view=table&orderBy=${orderBy}&direction=${direction}` expecting `CategoryWordsListDto` response.
 - Create word: `POST /api/categories/${categoryId}/words` with `CreateWordCommand` body; response `WordDto`.
 - Update word: `PATCH /api/words/${wordId}` with `UpdateWordCommand`; response `WordDto`.
@@ -215,6 +237,7 @@
 - Handle response errors by reading standard error shape `{ error: { code, message } }`.
 
 ## 8. User Interactions
+
 - Mode toggle changes route and triggers data fetch for target view.
 - Create button opens modal; submit adds word and closes modal with toast feedback.
 - Row edit opens modal prefilled with selected word data; submit sends PATCH.
@@ -225,6 +248,7 @@
 - Empty state CTA opens create modal.
 
 ## 9. Conditions and Validation
+
 - Ensure required fields (`term`, `translation`, `examplesMd`) are non-empty (trimmed) before enabling Save.
 - Difficulty defaults to `medium`; block AI generate if unset (should never be unset).
 - Restrict `orderBy` to `createdAt` or `term` in table mode; `direction` limited to `asc`/`desc`.
@@ -233,6 +257,7 @@
 - Markdown field should maintain guidance text; optionally validate minimum length or bullet count (align with UX guidance).
 
 ## 10. Error Handling
+
 - Display toast or inline alert when fetch/mutation fails, using message from backend error payload.
 - For initial fetch errors, render fallback state with retry button.
 - On AI failure or invalid JSON, close loader overlay and leave form untouched; optionally show non-blocking toast per PRD (silent failure allowed but internal debugging may use console/logging).
@@ -241,6 +266,7 @@
 - Ensure Markdown renderer handles malformed input by showing fallback text rather than breaking layout.
 
 ## 11. Implementation Steps
+
 1. Scaffold `CategoryWordTablePage` under `app/(app)/[learningLanguageId]/[categoryId]/page.tsx`, ensuring server-side param validation and authenticated layout.
 2. Implement `CategoryWordTableClient` as a client component that consumes initial data and wires hooks.
 3. Create `useCategoryWords`, `useWordMutations`, and `useAiWordGeneration` hooks for data fetching and mutations with proper typing.

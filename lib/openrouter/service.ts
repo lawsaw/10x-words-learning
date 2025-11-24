@@ -5,7 +5,6 @@ import type {
   OpenRouterConfig,
   OpenRouterOptions,
   OpenRouterPayload,
-  ChatMessage,
   ModelParameters,
 } from '@/lib/types'
 import {
@@ -16,7 +15,6 @@ import {
   OpenRouterRateLimitError,
   OpenRouterServerError,
   OpenRouterSafetyError,
-  OpenRouterSchemaError,
   OpenRouterUnexpectedResponseError,
 } from './errors'
 import { MessageComposer } from './message-composer'

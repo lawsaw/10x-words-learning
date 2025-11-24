@@ -1,6 +1,5 @@
 import { redirect, notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import type { CategoryWordsListDto } from '@/lib/types'
 import { WordService } from '@/lib/services/word.service'
 
 import CategorySliderClient from './slider-client'
@@ -48,8 +47,6 @@ export default async function CategorySliderPage({ params }: { params: Promise<P
     <CategorySliderClient
       categoryId={resolvedParams.categoryId}
       learningLanguageId={resolvedParams.learningLanguageId}
-      learningLanguageLabel={context.learningLanguageName}
-      learningLanguageCode={context.learningLanguageCode}
       categoryName={context.categoryName}
       initialWords={initialWords}
     />
