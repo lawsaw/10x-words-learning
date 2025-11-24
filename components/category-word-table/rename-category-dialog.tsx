@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -33,12 +33,13 @@ export function RenameCategoryDialog({
   const [name, setName] = useState(initialName)
   const [touched, setTouched] = useState(false)
 
-  useEffect(() => {
-    if (open) {
-      setName(initialName)
-      setTouched(false)
-    }
-  }, [open, initialName])
+  // Sync local state with initialName prop when it changes
+  const [prevInitialName, setPrevInitialName] = useState(initialName)
+  if (initialName !== prevInitialName) {
+    setPrevInitialName(initialName)
+    setName(initialName)
+    setTouched(false)
+  }
 
   const trimmedName = name.trim()
   const hasError = touched && !trimmedName

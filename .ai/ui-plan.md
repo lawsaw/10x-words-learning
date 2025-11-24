@@ -1,6 +1,7 @@
 # UI Architecture for 10x Words Learning
 
 ## 1. UI Structure Overview
+
 - Public landing funnels visitors into authentication, while the authenticated workspace combines a persistent header, collapsible sidebar, and context-aware main pane for vocabulary management.
 - Routing relies on `/app` with segments for learning language, category, and optional `/study` suffix so table/slider mode persists across refreshes; CRUD modals overlay on top without leaving the current context.
 - API alignment covers `GET /languages`, `/auth/*`, `GET/POST/DELETE /learning-languages`, `GET/POST/PATCH/DELETE /categories`, `GET/POST/PATCH/DELETE /words`, and `POST /categories/{id}/words/ai-generate`, all respecting Supabase RLS enforced server-side.
@@ -11,6 +12,7 @@
 ## 2. View List
 
 ### Landing Page
+
 - View path: `/`
 - Main purpose: Introduce the product and route unauthenticated users to login or registration modals.
 - Key information to display: hero value proposition; feature highlights for table and slider modes; supported language list; privacy reassurance; prominent CTA buttons.
@@ -19,6 +21,7 @@
 - Requirement coverage: `US-001`, `US-002`, `US-003` orientation.
 
 ### Register Modal
+
 - View path: global overlay `?modal=register`
 - Main purpose: Collect email, password, and immutable user language for new accounts.
 - Key information to display: email field; password field with minimum length hint; user language select; loader state; link to login modal.
@@ -27,6 +30,7 @@
 - Requirement coverage: `US-001`.
 
 ### Login Modal
+
 - View path: global overlay `?modal=login`
 - Main purpose: Authenticate returning users with email and password.
 - Key information to display: email and password fields; error messaging for invalid credentials; link back to register.
@@ -35,6 +39,7 @@
 - Requirement coverage: `US-002`.
 
 ### Workspace Shell
+
 - View path: `/app`
 - Main purpose: Provide an authenticated layout with global header, language sidebar, and main workspace region.
 - Key information to display: signed-in identity indicator; logout control; active learning language context; mode toggle visibility; loading states while data fetches.
@@ -43,6 +48,7 @@
 - Requirement coverage: `US-003`, `US-011`, `US-015`.
 
 ### Learning Languages Dashboard
+
 - View path: `/app` (default state with no language selected)
 - Main purpose: Display user learning languages, enable creation, and support deletions with cascade awareness.
 - Key information to display: language cards with display name, creation timestamp, category/word counts, delete action, and add-language CTA; empty state guidance when list is empty.
@@ -51,6 +57,7 @@
 - Requirement coverage: `US-003`, `US-004`, `US-005`.
 
 ### Learning Language Form Modal
+
 - View path: overlay `?modal=learning-language`
 - Main purpose: Allow users to add a new learning language from static list excluding disallowed options.
 - Key information to display: dropdown of eligible languages; helper text about immutability and uniqueness; submit/cancel controls.
@@ -59,6 +66,7 @@
 - Requirement coverage: `US-004`.
 
 ### Language Workspace
+
 - View path: `/app/[learningLanguageId]`
 - Main purpose: Present the selected learning language context with category list management and summary information.
 - Key information to display: active language name; categories sorted by newest; per-category word counts; controls for add, rename, delete; empty state messaging if none exist.
@@ -67,6 +75,7 @@
 - Requirement coverage: `US-006`, `US-007`.
 
 ### Category Form Modal
+
 - View path: overlay `?modal=category`
 - Main purpose: Create or rename a category within the active learning language.
 - Key information to display: category name input; character limit hint; mode indicator (create vs rename); validation feedback.
@@ -75,6 +84,7 @@
 - Requirement coverage: `US-006`.
 
 ### Category Word Table View
+
 - View path: `/app/[learningLanguageId]/[categoryId]`
 - Main purpose: Manage words in tabular mode with inline editing and deletion.
 - Key information to display: numbered rows ordered by created date; term; translation; created/updated timestamps; accordion trigger for Markdown examples; edit/delete actions.
@@ -83,6 +93,7 @@
 - Requirement coverage: `US-008`, `US-009`, `US-011`, `US-012`.
 
 ### Category Slider Study View
+
 - View path: `/app/[learningLanguageId]/[categoryId]/study`
 - Main purpose: Offer flashcard-style sequential review with shuffle and navigation controls.
 - Key information to display: current word term and translation; rendered Markdown examples; position indicator (e.g., 3 of 12); next/previous buttons; shuffle control.
@@ -91,6 +102,7 @@
 - Requirement coverage: `US-011`, `US-013`.
 
 ### Word Form Modal (Create/Edit + AI)
+
 - View path: overlay `?modal=word`
 - Main purpose: Create or edit words manually or via AI-assisted generation.
 - Key information to display: term input; translation input; Markdown textarea with guidance; difficulty selector (easy/medium/advanced); AI generate button; metadata for last updated when editing.
@@ -99,6 +111,7 @@
 - Requirement coverage: `US-008`, `US-009`, `US-010`.
 
 ### Delete Confirmation Dialog
+
 - View path: overlay `?modal=confirm-delete`
 - Main purpose: Confirm destructive actions for learning languages, categories, and words with contextual messaging.
 - Key information to display: entity name and scope; cascade warning (languages/categories remove descendant data); primary destructive action and cancel button.
@@ -107,6 +120,7 @@
 - Requirement coverage: `US-005`, `US-007`, `US-009`, `US-014`.
 
 ### JSON Error Modal
+
 - View path: overlay `?modal=api-error`
 - Main purpose: Surface structured API errors (especially AI failures) without interrupting background modals.
 - Key information to display: endpoint; status code; parsed JSON payload; copy-to-clipboard control; dismiss instructions.
@@ -115,6 +129,7 @@
 - Requirement coverage: Supports PRD guidance on silent AI failure fallback while providing optional debugging for internal users.
 
 ## 3. User Journey Map
+
 - Step 1: User lands on `/`, reviews hero messaging, and opens the register modal via primary CTA.
 - Step 2: In the register modal, the user enters email, password (validated to minimum five characters), and selects a user language; submission calls `POST /auth/register`, displays loader, and routes to `/app` on success.
 - Step 3: Workspace shell loads, `GET /learning-languages` returns empty, and the dashboard empty state guides the user to add a learning language by launching the learning-language form modal.
@@ -127,6 +142,7 @@
 - Step 10: If an AI request fails or data conflicts occur, the JSON error modal appears with structured feedback; the user dismisses it, adjusts inputs, and retries, maintaining progress without losing form data.
 
 ## 4. Layout and Navigation Structure
+
 - Global header displays brand, mode toggle (when category selected), JSON error indicator, and auth actions (login/register or logout) with responsive collapse into menu on smaller screens.
 - Sidebar persists in authenticated areas, showing language list at the top and contextual category list beneath; add buttons reside within respective sections and open modals without navigating away.
 - Main content area swaps between dashboard cards, table view, and slider view based on route segments, while maintaining route-driven state for reload resilience.
@@ -135,6 +151,7 @@
 - Mobile layout collapses sidebar into a drawer activated from header, while mode toggle and primary actions remain accessible in the main pane to prevent buried controls.
 
 ## 5. Key Components
+
 - ModalShell Framework: Shared accessible container powering register/login, language and category forms, word form, confirmation dialog, and stackable JSON error overlays; enforces focus management, ESC handling, and background locking to satisfy `US-001`, `US-004`, `US-006`, `US-008`, and `US-014`.
 - Language Management Suite: Combines `LanguageList`, `LanguageCard`, `AddLanguageButton`, and `LanguageEmptyState` to interact with `/learning-languages` endpoints, showing ownership counts, cascade warnings, and supporting keyboard navigation for `US-003` to `US-005`.
 - Category Navigation Panel: Provides sortable `CategoryListPanel`, context menus, and inline rename triggers backed by `GET/POST/PATCH/DELETE` category endpoints, guarding uniqueness and cascade messaging per `US-006` and `US-007` while remaining operable via keyboard.

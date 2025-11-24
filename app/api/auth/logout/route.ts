@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server'
 import { AuthService } from '@/lib/services/auth.service'
 import { noContentResponse, errorResponse } from '@/lib/response'
 
@@ -7,7 +6,7 @@ import { noContentResponse, errorResponse } from '@/lib/response'
  * Logs out the current user by ending their session.
  * Requires authentication.
  */
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Verify user is authenticated before attempting logout
     await AuthService.getCurrentUserId()

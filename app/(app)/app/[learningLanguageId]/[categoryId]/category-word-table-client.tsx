@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 
+import { WordActionsMenu } from '@/components/category-word-table/word-actions-menu'
+import { DeleteCategoryDialog } from '@/components/category-word-table/delete-category-dialog'
 import { WordToolbar } from '@/components/category-word-table/word-toolbar'
 import { WordTable } from '@/components/category-word-table/word-table'
 import { TableEmptyState } from '@/components/category-word-table/table-empty-state'
@@ -11,9 +13,6 @@ import { PaginationHint } from '@/components/category-word-table/pagination-hint
 import { WordFormModal } from '@/components/category-word-table/word-form-modal'
 import { ConfirmDeleteDialog } from '@/components/category-word-table/confirm-delete-dialog'
 import { RenameCategoryDialog } from '@/components/category-word-table/rename-category-dialog'
-import { DeleteCategoryDialog } from '@/components/category-word-table/delete-category-dialog'
-import { Button } from '@/components/ui/button'
-import { WordActionsMenu } from '@/components/category-word-table/word-actions-menu'
 import type {
   CategoryWordsListDto,
   DeleteWordContext,
@@ -22,7 +21,6 @@ import type {
   WordOrderField,
   WordTableRowVm,
   WordTableViewModel,
-  WordViewMode,
 } from '@/lib/types'
 import { useCategoryWords } from '@/hooks/use-category-words'
 import { useWordMutations } from '@/hooks/use-word-mutations'
@@ -55,7 +53,7 @@ export default function CategoryWordTableClient({
   userLanguage,
   initialWords,
   learningLanguageLabel,
-  learningLanguageCode,
+  learningLanguageCode: _learningLanguageCode,
 }: CategoryWordTableClientProps) {
   const router = useRouter()
 
@@ -87,7 +85,6 @@ export default function CategoryWordTableClient({
   useEffect(() => {
     setHeadingActionsContainer(document.getElementById('app-shell-heading-actions'))
   }, [])
-  const [pendingCategoryName, setPendingCategoryName] = useState(categoryName)
   const [categoryActionsBusy, setCategoryActionsBusy] = useState(false)
 
   const showFeedback = useCallback((type: FeedbackType, message: string) => {

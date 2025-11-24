@@ -103,8 +103,8 @@ export class AiGenerationService {
       let parsedContent
       try {
         parsedContent = JSON.parse(content)
-      } catch (parseError) {
-        console.error('Failed to parse AI response as JSON:', content)
+      } catch (error) {
+        console.error('Failed to parse AI response as JSON:', content, error)
         throw new DomainError(ErrorCode.InvalidAIResponse, 'AI response is not valid JSON', 422)
       }
 
@@ -112,8 +112,7 @@ export class AiGenerationService {
       const suggestions = this.validateAndExtractSuggestions(
         parsedContent,
         command.count || 1,
-        command.excludeTerms,
-        command.learningLanguageName ?? command.learningLanguageId
+        command.excludeTerms
       )
 
       // Post-process TERMS for English learning: add articles and "to" for verbs
@@ -187,11 +186,6 @@ export class AiGenerationService {
 
     const learningLanguageLabel = command.learningLanguageName ?? command.learningLanguageId
     const userLanguageLabel = command.userLanguageName ?? command.userLanguage
-
-    // Check if translation language is English
-    const isEnglishTranslation =
-      this.isEnglishLanguage(command.userLanguage) ||
-      this.isEnglishLanguage(command.userLanguageName)
 
     let prompt = `Generate ${count} distinct ${difficultyDesc} words or phrases in ${learningLanguageLabel}.`
 
@@ -428,8 +422,7 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanations.`
   private static validateAndExtractSuggestions(
     response: any,
     expectedCount: number,
-    excludeTerms?: string[],
-    learningLanguageLabel?: string
+    excludeTerms?: string[]
   ): GeneratedWordSuggestionDto[] {
     // Check if response has words array
     if (!response.words || !Array.isArray(response.words)) {

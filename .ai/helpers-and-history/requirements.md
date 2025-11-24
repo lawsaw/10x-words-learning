@@ -1,4 +1,5 @@
 ### Mandatory project requirements:
+
 - User access control mechanism appropriate for the type of application (e.g., login screen)
 - Data management — ability to create, read, update, and delete items (typical CRUD functionality)
 - Business logic

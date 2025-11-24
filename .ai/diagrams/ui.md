@@ -1,4 +1,5 @@
 <architecture_analysis>
+
 1. Komponenty z dokumentacji:
    - Layouty i strony: `app/layout.tsx`, `app/(public)/page.tsx`, `app/(app)/layout.tsx`, `components/app/app-shell-layout.tsx`.
    - Publiczne komponenty React: `LandingPageClient`, `HeroSection`, `FeatureGrid`, `PrivacySection`.
@@ -25,9 +26,10 @@
    - `middleware.ts`: synchronizacja cookies Supabase dla SSR i API.
    - `app/(app)/layout.tsx` + `AppShellLayout`: ochrona tras, wspólny UI workspace, wstrzyknięcie `LogoutButton`.
    - Dashboard języków, zarządzanie kategoriami, CRUD słów, tryby tabela/slider, generator AI oraz dialogi potwierdzeń: funkcjonalności opisane w PRD, korzystające z uwierzytelnionej sesji.
-</architecture_analysis>
+     </architecture_analysis>
 
 <mermaid_diagram>
+
 ```mermaid
 flowchart TD
   classDef updated fill:#fef3c7,stroke:#b45309,stroke-width:2px;
@@ -73,8 +75,8 @@ flowchart TD
     subgraph Widoki["Specyficzne widoki PRD"]
       Languages["Dashboard języków\n(add/delete)"]
       Categories["Zarządzanie kategoriami\n(create/rename/delete)"]
-      Words["Formularz słowa\n+ tabela"] 
-      Slider["Tryb slider"] 
+      Words["Formularz słowa\n+ tabela"]
+      Slider["Tryb slider"]
       AI["Generator słów AI\n(OpenRouter)"]
       Confirm["ConfirmationDialog\n(shared)"]
     end
@@ -122,6 +124,5 @@ flowchart TD
   Confirm --> Categories
   Confirm --> Words
 ```
+
 </mermaid_diagram>
-
-

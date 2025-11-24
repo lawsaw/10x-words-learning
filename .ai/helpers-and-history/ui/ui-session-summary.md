@@ -33,7 +33,7 @@ CRUD modals: add/edit language, category, word; AI generation integrated into wo
 Error handling flow: JSON modal stacking over current dialog.
 Empty states: global message when no languages/categories/words exist; slider empty deck message with actions.
 API integration & state management: Each language selection triggers fresh GET /learning-languages and dependent category/word fetches (no caching). Category list sorted by creation desc; words fetched per category and rendered in table or slider mode. Mode state derived from URL segment. Loading overlays applied per fetch region; sequential row numbering computed client-side. AI button calls POST /categories/{id}/words/ai-generate overwriting form fields immediately; error responses open JSON modal.
-Responsiveness, accessibility, security: Tailwind/ Shadcn components provide responsive layout; sidebar collapses as drawer on smaller screens (previous agreement). Accordion icon rotation with proper aria attributes; modals trap focus individually and stack cleanly. Landing accessible to everyone; all /app/* routes require auth. Overlays purely visual (pointer events passthrough) but with clear text labels.
+Responsiveness, accessibility, security: Tailwind/ Shadcn components provide responsive layout; sidebar collapses as drawer on smaller screens (previous agreement). Accordion icon rotation with proper aria attributes; modals trap focus individually and stack cleanly. Landing accessible to everyone; all /app/\* routes require auth. Overlays purely visual (pointer events passthrough) but with clear text labels.
 Unresolved issues / clarifications needed: None identified; all raised items received concrete decisions.
 </ui_architecture_planning_summary>
 <unresolved_issues>

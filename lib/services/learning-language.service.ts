@@ -5,7 +5,7 @@ import type {
   LearningLanguagesQueryDto,
   CreateLearningLanguageCommand,
 } from '@/lib/types'
-import { mapSupabaseError, NotFoundError, ValidationError } from '@/lib/errors'
+import { mapSupabaseError, ValidationError } from '@/lib/errors'
 import { calculateCursorPaginationMeta, trimToPageSize } from '@/lib/pagination'
 
 /**

@@ -1,4 +1,5 @@
 ## Service Description
+
 - Defines a reusable `OpenRouterService` within `lib/openrouter` to broker LLM chat requests for Next.js 16 + TypeScript 5 apps.
 - Encapsulates request composition, HTTP transport, structured response parsing, and observability for OpenRouter API usage.
 - Core components:
@@ -52,6 +53,7 @@
        2. Batch metrics uploads and use asynchronous, fire-and-forget strategies where consistent.
 
 ## Constructor Description
+
 - Signature: `constructor(config: OpenRouterConfig, options?: OpenRouterOptions)`
 - Parameters:
   - `config`: Required immutable settings (apiKey, baseUrl, defaultModel, defaultParams, timeoutMs).
@@ -65,6 +67,7 @@
   - Instantiate reusable helper instances (token estimator, schema validator).
 
 ## Public Methods and Fields
+
 - `sendChat(input: ChatRequest): Promise<ChatResponse>`
   - Accepts `{ messages, model?, parameters?, responseFormat?, tags?, signal? }`.
   - Flow: compose messages → serialize payload → issue POST to `/v1/chat/completions` → parse response → return normalized payload with `{ id, model, choices, usage }`.
@@ -106,6 +109,7 @@
   - `static SUPPORTED_PARAMETERS` (Set of accepted keys, e.g., `temperature`, `top_p`, `frequency_penalty`).
 
 ## Private Methods and Fields
+
 - `_buildHeaders(extra?: Record<string, string>): HeadersInit`
   - Adds `Authorization`, JSON content-type, and optional telemetry headers.
 - `_buildPayload(input: ChatRequest): OpenRouterPayload`
@@ -124,6 +128,7 @@
   - `_config`, `_fetchImpl`, `_logger`, `_metricsClient`, `_tokenEstimator`, `_zodSchema`.
 
 ## Error Handling
+
 1. **Missing credentials**: Throw `OpenRouterConfigurationError` during construction if `apiKey` or `baseUrl` absent.
 2. **Payload validation failure**: Reject request with `OpenRouterValidationError` containing field details (messages, response_format, parameters).
 3. **Network timeout/abort**: Wrap fetch errors into `OpenRouterNetworkError` with retry hints.
@@ -134,6 +139,7 @@
 8. **Unexpected format**: Use fallback handler to guard against missing `choices`, returning `OpenRouterUnexpectedResponseError`.
 
 ## Security Considerations
+
 - Store API keys in server-only env variables (`OPENROUTER_API_KEY`); never expose via client bundles.
 - Use Supabase Key Vault or environment secrets manager for production deployments.
 - Redact sensitive headers and message content in logs; log message hashes or IDs instead.
@@ -143,6 +149,7 @@
 - Monitor and cap token usage per user/session to prevent abuse, storing metrics in Supabase.
 
 ## Step-by-Step Implementation Plan
+
 1. **Define types**: Create `lib/types.ts` entries (`OpenRouterConfig`, `ChatMessage`, `ChatRequest`, `ChatResponse`, `ResponseFormatSchema`) using TypeScript 5 features (satisfies, const assertions).
 2. **Set up configuration**: Add `OPENROUTER_API_KEY`, `OPENROUTER_BASE_URL`, `OPENROUTER_DEFAULT_MODEL` to `.env`; expose server-only via `next.config.js` runtime config.
 3. **Implement `OpenRouterService` class** in `lib/openrouter/service.ts`, following constructor contract and freezing config.

@@ -180,9 +180,7 @@ export function WordFormModal({
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Create word' : 'Edit word'}</DialogTitle>
-          <DialogDescription>
-            Provide the vocabulary details and examples
-          </DialogDescription>
+          <DialogDescription>Provide the vocabulary details and examples</DialogDescription>
         </DialogHeader>
 
         <div className="relative">
