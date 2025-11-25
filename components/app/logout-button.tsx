@@ -1,13 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
+import { supabaseClient } from '@/lib/supabase/client'
 
 export function LogoutButton() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+      } = await supabaseClient.auth.getUser()
+
+      if (user?.email) {
+        setUserEmail(user.email)
+      }
+    }
+
+    fetchUser()
+  }, [])
 
   const handleLogout = async () => {
     if (loading) {
@@ -32,15 +48,20 @@ export function LogoutButton() {
   }
 
   return (
-    <Button
-      type="button"
-      variant="outline"
-      size="sm"
-      onClick={handleLogout}
-      disabled={loading}
-      aria-label="Log out of 10x Words Learning"
-    >
-      {loading ? 'Logging out…' : 'Log out'}
-    </Button>
+    <div className="flex items-center gap-2">
+      {userEmail && (
+        <span className="text-muted-foreground hidden text-sm sm:inline">{userEmail}</span>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={handleLogout}
+        disabled={loading}
+        aria-label={`Log out of 10x Words Learning${userEmail ? ` (${userEmail})` : ''}`}
+      >
+        {loading ? 'Logging out…' : 'Log out'}
+      </Button>
+    </div>
   )
 }

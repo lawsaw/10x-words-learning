@@ -55,7 +55,6 @@ export function WordToolbar({
   return (
     <div className="border-border bg-card flex flex-col gap-3 rounded-lg border px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="space-y-1 text-sm">
-        <p className="text-foreground font-medium">Category words</p>
         <p className="text-muted-foreground">{summary}</p>
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
