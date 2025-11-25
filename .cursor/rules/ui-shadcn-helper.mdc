@@ -1,6 +1,5 @@
 ---
-description: 
-globs: 
+globs: *.tsx
 alwaysApply: false
 ---
 # Shadcn UI Components

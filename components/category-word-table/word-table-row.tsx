@@ -79,15 +79,19 @@ export function WordTableRow({
           <td colSpan={4} className="px-4 pt-0 pb-4">
             <div className="text-muted-foreground space-y-2 pt-4 text-left text-sm">
               <ul className="space-y-1">
-                {row.examplesMd
-                  .split('\n')
-                  .filter(line => Boolean(line.trim()))
-                  .slice(0, 5)
-                  .map((line, index) => (
+                {row.examplesMd.split('\n').map((line, index) => {
+                  const trimmed = line.trim()
+                  // Render empty lines as spacing
+                  if (!trimmed) {
+                    return <li key={index} className="h-2" aria-hidden="true" />
+                  }
+                  // Render lines with content
+                  return (
                     <li key={index} className="break-words">
                       {line}
                     </li>
-                  ))}
+                  )
+                })}
               </ul>
             </div>
           </td>
@@ -144,15 +148,19 @@ export function WordTableRow({
                 {expanded && (
                   <div className="text-muted-foreground mt-3 space-y-2 text-sm">
                     <ul className="space-y-1">
-                      {row.examplesMd
-                        .split('\n')
-                        .filter(line => Boolean(line.trim()))
-                        .slice(0, 5)
-                        .map((line, index) => (
+                      {row.examplesMd.split('\n').map((line, index) => {
+                        const trimmed = line.trim()
+                        // Render empty lines as spacing
+                        if (!trimmed) {
+                          return <li key={index} className="h-2" aria-hidden="true" />
+                        }
+                        // Render lines with content
+                        return (
                           <li key={index} className="break-words">
                             {line}
                           </li>
-                        ))}
+                        )
+                      })}
                     </ul>
                   </div>
                 )}
