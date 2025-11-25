@@ -47,3 +47,5 @@ coverage/
 
 # screenshots (test artifacts)
 screenshots/
+
+.idea
