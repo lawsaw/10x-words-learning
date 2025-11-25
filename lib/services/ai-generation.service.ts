@@ -71,10 +71,9 @@ export class AiGenerationService {
       // Create OpenRouter service instance
       const openRouterService = this.createOpenRouterService()
 
-      // Note: We'll post-process translations for English later, but we can still hint to the AI
       // Prepare system message
       const systemMessage =
-        'You are a helpful language learning assistant that generates vocabulary words with translations and examples in valid JSON format.'
+        'You are a helpful language learning assistant that generates vocabulary words with translations, phonetic transcriptions, and examples in valid JSON format. Always include phonetic transcription for the term to help learners pronounce it correctly.'
 
       // Prepare messages
       const messages = [
@@ -103,6 +102,7 @@ export class AiGenerationService {
       let parsedContent
       try {
         parsedContent = JSON.parse(content)
+        console.log('[AI Generation] Raw AI response:', JSON.stringify(parsedContent, null, 2))
       } catch (error) {
         console.error('Failed to parse AI response as JSON:', content, error)
         throw new DomainError(ErrorCode.InvalidAIResponse, 'AI response is not valid JSON', 422)
@@ -114,6 +114,8 @@ export class AiGenerationService {
         command.count || 1,
         command.excludeTerms
       )
+
+      console.log('[AI Generation] Extracted suggestions:', suggestions)
 
       // Post-process TERMS: add language-specific part-of-speech markers
       const languageCode =
@@ -204,7 +206,8 @@ export class AiGenerationService {
 For each word, provide:
 1. "term": the word or phrase in ${learningLanguageLabel}
 2. "translation": the translation in ${userLanguageLabel}
-3. "examplesMd": exactly 5 concise example sentences in ${learningLanguageLabel} with pronunciation transcription and translation, formatted as markdown list items. Each example must follow this EXACT format:
+3. "transcription": phonetic transcription of the TERM (not examples) using ${userLanguageLabel} alphabet to help pronunciation
+4. "examplesMd": exactly 5 concise example sentences in ${learningLanguageLabel} with pronunciation transcription and translation, formatted as markdown list items. Each example must follow this EXACT format:
    - [sentence in ${learningLanguageLabel}]
    [transcription using ${userLanguageLabel} alphabet]
    [translation in ${userLanguageLabel}]
@@ -247,6 +250,7 @@ Return ONLY a JSON object with this exact structure:
     {
       "term": "word in ${learningLanguageLabel}",
       "translation": "translation in ${userLanguageLabel}",
+      "transcription": "phonetic transcription of the term in ${userLanguageLabel} alphabet",
       "examplesMd": "- Example 1\\n[transcription1]\\nTranslation 1\\n\\n- Example 2\\n[transcription2]\\nTranslation 2\\n\\n- Example 3\\n[transcription3]\\nTranslation 3\\n\\n- Example 4\\n[transcription4]\\nTranslation 4\\n\\n- Example 5\\n[transcription5]\\nTranslation 5"
     }
   ]
@@ -763,6 +767,31 @@ CRITICAL FORMAT FOR EXAMPLES:
       // Sanitize and validate lengths
       const term = word.term.trim().substring(0, 500)
       const translation = word.translation.trim().substring(0, 500)
+
+      // Handle transcription - check both undefined and null
+      let transcription: string | null = null
+      if (
+        word.transcription !== undefined &&
+        word.transcription !== null &&
+        String(word.transcription).trim()
+      ) {
+        transcription = String(word.transcription).trim().substring(0, 500)
+      }
+
+      // Log transcription status for debugging
+      console.log(`[AI Generation] Word ${i} transcription:`, {
+        rawValue: word.transcription,
+        extracted: transcription,
+        type: typeof word.transcription,
+      })
+
+      if (!transcription) {
+        console.warn(
+          `Word ${i}: transcription field is missing or empty. AI may not have generated it. Raw value:`,
+          word.transcription
+        )
+      }
+
       const examplesRaw = word.examplesMd
         ? String(word.examplesMd)
         : Array.isArray(word.examples)
@@ -831,6 +860,7 @@ CRITICAL FORMAT FOR EXAMPLES:
       suggestions.push({
         term,
         translation,
+        transcription,
         examplesMd,
       })
     }

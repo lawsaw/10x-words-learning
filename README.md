@@ -27,9 +27,9 @@ A web-based vocabulary workspace for independent language learners. The MVP blen
 
 - Email/password accounts require learners to pick an immutable user language at registration.
 - Users manage learning languages, subject categories, and words, with guard rails against duplicates and cascading deletions across the hierarchy.
-- Words capture multilingual definitions, personal translations, and Markdown-formatted usage examples with timestamps for chronological sorting.
-- AI generation via OpenRouter (DeepSeek) can overwrite an in-progress word form with JSON-provided suggestions while a full-screen loader blocks interactions.
-- Two study modes—table and slider—offer responsive layouts, shuffle controls, and boundary-aware navigation.
+- Words capture multilingual definitions, personal translations, phonetic transcriptions (using native alphabet), and Markdown-formatted usage examples with timestamps for chronological sorting.
+- AI generation via OpenRouter (DeepSeek) can overwrite an in-progress word form with JSON-provided suggestions including auto-generated phonetic transcriptions and example sentences with pronunciation guides.
+- Two study modes—table and slider—offer responsive layouts with transcription display, shuffle controls, and boundary-aware navigation.
 - Supabase persistence enforces row-level security policies so each learner only accesses their own data.
 
 ## Tech Stack
@@ -282,9 +282,9 @@ All endpoints follow REST conventions with standardized error responses and prop
 **In scope**
 
 - Email/password authentication with immutable user language selection.
-- CRUD for learning languages, categories (including rename), and words with Markdown-rich examples.
-- AI-assisted vocabulary generation that overwrites current form data when successful.
-- Table and slider study modes with shuffle behavior and responsive layouts.
+- CRUD for learning languages, categories (including rename), and words with phonetic transcriptions and Markdown-rich examples.
+- AI-assisted vocabulary generation that overwrites current form data when successful, including auto-generated transcriptions using the user's native alphabet for pronunciation assistance.
+- Table and slider study modes with transcription display, shuffle behavior and responsive layouts.
 - Standardized confirmation dialogs and cascading delete flows across the vocabulary hierarchy.
 - Supabase persistence with row-level security and separated roles.
 - Playwright end-to-end coverage for the primary user flows using the Page Object Model pattern.

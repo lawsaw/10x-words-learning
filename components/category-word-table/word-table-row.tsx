@@ -37,6 +37,9 @@ export function WordTableRow({
         <td className="text-muted-foreground max-w-[250px] px-4 py-3 align-middle break-words">
           {row.translation}
         </td>
+        <td className="text-muted-foreground max-w-[200px] px-4 py-3 align-middle text-sm break-words">
+          {row.transcription || <span className="text-muted-foreground/50 italic">—</span>}
+        </td>
         <td className="px-4 py-3 text-center align-middle">
           {hasExamples ? (
             <Button
@@ -76,7 +79,7 @@ export function WordTableRow({
       </tr>
       {expanded && hasExamples ? (
         <tr className="bg-muted/20 hidden md:table-row">
-          <td colSpan={4} className="px-4 pt-0 pb-4">
+          <td colSpan={5} className="px-4 pt-0 pb-4">
             <div className="text-muted-foreground space-y-2 pt-4 text-left text-sm">
               <ul className="space-y-1">
                 {row.examplesMd.split('\n').map((line, index) => {
@@ -100,7 +103,7 @@ export function WordTableRow({
 
       {/* Mobile card view - visible only on mobile */}
       <tr className="md:hidden">
-        <td colSpan={4} className="p-0">
+        <td colSpan={5} className="p-0">
           <div className="space-y-3 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1 space-y-2">
@@ -116,6 +119,16 @@ export function WordTableRow({
                   </div>
                   <div className="text-muted-foreground break-words">{row.translation}</div>
                 </div>
+                {row.transcription && (
+                  <div>
+                    <div className="text-muted-foreground/60 mb-0.5 text-[10px] font-medium tracking-wider uppercase">
+                      Transcription
+                    </div>
+                    <div className="text-muted-foreground text-sm break-words">
+                      {row.transcription}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex-shrink-0">
                 <WordActionsMenu

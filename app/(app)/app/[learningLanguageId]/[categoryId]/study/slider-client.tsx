@@ -22,6 +22,7 @@ type SliderCardVm = {
   id: string
   term: string
   translation: string
+  transcription?: string | null
   examples?: string
 }
 
@@ -73,6 +74,7 @@ export default function CategorySliderClient({
         id: word.id,
         term: word.term,
         translation: word.translation,
+        transcription: word.transcription,
         examples: word.examplesMd,
       })),
     [payload]
@@ -279,6 +281,7 @@ export default function CategorySliderClient({
             <SliderCard
               term={currentCard?.term ?? 'No cards yet'}
               translation={currentCard?.translation ?? 'Add words to populate slider view'}
+              transcription={currentCard?.transcription}
               examples={currentCard?.examples}
               revealed={revealed}
               onReveal={() => setRevealed(true)}

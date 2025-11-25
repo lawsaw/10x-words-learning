@@ -189,6 +189,7 @@ export type WordDto = {
   categoryId: WordEntity['category_id']
   term: WordEntity['term']
   translation: WordEntity['translation']
+  transcription: WordEntity['transcription']
   examplesMd: WordEntity['examples_md']
   createdAt: WordEntity['created_at']
   updatedAt: WordEntity['updated_at']
@@ -216,6 +217,7 @@ export type WordTableRowVm = {
   id: string
   term: string
   translation: string
+  transcription: string | null
   examplesMd: string
   createdAt: string
   updatedAt: string
@@ -234,6 +236,7 @@ export type WordFormState = {
   wordId?: string
   term: string
   translation: string
+  transcription: string
   examplesMd: string
   difficulty: DifficultyLevel
 }
@@ -258,6 +261,7 @@ export type AiGenerationRequest = {
 export type CreateWordCommand = {
   term: WordEntity['term']
   translation: WordEntity['translation']
+  transcription?: WordEntity['transcription']
   examplesMd: WordEntity['examples_md']
 }
 
@@ -299,6 +303,7 @@ export type GenerateWordsCommand = {
 export type GeneratedWordSuggestionDto = {
   term: WordEntity['term']
   translation: WordEntity['translation']
+  transcription: WordEntity['transcription']
   examplesMd: WordEntity['examples_md']
 }
 

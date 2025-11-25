@@ -24,7 +24,7 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
   }
 
   return (
-    <div className="border-border bg-card overflow-hidden rounded-lg border shadow-sm">
+    <div className="border-border bg-card rounded-lg border shadow-sm">
       {/* Desktop table view - hidden on mobile */}
       <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full border-collapse text-sm">
@@ -32,6 +32,7 @@ export const WordTable = memo(function WordTable({ rows, onEdit, onDelete, busy 
             <tr>
               <HeaderCell className="text-left align-middle">Term</HeaderCell>
               <HeaderCell className="text-left align-middle">Translation</HeaderCell>
+              <HeaderCell className="text-left align-middle">Transcription</HeaderCell>
               <HeaderCell className="text-center align-middle">Examples</HeaderCell>
               <HeaderCell className="text-right align-middle">Actions</HeaderCell>
             </tr>

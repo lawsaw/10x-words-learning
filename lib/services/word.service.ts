@@ -80,6 +80,7 @@ export class WordService {
       categoryId: item.category_id,
       term: item.term,
       translation: item.translation,
+      transcription: item.transcription,
       examplesMd: item.examples_md,
       createdAt: item.created_at,
       updatedAt: item.updated_at,
@@ -156,6 +157,7 @@ export class WordService {
       categoryId: item.category_id,
       term: item.term,
       translation: item.translation,
+      transcription: item.transcription,
       examplesMd: item.examples_md,
       createdAt: item.created_at,
       updatedAt: item.updated_at,
@@ -202,6 +204,7 @@ export class WordService {
       categoryId: data.category_id,
       term: data.term,
       translation: data.translation,
+      transcription: data.transcription,
       examplesMd: data.examples_md,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
@@ -229,6 +232,7 @@ export class WordService {
         category_id: categoryId,
         term: command.term,
         translation: command.translation,
+        transcription: command.transcription,
         examples_md: command.examplesMd,
       })
       .select()
@@ -244,6 +248,7 @@ export class WordService {
       categoryId: data.category_id,
       term: data.term,
       translation: data.translation,
+      transcription: data.transcription,
       examplesMd: data.examples_md,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
@@ -273,6 +278,9 @@ export class WordService {
     if (command.translation !== undefined) {
       updateData.translation = command.translation
     }
+    if (command.transcription !== undefined) {
+      updateData.transcription = command.transcription
+    }
     if (command.examplesMd !== undefined) {
       updateData.examples_md = command.examplesMd
     }
@@ -301,6 +309,7 @@ export class WordService {
       categoryId: data.category_id,
       term: data.term,
       translation: data.translation,
+      transcription: data.transcription,
       examplesMd: data.examples_md,
       createdAt: data.created_at,
       updatedAt: data.updated_at,

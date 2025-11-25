@@ -42,13 +42,15 @@ type WordFormModalProps = {
 type FieldErrors = {
   term?: string
   translation?: string
+  transcription?: string
   examplesMd?: string
 }
 
 const MIN_EXAMPLES_LENGTH = 1
 const MAX_TERM_LENGTH = 500
 const MAX_TRANSLATION_LENGTH = 500
-const MAX_EXAMPLES_LENGTH = 2000
+const MAX_TRANSCRIPTION_LENGTH = 500
+const MAX_EXAMPLES_LENGTH = 3000
 
 const DIFFICULTY_LABELS: Record<DifficultyLevel, string> = {
   easy: 'Easy',
@@ -68,6 +70,7 @@ export function WordFormModal({
 }: WordFormModalProps) {
   const [term, setTerm] = useState<string>(initialValue?.term ?? '')
   const [translation, setTranslation] = useState<string>(initialValue?.translation ?? '')
+  const [transcription, setTranscription] = useState<string>(initialValue?.transcription ?? '')
   const [examplesMd, setExamplesMd] = useState<string>(initialValue?.examplesMd ?? '')
   const [difficulty, setDifficulty] = useState<DifficultyLevel>(
     initialValue?.difficulty ?? 'medium'
@@ -75,17 +78,19 @@ export function WordFormModal({
   const [touched, setTouched] = useState<{
     term: boolean
     translation: boolean
+    transcription: boolean
     examplesMd: boolean
-  }>({ term: false, translation: false, examplesMd: false })
+  }>({ term: false, translation: false, transcription: false, examplesMd: false })
   const [formError, setFormError] = useState<string | null>(null)
   const [aiError, setAiError] = useState<string | null>(null)
 
   const resetFormValues = useCallback((value?: WordFormState) => {
     setTerm(value?.term ?? '')
     setTranslation(value?.translation ?? '')
+    setTranscription(value?.transcription ?? '')
     setExamplesMd(value?.examplesMd ?? '')
     setDifficulty(value?.difficulty ?? 'medium')
-    setTouched({ term: false, translation: false, examplesMd: false })
+    setTouched({ term: false, translation: false, transcription: false, examplesMd: false })
     setFormError(null)
     setAiError(null)
   }, [])
@@ -106,6 +111,7 @@ export function WordFormModal({
 
   const trimmedTerm = term.trim()
   const trimmedTranslation = translation.trim()
+  const trimmedTranscription = transcription.trim()
   const trimmedExamples = examplesMd.trim()
 
   const fieldErrors: FieldErrors = useMemo(() => {
@@ -123,6 +129,10 @@ export function WordFormModal({
       errors.translation = `Translation must be ≤${MAX_TRANSLATION_LENGTH} characters`
     }
 
+    if (trimmedTranscription.length > MAX_TRANSCRIPTION_LENGTH) {
+      errors.transcription = `Transcription must be ≤${MAX_TRANSCRIPTION_LENGTH} characters`
+    }
+
     if (!trimmedExamples || trimmedExamples.length < MIN_EXAMPLES_LENGTH) {
       errors.examplesMd = 'Examples are required'
     } else if (trimmedExamples.length > MAX_EXAMPLES_LENGTH) {
@@ -130,7 +140,7 @@ export function WordFormModal({
     }
 
     return errors
-  }, [trimmedTerm, trimmedTranslation, trimmedExamples])
+  }, [trimmedTerm, trimmedTranslation, trimmedTranscription, trimmedExamples])
 
   const isValid = Object.keys(fieldErrors).length === 0
   const saveDisabled = !isValid || busy || aiBusy
@@ -146,12 +156,13 @@ export function WordFormModal({
 
     setTerm(suggestion.term)
     setTranslation(suggestion.translation)
+    setTranscription(suggestion.transcription || '')
     setExamplesMd(suggestion.examplesMd)
   }
 
   const handleSubmit = async () => {
     if (!isValid || busy || aiBusy) {
-      setTouched({ term: true, translation: true, examplesMd: true })
+      setTouched({ term: true, translation: true, transcription: true, examplesMd: true })
       return
     }
 
@@ -160,6 +171,7 @@ export function WordFormModal({
     const payload: CreateWordCommand | UpdateWordCommand = {
       term: trimmedTerm,
       translation: trimmedTranslation,
+      transcription: trimmedTranscription || undefined,
       examplesMd: trimmedExamples,
     }
 
@@ -173,6 +185,7 @@ export function WordFormModal({
 
   const showTermError = touched.term && fieldErrors.term
   const showTranslationError = touched.translation && fieldErrors.translation
+  const showTranscriptionError = touched.transcription && fieldErrors.transcription
   const showExamplesError = touched.examplesMd && fieldErrors.examplesMd
 
   return (
@@ -224,6 +237,23 @@ export function WordFormModal({
               />
               {showTranslationError ? (
                 <p className="text-destructive text-xs">{fieldErrors.translation}</p>
+              ) : null}
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-foreground text-sm font-medium" htmlFor="word-transcription">
+                Transcription <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <Input
+                id="word-transcription"
+                value={transcription}
+                onChange={event => setTranscription(event.target.value)}
+                onBlur={() => setTouched(prev => ({ ...prev, transcription: true }))}
+                placeholder="Phonetic transcription in your native alphabet"
+                disabled={busy || aiBusy}
+              />
+              {showTranscriptionError ? (
+                <p className="text-destructive text-xs">{fieldErrors.transcription}</p>
               ) : null}
             </div>
 
