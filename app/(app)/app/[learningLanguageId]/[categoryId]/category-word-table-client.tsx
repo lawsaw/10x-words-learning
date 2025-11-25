@@ -64,6 +64,7 @@ export default function CategoryWordTableClient({
   const [formState, setFormState] = useState<WordFormState>({
     term: '',
     translation: '',
+    transcription: '',
     examplesMd: '',
     difficulty: DEFAULT_DIFFICULTY,
   })
@@ -211,6 +212,7 @@ export default function CategoryWordTableClient({
     setFormState({
       term: '',
       translation: '',
+      transcription: '',
       examplesMd: '',
       difficulty: DEFAULT_DIFFICULTY,
     })
@@ -230,6 +232,7 @@ export default function CategoryWordTableClient({
         wordId: word.id,
         term: word.term,
         translation: word.translation,
+        transcription: word.transcription ?? '',
         examplesMd: word.examplesMd ?? '',
         difficulty: DEFAULT_DIFFICULTY,
       })
@@ -243,6 +246,7 @@ export default function CategoryWordTableClient({
     setFormState({
       term: '',
       translation: '',
+      transcription: '',
       examplesMd: '',
       difficulty: DEFAULT_DIFFICULTY,
     })
@@ -260,6 +264,7 @@ export default function CategoryWordTableClient({
           await wordMutations.createWord({
             term: state.term.trim(),
             translation: state.translation.trim(),
+            transcription: state.transcription?.trim() || undefined,
             examplesMd: state.examplesMd.trim(),
           })
           showFeedback('success', 'Word created successfully.')
@@ -267,6 +272,7 @@ export default function CategoryWordTableClient({
           await wordMutations.updateWord(state.wordId, {
             term: state.term.trim(),
             translation: state.translation.trim(),
+            transcription: state.transcription?.trim() || undefined,
             examplesMd: state.examplesMd.trim(),
           })
           showFeedback('success', 'Word updated successfully.')
@@ -337,6 +343,7 @@ export default function CategoryWordTableClient({
         ...prev,
         term: suggestion.term,
         translation: suggestion.translation,
+        transcription: suggestion.transcription ?? '',
         examplesMd: suggestion.examplesMd,
         difficulty,
       }))
@@ -415,6 +422,10 @@ export default function CategoryWordTableClient({
               'translation' in payload && payload.translation
                 ? payload.translation
                 : formState.translation,
+            transcription:
+              'transcription' in payload && payload.transcription !== undefined
+                ? (payload.transcription ?? '')
+                : formState.transcription,
             examplesMd:
               'examplesMd' in payload && payload.examplesMd !== undefined
                 ? payload.examplesMd
@@ -468,6 +479,7 @@ function createWordTableViewModel(payload: CategoryWordsListDto): WordTableViewM
     id: word.id,
     term: word.term,
     translation: word.translation,
+    transcription: word.transcription ?? '',
     examplesMd: word.examplesMd ?? '',
     createdAt: word.createdAt,
     updatedAt: word.updatedAt,

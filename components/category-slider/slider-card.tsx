@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 type SliderCardProps = {
   term: string
   translation: string
+  transcription?: string | null
   examples?: string
   revealed: boolean
   onReveal: () => void
@@ -16,6 +17,7 @@ type SliderCardProps = {
 export function SliderCard({
   term,
   translation,
+  transcription,
   examples,
   revealed,
   onReveal,
@@ -38,11 +40,21 @@ export function SliderCard({
 
       <div className="flex w-full items-center justify-center">
         {revealed ? (
-          <div className="space-y-2">
-            <p className="text-muted-foreground text-xs tracking-wide uppercase">
-              {secondaryLabel}
-            </p>
-            <p className="text-foreground text-xl font-medium">{secondaryValue}</p>
+          <div className="w-full space-y-3">
+            <div className="space-y-2">
+              <p className="text-muted-foreground text-xs tracking-wide uppercase">
+                {secondaryLabel}
+              </p>
+              <p className="text-foreground text-xl font-medium">{secondaryValue}</p>
+            </div>
+            {transcription && (
+              <div className="border-border bg-muted/40 w-full rounded-md border border-dashed p-3 text-center">
+                <p className="text-muted-foreground text-xs tracking-wide uppercase">
+                  Transcription
+                </p>
+                <p className="text-muted-foreground mt-1 text-sm">{transcription}</p>
+              </div>
+            )}
           </div>
         ) : (
           <button

@@ -142,14 +142,20 @@ export const searchWordsQuerySchema = z.object({
 export const createWordCommandSchema = z.object({
   term: z.string().min(1, 'Term is required').max(500, 'Term is too long'),
   translation: z.string().min(1, 'Translation is required').max(500, 'Translation is too long'),
-  examplesMd: z.string().max(2000, 'Examples are too long').optional().default(''),
+  transcription: z
+    .string()
+    .max(500, 'Transcription is too long')
+    .optional()
+    .transform(val => (val === '' ? undefined : val)),
+  examplesMd: z.string().max(3000, 'Examples are too long').optional().default(''),
 })
 
 export const updateWordCommandSchema = z
   .object({
     term: z.string().min(1).max(500).optional(),
     translation: z.string().min(1).max(500).optional(),
-    examplesMd: z.string().max(2000).optional(),
+    transcription: z.string().max(500).optional(),
+    examplesMd: z.string().max(3000).optional(),
   })
   .refine(data => Object.keys(data).length > 0, {
     message: 'At least one field must be provided',
