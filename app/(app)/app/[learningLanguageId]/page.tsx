@@ -1,10 +1,35 @@
 import { redirect, notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import AppShellLayout from '@/components/app/app-shell-layout'
 import { createClient } from '@/lib/supabase/server'
 import { learningLanguageParamsSchema } from '@/lib/validation'
 
 import WorkspaceClient, { LearningLanguageSummary } from '../workspace-client'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ learningLanguageId: string }>
+}): Promise<Metadata> {
+  const resolvedParams = await params
+  const { learningLanguageId } = learningLanguageParamsSchema.parse(resolvedParams)
+  const supabase = await createClient()
+
+  const { data } = await supabase
+    .schema('app')
+    .from('user_learning_languages')
+    .select('languages ( name )')
+    .eq('id', learningLanguageId)
+    .single()
+
+  const languageName =
+    data?.languages && !Array.isArray(data.languages) ? data.languages.name : 'Language'
+
+  return {
+    title: languageName,
+  }
+}
 
 export default async function LearningLanguageHome({
   params,

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import { LoginForm } from '@/components/public/login-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +12,12 @@ const LOGIN_FEATURES = [
   'Keep AI-generated lists scoped to your profile',
   'Manage every learning language from one workspace',
 ]
+
+export const metadata: Metadata = {
+  title: 'Log In',
+  description:
+    'Log in to your 10xWordsLearning account to resume your vocabulary learning journey.',
+}
 
 export default async function LoginPage() {
   const sessionStatus = await fetchSessionStatus()

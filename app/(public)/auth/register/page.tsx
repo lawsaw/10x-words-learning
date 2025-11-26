@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import { RegisterForm } from '@/components/public/register-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +16,11 @@ const REGISTER_POINTS = [
   'Curate thematic categories for every learning language',
   'Switch between table and slider study modes instantly',
 ]
+
+export const metadata: Metadata = {
+  title: 'Sign Up',
+  description: 'Create your 10xWordsLearning account and start mastering new vocabulary today.',
+}
 
 export default async function RegisterPage() {
   const [sessionStatus, supportedLanguages] = await Promise.all([

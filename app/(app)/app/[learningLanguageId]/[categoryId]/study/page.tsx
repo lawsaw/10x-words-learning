@@ -1,4 +1,5 @@
 import { redirect, notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { WordService } from '@/lib/services/word.service'
 
@@ -13,6 +14,26 @@ type SliderContext = {
   categoryName: string
   learningLanguageName: string
   learningLanguageCode: string
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<PageParams>
+}): Promise<Metadata> {
+  const resolvedParams = await params
+  const supabase = await createClient()
+
+  const { data: category } = await supabase
+    .schema('app')
+    .from('categories')
+    .select('name')
+    .eq('id', resolvedParams.categoryId)
+    .single()
+
+  return {
+    title: `Study ${category?.name || 'Category'}`,
+  }
 }
 
 export default async function CategorySliderPage({ params }: { params: Promise<PageParams> }) {
