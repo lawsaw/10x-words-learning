@@ -115,6 +115,14 @@ export class WorkspacePage extends BasePage {
     await this.addLearningLanguageDialog.selectLanguage(languageCode)
     await this.addLearningLanguageDialog.clickSubmit()
 
+    // Handle duplicate entry error (backend has it, frontend didn't see it)
+    // If duplicate, cancel dialog and reload to sync UI with backend
+    const duplicateError = this.page.getByText('Duplicate entry detected')
+    if (await duplicateError.isVisible({ timeout: 2000 })) {
+      await this.addLearningLanguageDialog.clickCancel()
+      await this.page.reload()
+    }
+
     // Wait for the language section to appear (this confirms success)
     await this.waitForLanguageSection(languageCode)
   }
@@ -207,8 +215,9 @@ export class WorkspacePage extends BasePage {
     await menuButton.waitFor({ state: 'visible', timeout: 10000 })
     await menuButton.click()
 
-    // Wait for menu to open
-    await this.page.waitForTimeout(300)
+    // Wait for menu to open (look for any menu item)
+    // Using a broad selector because specific items depend on caller
+    await this.page.getByRole('menuitem').first().waitFor({ state: 'visible', timeout: 5000 })
   }
 
   /**
@@ -257,5 +266,31 @@ export class WorkspacePage extends BasePage {
   ): Promise<void> {
     const section = this.getLanguageSection(languageCode)
     await section.waitFor({ state: 'hidden', timeout })
+  }
+
+  /**
+   * Act: Open "Add category" dialog via language menu
+   */
+  async clickAddCategoryMenuItem(languageCode: string): Promise<void> {
+    await this.openLanguageMenu(languageCode)
+    // Use role selector as fallback or primary if testid is problematic
+    const addItem = this.page.getByRole('menuitem', { name: /add category/i })
+    await addItem.click()
+  }
+
+  /**
+   * Act: Fill and submit create category form
+   */
+  async fillCreateCategoryForm(name: string): Promise<void> {
+    // Dialog should be open
+    await this.page.fill('#category-name-input', name)
+    await this.page.getByRole('button', { name: /create category/i }).click()
+  }
+
+  /**
+   * Act: Click on a category link
+   */
+  async clickCategory(name: string): Promise<void> {
+    await this.page.getByRole('link', { name }).first().click()
   }
 }
