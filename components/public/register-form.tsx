@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
 
 import type { SupportedLanguagesVm } from '@/app/(public)/types'
 import { Button } from '@/components/ui/button'
@@ -63,6 +64,7 @@ export function RegisterForm({
   submittingLabel = 'Creating your workspace...',
   onSuccess,
 }: RegisterFormProps) {
+  const router = useRouter()
   const [formState, setFormState] = useState<RegisterFormState>(INITIAL_FORM_STATE)
   const [languagesState, setLanguagesState] = useState<LanguagesState>(() => {
     if (initialLanguages.items.length > 0) {
@@ -155,10 +157,8 @@ export function RegisterForm({
 
   const handleSuccess = useCallback(() => {
     onSuccess?.()
-    if (typeof window !== 'undefined') {
-      window.location.replace('/app')
-    }
-  }, [onSuccess])
+    router.push('/app')
+  }, [onSuccess, router])
 
   const canSubmit = useMemo(() => {
     const isEmailValid = email.trim().length > 0

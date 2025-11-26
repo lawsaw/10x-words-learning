@@ -32,32 +32,53 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        'border-border bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed z-50 grid w-full max-w-lg gap-4 border shadow-lg duration-200',
-        'left-[50%] translate-x-[-50%]',
-        'top-[50%] max-h-[100vh] translate-y-[-50%] overflow-y-auto',
-        'sm:top-[50%] sm:translate-y-[-50%]',
-        'p-6',
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <DialogPrimitive.Close
-        aria-label="Close dialog"
-        className="text-muted-foreground hover:text-foreground focus-visible:ring-ring focus-visible:ring-offset-background absolute top-4 right-4 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none"
+>(({ className, children, ...props }, ref) => {
+  const [viewportStyle, setViewportStyle] = React.useState<React.CSSProperties>({})
+
+  React.useEffect(() => {
+    if (!window.visualViewport) return
+
+    const handleResize = () => {
+      if (!window.visualViewport) return
+      setViewportStyle({
+        maxHeight: `${window.visualViewport.height}px`,
+      })
+    }
+
+    window.visualViewport.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => window.visualViewport?.removeEventListener('resize', handleResize)
+  }, [])
+
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        style={{ ...viewportStyle, ...props.style }}
+        className={cn(
+          'border-border bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed z-50 flex w-full max-w-lg flex-col gap-4 border shadow-lg duration-200',
+          'left-[50%] translate-x-[-50%]',
+          'top-[50%] max-h-[100dvh] translate-y-[-50%] overflow-y-auto',
+          'sm:top-[50%] sm:translate-y-[-50%]',
+          'p-4 sm:p-6',
+          className
+        )}
+        {...props}
       >
-        <X aria-hidden="true" className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
+        {children}
+        <DialogPrimitive.Close
+          aria-label="Close dialog"
+          className="text-muted-foreground hover:text-foreground focus-visible:ring-ring focus-visible:ring-offset-background absolute top-4 right-4 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none"
+        >
+          <X aria-hidden="true" className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  )
+})
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
