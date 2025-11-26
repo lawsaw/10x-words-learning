@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import { PasswordResetForm } from '@/components/public/password-reset-form'
 import { PasswordResetRequestForm } from '@/components/public/password-reset-request-form'
@@ -22,6 +23,11 @@ type ResetPasswordPageProps = {
     | {
         [key: string]: string | string[] | undefined
       }
+}
+
+export const metadata: Metadata = {
+  title: 'Reset Password',
+  description: 'Recover your 10xWordsLearning account password.',
 }
 
 export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {

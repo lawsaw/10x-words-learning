@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import AppShellLayout from '@/components/app/app-shell-layout'
 import { createClient } from '@/lib/supabase/server'
@@ -10,6 +11,10 @@ type LanguageRow = {
   language_id: string
   languages?: { code: string; name: string } | null | Array<{ code: string; name: string }>
   categories?: Array<{ id: string; name: string; words?: Array<{ count: number }> }> | null
+}
+
+export const metadata: Metadata = {
+  title: 'Workspace',
 }
 
 export default async function AppHomePage() {
