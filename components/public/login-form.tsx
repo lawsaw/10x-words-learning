@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,6 +36,7 @@ export function LoginForm({
   submittingLabel = 'Logging in...',
   onSuccess,
 }: LoginFormProps) {
+  const router = useRouter()
   const [formState, setFormState] = useState<LoginFormState>(INITIAL_FORM_STATE)
   const { email, password, error, status } = formState
 
@@ -56,10 +58,8 @@ export function LoginForm({
 
   const handleSuccess = useCallback(() => {
     onSuccess?.()
-    if (typeof window !== 'undefined') {
-      window.location.replace('/app')
-    }
-  }, [onSuccess])
+    router.push('/app')
+  }, [onSuccess, router])
 
   const handleSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {

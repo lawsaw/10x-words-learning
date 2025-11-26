@@ -4,11 +4,14 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/app/theme-toggle'
 
+type PublicHeaderVariant = 'home' | 'login' | 'register' | 'reset-password'
+
 type PublicHeaderProps = {
+  variant?: PublicHeaderVariant
   className?: string
 }
 
-export function PublicHeader({ className }: PublicHeaderProps) {
+export function PublicHeader({ variant = 'home', className }: PublicHeaderProps) {
   return (
     <header
       className={cn(
@@ -29,12 +32,40 @@ export function PublicHeader({ className }: PublicHeaderProps) {
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" asChild aria-label="Go to login page">
-            <Link href="/auth/login">Log in</Link>
-          </Button>
-          <Button asChild aria-label="Go to registration page">
-            <Link href="/auth/register">Get started</Link>
-          </Button>
+          {variant === 'home' && (
+            <>
+              <Button variant="ghost" asChild aria-label="Go to login page">
+                <Link href="/auth/login">Log in</Link>
+              </Button>
+              <Button asChild aria-label="Go to registration page">
+                <Link href="/auth/register">Get started</Link>
+              </Button>
+            </>
+          )}
+          {variant === 'login' && (
+            <Link
+              href="/auth/register"
+              className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+            >
+              Need an account?
+            </Link>
+          )}
+          {variant === 'register' && (
+            <Link
+              href="/auth/login"
+              className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+            >
+              Already have an account?
+            </Link>
+          )}
+          {variant === 'reset-password' && (
+            <Link
+              href="/auth/login"
+              className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+            >
+              Back to login
+            </Link>
+          )}
         </div>
       </div>
     </header>
